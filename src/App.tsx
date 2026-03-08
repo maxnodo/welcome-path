@@ -47,8 +47,17 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isGestor, loading } = useAuth();
+  const { isAuthenticated, isGestor, loading, profile } = useAuth();
   if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="text-center space-y-4">
+        <Logo size="lg" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+      </div>
+    </div>
+  );
+  // Wait for profile to load before redirecting
+  if (isAuthenticated && !profile) return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30">
       <div className="text-center space-y-4">
         <Logo size="lg" />
