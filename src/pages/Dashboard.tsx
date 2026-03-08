@@ -1,32 +1,43 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { useExpedientes } from "@/hooks/useExpedientes";
+import { useMensajes } from "@/hooks/useMensajes";
+import { useAlertas } from "@/hooks/useAlertas";
+import { useCitas } from "@/hooks/useCitas";
+import { useFacturas } from "@/hooks/useFacturas";
 import {
   User, FileText, Mail, Bell, CreditCard, Clock,
   HelpCircle, MessageCircle, Receipt, Calendar,
 } from "lucide-react";
 
-const dashboardCards = [
-  { title: "Mi perfil", icon: User, path: "/perfil", count: 0 },
-  { title: "Mis trámites / Mis documentos", icon: FileText, path: "/tramites", count: 0 },
-  { title: "Mis mensajes", icon: Mail, path: "/mensajes", count: 0 },
-  { title: "Mis Alertas", icon: Bell, path: "/alertas", count: 0, badgeColor: "destructive" },
-  { title: "Mi suscripción", icon: CreditCard, path: "/suscripcion", count: 0 },
-  { title: "Mi histórico", icon: Clock, path: "/historico", count: 0 },
-  { title: "Ayuda", icon: HelpCircle, path: "/ayuda" },
-  { title: "Chat en vivo", icon: MessageCircle, path: "/chat", online: true },
-  { title: "Mis facturas", icon: Receipt, path: "/facturas", count: 0 },
-  { title: "Próximas citas", icon: Calendar, path: "/citas", count: 0 },
-];
-
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
+  const { expedientes } = useExpedientes();
+  const { unreadCount: mensajesUnread } = useMensajes();
+  const { unreadCount: alertasUnread } = useAlertas();
+  const { citas } = useCitas();
+  const { pendingCount: facturasPending } = useFacturas();
 
-  const initials = user?.name
+  const displayName = profile?.full_name ?? "Usuario";
+  const initials = displayName
     .split(" ")
     .map((n) => n[0])
     .join("")
-    .slice(0, 2) ?? "";
+    .slice(0, 2);
+
+  const dashboardCards = [
+    { title: "Mi perfil", icon: User, path: "/perfil", count: undefined },
+    { title: "Mis trámites / Mis documentos", icon: FileText, path: "/tramites", count: expedientes.length },
+    { title: "Mis mensajes", icon: Mail, path: "/mensajes", count: mensajesUnread },
+    { title: "Mis Alertas", icon: Bell, path: "/alertas", count: alertasUnread, badgeColor: "destructive" },
+    { title: "Mi suscripción", icon: CreditCard, path: "/suscripcion", count: undefined },
+    { title: "Mi histórico", icon: Clock, path: "/historico", count: undefined },
+    { title: "Ayuda", icon: HelpCircle, path: "/ayuda" },
+    { title: "Chat en vivo", icon: MessageCircle, path: "/chat", online: true },
+    { title: "Mis facturas", icon: Receipt, path: "/facturas", count: facturasPending },
+    { title: "Próximas citas", icon: Calendar, path: "/citas", count: citas.length },
+  ];
 
   return (
     <div className="flex gap-6">
@@ -37,10 +48,10 @@ const Dashboard = () => {
             {initials}
           </div>
           <p className="text-sm text-muted-foreground">Bienvenido</p>
-          <p className="font-semibold text-foreground text-lg">{user?.name}</p>
+          <p className="font-semibold text-foreground text-lg">{displayName}</p>
           <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-            <p>Nacionalidad: {user?.nationality}</p>
-            <p className="break-all">{user?.email}</p>
+            <p>Nacionalidad: {profile?.nationality ?? "—"}</p>
+            <p className="break-all">{profile?.email ?? "—"}</p>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Layout from "@/components/Layout";
 import { AdminLayout, AdminLogin } from "@/components/AdminLayout";
 import Login from "@/pages/Login";
@@ -20,6 +20,7 @@ import Facturas from "@/pages/Facturas";
 import Citas from "@/pages/Citas";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import NotFound from "@/pages/NotFound";
+import Logo from "@/components/Logo";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,35 @@ const AdminPlaceholder = ({ title }: { title: string }) => (
   </div>
 );
 
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isGestor, loading, isAuthenticated } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="text-center space-y-4">
+        <Logo size="lg" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+      </div>
+    </div>
+  );
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  if (!isGestor) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="text-center space-y-4">
+        <Logo size="lg" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+      </div>
+    </div>
+  );
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -39,7 +69,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
             {/* User area */}
             <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
@@ -56,14 +86,14 @@ const App = () => (
 
             {/* Admin area */}
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-            <Route path="/admin/expedientes" element={<AdminLayout><AdminPlaceholder title="Expedientes" /></AdminLayout>} />
-            <Route path="/admin/tramites" element={<AdminLayout><AdminPlaceholder title="Trámites" /></AdminLayout>} />
-            <Route path="/admin/mensajes" element={<AdminLayout><AdminPlaceholder title="Mensajes" /></AdminLayout>} />
-            <Route path="/admin/alertas" element={<AdminLayout><AdminPlaceholder title="Alertas" /></AdminLayout>} />
-            <Route path="/admin/citas" element={<AdminLayout><AdminPlaceholder title="Citas" /></AdminLayout>} />
-            <Route path="/admin/facturacion" element={<AdminLayout><AdminPlaceholder title="Facturación" /></AdminLayout>} />
-            <Route path="/admin/configuracion" element={<AdminLayout><AdminPlaceholder title="Configuración" /></AdminLayout>} />
+            <Route path="/admin" element={<AdminRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/expedientes" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Expedientes" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/tramites" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Trámites" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/mensajes" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Mensajes" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Alertas" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Citas" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Facturación" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Configuración" /></AdminLayout></AdminRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
