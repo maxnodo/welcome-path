@@ -30,12 +30,6 @@ import Logo from "@/components/Logo";
 
 const queryClient = new QueryClient();
 
-const AdminPlaceholder = ({ title }: { title: string }) => (
-  <div className="flex flex-col items-center justify-center py-20 text-center">
-    <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
-    <p className="text-muted-foreground mt-2">Sección en construcción</p>
-  </div>
-);
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isGestor, loading, isAuthenticated } = useAuth();
