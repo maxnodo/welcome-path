@@ -3,65 +3,69 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Download, FileText, ChevronRight, CheckCircle, XCircle, Archive, ClipboardList, Paperclip, Play, AlertTriangle } from "lucide-react";
+import { Search, Download, FileText, ChevronRight, CheckCircle, ClipboardList, Paperclip, Play, AlertTriangle } from "lucide-react";
+import { useExpedientes } from "@/hooks/useExpedientes";
+import { useFacturas } from "@/hooks/useFacturas";
+import { useMensajes } from "@/hooks/useMensajes";
+import { ExpedienteStatus } from "@/types/database.types";
 
 const statusBadge = (status: string) => {
   const map: Record<string, { color: string; label: string }> = {
     aprobado: { color: "bg-success/10 text-success", label: "Aprobado" },
-    resuelto: { color: "bg-success/10 text-success", label: "Resuelto" },
+    finalizado: { color: "bg-success/10 text-success", label: "Finalizado" },
     denegado: { color: "bg-destructive/10 text-destructive", label: "Denegado" },
     archivado: { color: "bg-muted text-muted-foreground", label: "Archivado" },
+    en_revision: { color: "bg-secondary/10 text-secondary", label: "En revisión" },
+    presentado: { color: "bg-purple-500/10 text-purple-600", label: "Presentado" },
+    no_iniciado: { color: "bg-muted text-muted-foreground", label: "No iniciado" },
+    documentacion_incompleta: { color: "bg-warning/10 text-warning", label: "Doc. incompleta" },
+    requerimiento_adicional: { color: "bg-orange-500/10 text-orange-600", label: "Requerimiento" },
     validado: { color: "text-success", label: "✓ Validado" },
+    pendiente: { color: "text-warning", label: "⏳ Pendiente" },
+    rechazado: { color: "text-destructive", label: "✗ Rechazado" },
     pagada: { color: "text-success", label: "✓ Pagada" },
   };
   const s = map[status] ?? { color: "bg-muted text-muted-foreground", label: status };
   return <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.color}`}>{s.label}</span>;
 };
 
-const tramitesData = [
-  { name: "Nacionalidad Española", sub: "Expediente: 87596-NAC", fecha: "22 enero 2023", status: "aprobado", resultado: "20 abril 2024", hasDownload: true },
-  { name: "NIE – Número de Identidad de Extranjero", sub: "Expediente: 8821", fecha: "10 noviembre 2022", status: "resuelto", resultado: "25 enero 2023", hasDownload: true },
-  { name: "DNI – Documento Nacional de Identidad", sub: "Consulta previa cerrada", extra: "Solicitud denegada por falta de documentación.", fecha: "5 julio 2022", status: "denegado", resultado: "10 agosto 2022", hasDownload: false },
-  { name: "Consulta general", sub: "Acceso laboral en España", fecha: "23 abril 2022", status: "archivado", resultado: "5 mayo 2022", hasDownload: true },
-];
-
-const docsData = [
-  { name: "Pasaporte.pdf", tramite: "Nacionalidad", fecha: "25 ene 2023", status: "validado", gestor: "María López" },
-  { name: "Cert_nacimiento.pdf", tramite: "Nacionalidad", fecha: "25 ene 2023", status: "validado", gestor: "María López" },
-  { name: "Antecedentes_ES.pdf", tramite: "Nacionalidad", fecha: "1 feb 2023", status: "validado", gestor: "María López" },
-  { name: "Empadronamiento.pdf", tramite: "NIE", fecha: "12 nov 2022", status: "validado", gestor: "Carlos Martínez" },
-  { name: "Formulario_NIE.pdf", tramite: "NIE", fecha: "12 nov 2022", status: "validado", gestor: "Carlos Martínez" },
-];
-
-const commsData = [
-  { date: "20 abril 2024", icon: CheckCircle, iconColor: "text-success", title: "Resolución aprobada", desc: "Tu solicitud de Nacionalidad Española fue aprobada por el Ministerio de Justicia." },
-  { date: "20 marzo 2023", icon: ClipboardList, iconColor: "text-secondary", title: "Expediente presentado", desc: "Tu expediente de Nacionalidad Española fue presentado ante las autoridades competentes." },
-  { date: "5 febrero 2023", icon: Paperclip, iconColor: "text-primary", title: "Documentación completa", desc: "Toda la documentación requerida fue recibida y validada por el gestor." },
-  { date: "22 enero 2023", icon: Play, iconColor: "text-muted-foreground", title: "Trámite iniciado", desc: "Se inició el trámite de Nacionalidad Española." },
-];
-
-const pagosData = [
-  { factura: "2024-004", periodo: "Abril 2024", importe: "69,95€", status: "pagada", metodo: "Tarjeta" },
-  { factura: "2024-003", periodo: "Marzo 2024", importe: "69,95€", status: "pagada", metodo: "Bizum" },
-  { factura: "2024-002", periodo: "Febrero 2024", importe: "69,95€", status: "pagada", metodo: "Tarjeta" },
-  { factura: "2024-001", periodo: "Enero 2024", importe: "69,95€", status: "pagada", metodo: "Tarjeta" },
-];
-
-const timelinePoints = [
-  { label: "Inicio", date: "22 ene 2023", completed: true },
-  { label: "Ingreso de documentación", date: "5 feb 2023", completed: true },
-  { label: "Revisión", date: "20 mar 2023", completed: true },
-  { label: "Resolución", date: "", completed: false },
-  { label: "Resultado", date: "20 abr 2024", completed: true },
-];
-
 const Historico = () => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
+  const { expedientes, loading: expLoading } = useExpedientes();
+  const { facturas, loading: facLoading } = useFacturas();
+  const { mensajes } = useMensajes();
 
   const handleDownload = () => {
     toast({ title: "Descarga iniciada", description: "El archivo se está descargando." });
   };
+
+  // Build docs list from expedientes
+  const allDocs = expedientes.flatMap(exp =>
+    (exp.documentos ?? []).map(doc => ({
+      ...doc,
+      tramiteName: exp.tramites_catalog?.name ?? exp.tramite_code,
+    }))
+  );
+
+  // Build comms from messages (simplified)
+  const comms = mensajes.slice(0, 10).map(m => ({
+    date: new Date(m.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }),
+    icon: m.is_read ? CheckCircle : ClipboardList,
+    iconColor: m.is_read ? "text-success" : "text-secondary",
+    title: m.content.slice(0, 50),
+    desc: m.content,
+  }));
+
+  // Timeline for first expediente
+  const firstExp = expedientes[0];
+  const timelinePoints = firstExp ? [
+    { label: "Inicio", date: new Date(firstExp.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }), completed: true },
+    { label: "Documentación", date: firstExp.submitted_at ? new Date(firstExp.submitted_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : "", completed: !!firstExp.submitted_at },
+    { label: "Revisión", date: "", completed: ["en_revision", "presentado", "aprobado", "finalizado"].includes(firstExp.status) },
+    { label: "Resolución", date: "", completed: ["aprobado", "finalizado", "denegado"].includes(firstExp.status) },
+    { label: "Resultado", date: firstExp.resolved_at ? new Date(firstExp.resolved_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : "", completed: !!firstExp.resolved_at },
+  ] : [];
 
   return (
     <div className="max-w-5xl space-y-6">
@@ -101,24 +105,22 @@ const Historico = () => {
                 </tr>
               </thead>
               <tbody>
-                {tramitesData.map((t, i) => (
-                  <tr key={i} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                {expLoading ? (
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">Cargando...</td></tr>
+                ) : expedientes.length === 0 ? (
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No hay trámites registrados.</td></tr>
+                ) : expedientes.map((t) => (
+                  <tr key={t.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-foreground">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.sub}</p>
-                      {t.extra && <p className="text-xs text-destructive mt-0.5">{t.extra}</p>}
+                      <p className="font-medium text-foreground">{t.tramites_catalog?.name ?? t.tramite_code}</p>
+                      <p className="text-xs text-muted-foreground">Expediente: {t.expediente_number ?? "—"}</p>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{t.fecha}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{new Date(t.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}</td>
                     <td className="px-4 py-3">{statusBadge(t.status)}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{t.resultado}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{t.resolved_at ? new Date(t.resolved_at).toLocaleDateString("es-ES") : "—"}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        {t.hasDownload && (
-                          <>
-                            <button onClick={handleDownload} className="text-muted-foreground hover:text-foreground"><Download size={16} /></button>
-                            <button className="text-muted-foreground hover:text-foreground"><FileText size={16} /></button>
-                          </>
-                        )}
+                        <button onClick={handleDownload} className="text-muted-foreground hover:text-foreground"><Download size={16} /></button>
                         <ChevronRight size={16} className="text-muted-foreground" />
                       </div>
                     </td>
@@ -129,32 +131,30 @@ const Historico = () => {
           </div>
 
           {/* Timeline */}
-          <div className="bg-card rounded-lg border shadow-sm p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-6">Nacionalidad Española</h3>
-            <div className="relative flex items-center justify-between">
-              {/* Line */}
-              <div className="absolute top-4 left-0 right-0 h-0.5 bg-border" />
-              <div className="absolute top-4 left-0 h-0.5 bg-primary" style={{ width: "80%" }} />
-              {timelinePoints.map((pt, i) => (
-                <div key={i} className="relative flex flex-col items-center z-10" style={{ minWidth: 80 }}>
-                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
-                    pt.completed ? "bg-primary border-primary" : "bg-card border-border"
-                  }`}>
-                    {pt.completed && <div className="w-2 h-2 rounded-full bg-primary-foreground" />}
+          {firstExp && timelinePoints.length > 0 && (
+            <div className="bg-card rounded-lg border shadow-sm p-6">
+              <h3 className="text-sm font-semibold text-foreground mb-6">{firstExp.tramites_catalog?.name ?? firstExp.tramite_code}</h3>
+              <div className="relative flex items-center justify-between">
+                <div className="absolute top-4 left-0 right-0 h-0.5 bg-border" />
+                <div className="absolute top-4 left-0 h-0.5 bg-primary" style={{ width: `${(timelinePoints.filter(p => p.completed).length / timelinePoints.length) * 100}%` }} />
+                {timelinePoints.map((pt, i) => (
+                  <div key={i} className="relative flex flex-col items-center z-10" style={{ minWidth: 80 }}>
+                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                      pt.completed ? "bg-primary border-primary" : "bg-card border-border"
+                    }`}>
+                      {pt.completed && <div className="w-2 h-2 rounded-full bg-primary-foreground" />}
+                    </div>
+                    <p className="text-xs font-medium text-foreground mt-2 text-center">{pt.label}</p>
+                    {pt.date && <p className="text-[10px] text-muted-foreground text-center">{pt.date}</p>}
                   </div>
-                  <p className="text-xs font-medium text-foreground mt-2 text-center">{pt.label}</p>
-                  {pt.date && <p className="text-[10px] text-muted-foreground text-center">{pt.date}</p>}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Warning */}
           <div className="flex items-start gap-2 bg-warning/10 border border-warning/20 rounded-md p-3">
             <AlertTriangle size={16} className="text-warning shrink-0 mt-0.5" />
-            <p className="text-xs text-foreground">
-              Mantén tus pagos al día para asegurar la entrega final de tus trámites con las autoridades.
-            </p>
+            <p className="text-xs text-foreground">Mantén tus pagos al día para asegurar la entrega final de tus trámites con las autoridades.</p>
           </div>
         </TabsContent>
 
@@ -168,20 +168,20 @@ const Historico = () => {
                   <th className="px-4 py-3 font-medium text-muted-foreground">Trámite</th>
                   <th className="px-4 py-3 font-medium text-muted-foreground">Fecha subida</th>
                   <th className="px-4 py-3 font-medium text-muted-foreground">Estado</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Gestor</th>
                   <th className="px-4 py-3 w-12"></th>
                 </tr>
               </thead>
               <tbody>
-                {docsData.map((d, i) => (
-                  <tr key={i} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                {allDocs.length === 0 ? (
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No hay documentos registrados.</td></tr>
+                ) : allDocs.map((d) => (
+                  <tr key={d.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-medium text-foreground flex items-center gap-2">
-                      <FileText size={14} className="text-primary" /> {d.name}
+                      <FileText size={14} className="text-primary" /> {d.file_name}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{d.tramite}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{d.fecha}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{d.tramiteName}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{new Date(d.created_at).toLocaleDateString("es-ES")}</td>
                     <td className="px-4 py-3">{statusBadge(d.status)}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{d.gestor}</td>
                     <td className="px-4 py-3">
                       <button onClick={handleDownload} className="text-muted-foreground hover:text-foreground"><Download size={16} /></button>
                     </td>
@@ -195,17 +195,18 @@ const Historico = () => {
         {/* Comunicaciones */}
         <TabsContent value="comunicaciones">
           <div className="bg-card rounded-lg border shadow-sm p-6 space-y-0">
-            {commsData.map((c, i) => {
+            {comms.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">No hay comunicaciones registradas.</p>
+            ) : comms.map((c, i) => {
               const Icon = c.icon;
               return (
-                <div key={i} className={`flex gap-4 py-4 ${i < commsData.length - 1 ? "border-b" : ""}`}>
+                <div key={i} className={`flex gap-4 py-4 ${i < comms.length - 1 ? "border-b" : ""}`}>
                   <div className="w-24 shrink-0 text-xs text-muted-foreground pt-1">{c.date}</div>
                   <div className="flex items-start gap-3 relative">
-                    {/* Vertical line */}
-                    {i < commsData.length - 1 && (
+                    {i < comms.length - 1 && (
                       <div className="absolute left-[15px] top-8 bottom-0 w-0.5 bg-border" style={{ height: "calc(100% + 16px)" }} />
                     )}
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-muted z-10`}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-muted z-10">
                       <Icon size={16} className={c.iconColor} />
                     </div>
                     <div>
@@ -234,13 +235,17 @@ const Historico = () => {
                 </tr>
               </thead>
               <tbody>
-                {pagosData.map((p, i) => (
-                  <tr key={i} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3 font-medium text-foreground">{p.factura}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.periodo}</td>
-                    <td className="px-4 py-3 font-medium text-foreground">{p.importe}</td>
+                {facLoading ? (
+                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Cargando...</td></tr>
+                ) : facturas.length === 0 ? (
+                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No hay pagos registrados.</td></tr>
+                ) : facturas.map((p) => (
+                  <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                    <td className="px-4 py-3 font-medium text-foreground">{p.invoice_number}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.period}</td>
+                    <td className="px-4 py-3 font-medium text-foreground">{p.total_amount.toFixed(2).replace('.', ',')}€</td>
                     <td className="px-4 py-3">{statusBadge(p.status)}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{p.metodo}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{p.payment_method ?? "—"}</td>
                     <td className="px-4 py-3">
                       <button onClick={handleDownload} className="text-muted-foreground hover:text-foreground"><Download size={16} /></button>
                     </td>

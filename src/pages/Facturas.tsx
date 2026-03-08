@@ -5,26 +5,39 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-
-const invoices = [
-  { id: "2024-005", fecha: "1 mayo 2024", periodo: "Mayo 2024", concepto: "Suscripción mensual", importe: "69,95€", status: "Pagada", metodo: "Tarjeta" },
-  { id: "2024-004", fecha: "1 abril 2024", periodo: "Abril 2024", concepto: "Suscripción mensual", importe: "69,95€", status: "Pagada", metodo: "Tarjeta" },
-  { id: "2024-003", fecha: "1 marzo 2024", periodo: "Marzo 2024", concepto: "Gestión adicional Certificado antecedentes", importe: "49,95€", status: "Pagada", metodo: "Tarjeta" },
-  { id: "2024-002", fecha: "1 febrero 2024", periodo: "Febrero 2024", concepto: "Suscripción mensual", importe: "69,95€", status: "Pagada", metodo: "Tarjeta" },
-  { id: "2024-001-B", fecha: "1 enero 2024", periodo: "Enero 2024", concepto: "Suscripción mensual", importe: "69,95€", status: "Pagada", metodo: "Tarjeta" },
-  { id: "2024-001", fecha: "1 enero 2024", periodo: "Enero 2024", concepto: "Suscripción mensual", importe: "69,95€", status: "Pagada", metodo: "Tarjeta (Msa.)" },
-];
+import { useFacturas } from "@/hooks/useFacturas";
+import { Factura } from "@/types/database.types";
+import { useAuth } from "@/context/AuthContext";
 
 const Facturas = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
+  const { facturas, loading } = useFacturas();
   const [search, setSearch] = useState("");
-  const [selectedInvoice, setSelectedInvoice] = useState<typeof invoices[0] | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<Factura | null>(null);
 
   const handleDownload = () => toast({ title: "Descarga iniciada" });
 
   const filtered = search
-    ? invoices.filter((i) => i.id.includes(search) || i.concepto.toLowerCase().includes(search.toLowerCase()))
-    : invoices;
+    ? facturas.filter((i) => i.invoice_number.includes(search) || i.concept.toLowerCase().includes(search.toLowerCase()))
+    : facturas;
+
+  const formatCurrency = (amount: number) => `${amount.toFixed(2).replace('.', ',')}€`;
+
+  const statusLabel = (s: string) => {
+    const map: Record<string, { color: string; label: string }> = {
+      pagada: { color: "text-success", label: "✓ Pagada" },
+      pendiente: { color: "text-warning", label: "⏳ Pendiente" },
+      fallida: { color: "text-destructive", label: "✗ Fallida" },
+      cancelada: { color: "text-muted-foreground", label: "Cancelada" },
+    };
+    const m = map[s] ?? { color: "text-muted-foreground", label: s };
+    return <span className={`text-xs font-medium ${m.color}`}>{m.label}</span>;
+  };
+
+  if (loading) {
+    return <div className="max-w-5xl"><p className="text-sm text-muted-foreground">Cargando facturas...</p></div>;
+  }
 
   return (
     <div className="max-w-5xl space-y-6">
@@ -62,20 +75,20 @@ const Facturas = () => {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((inv) => (
+                {filtered.length === 0 ? (
+                  <tr><td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">No hay facturas disponibles.</td></tr>
+                ) : filtered.map((inv) => (
                   <tr
                     key={inv.id}
                     className="border-b last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => setSelectedInvoice(inv)}
                   >
-                    <td className="px-4 py-3 font-medium text-foreground">{inv.id}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{inv.fecha}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{inv.periodo}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{inv.concepto}</td>
-                    <td className="px-4 py-3 font-medium text-foreground">{inv.importe}</td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-medium text-success">✓ {inv.status}</span>
-                    </td>
+                    <td className="px-4 py-3 font-medium text-foreground">{inv.invoice_number}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{new Date(inv.issued_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{inv.period}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{inv.concept}</td>
+                    <td className="px-4 py-3 font-medium text-foreground">{formatCurrency(inv.total_amount)}</td>
+                    <td className="px-4 py-3">{statusLabel(inv.status)}</td>
                     <td className="px-4 py-3">
                       <button onClick={(e) => { e.stopPropagation(); handleDownload(); }} className="text-muted-foreground hover:text-foreground">
                         <Download size={16} />
@@ -85,11 +98,6 @@ const Facturas = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-          <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-            <button className="hover:text-foreground">&lt;</button>
-            <span>1 de 1</span>
-            <button className="hover:text-foreground">&gt;</button>
           </div>
         </TabsContent>
 
@@ -112,50 +120,54 @@ const Facturas = () => {
       <Dialog open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Factura Nº {selectedInvoice?.id}</DialogTitle>
+            <DialogTitle>Factura Nº {selectedInvoice?.invoice_number}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-sm">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-semibold text-foreground">WCE WELCOME</p>
-                <p className="text-xs text-muted-foreground">Immigration & Foreign Affairs</p>
-                <p className="text-xs text-muted-foreground">CIF: B-12345678</p>
-                <p className="text-xs text-muted-foreground">Madrid, España</p>
+          {selectedInvoice && (
+            <div className="space-y-4 text-sm">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="font-semibold text-foreground">WCE WELCOME</p>
+                  <p className="text-xs text-muted-foreground">Immigration & Foreign Affairs</p>
+                  <p className="text-xs text-muted-foreground">CIF: B-12345678</p>
+                  <p className="text-xs text-muted-foreground">Madrid, España</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-foreground">{profile?.full_name ?? "Cliente"}</p>
+                  <p className="text-xs text-muted-foreground">{profile?.email ?? ""}</p>
+                  <p className="text-xs text-muted-foreground">{profile?.nationality ?? ""}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold text-foreground">Carlos García</p>
-                <p className="text-xs text-muted-foreground">carlos.garcia@email.com</p>
-                <p className="text-xs text-muted-foreground">México</p>
+
+              <table className="w-full text-xs border">
+                <thead>
+                  <tr className="bg-muted/50 border-b">
+                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Concepto</th>
+                    <th className="px-3 py-2 text-center font-medium text-muted-foreground">Cantidad</th>
+                    <th className="px-3 py-2 text-right font-medium text-muted-foreground">Precio</th>
+                    <th className="px-3 py-2 text-right font-medium text-muted-foreground">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="px-3 py-2">{selectedInvoice.concept}</td>
+                    <td className="px-3 py-2 text-center">1</td>
+                    <td className="px-3 py-2 text-right">{formatCurrency(selectedInvoice.total_amount)}</td>
+                    <td className="px-3 py-2 text-right">{formatCurrency(selectedInvoice.total_amount)}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="text-right space-y-1 text-xs">
+                <p className="text-muted-foreground">Base imponible: {formatCurrency(selectedInvoice.base_amount)}</p>
+                <p className="text-muted-foreground">IVA ({selectedInvoice.iva_rate}%): {formatCurrency(selectedInvoice.iva_amount ?? 0)}</p>
+                <p className="font-semibold text-foreground text-sm">Total: {formatCurrency(selectedInvoice.total_amount)}</p>
               </div>
+
+              <p className="text-xs text-muted-foreground">
+                Pago: {selectedInvoice.payment_date ? new Date(selectedInvoice.payment_date).toLocaleDateString("es-ES") : "—"} — {selectedInvoice.payment_method ?? "—"}
+              </p>
             </div>
-
-            <table className="w-full text-xs border">
-              <thead>
-                <tr className="bg-muted/50 border-b">
-                  <th className="px-3 py-2 text-left font-medium text-muted-foreground">Concepto</th>
-                  <th className="px-3 py-2 text-center font-medium text-muted-foreground">Cantidad</th>
-                  <th className="px-3 py-2 text-right font-medium text-muted-foreground">Precio</th>
-                  <th className="px-3 py-2 text-right font-medium text-muted-foreground">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b">
-                  <td className="px-3 py-2">{selectedInvoice?.concepto}</td>
-                  <td className="px-3 py-2 text-center">1</td>
-                  <td className="px-3 py-2 text-right">{selectedInvoice?.importe}</td>
-                  <td className="px-3 py-2 text-right">{selectedInvoice?.importe}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div className="text-right space-y-1 text-xs">
-              <p className="text-muted-foreground">Base imponible: 57,81€</p>
-              <p className="text-muted-foreground">IVA (21%): 12,14€</p>
-              <p className="font-semibold text-foreground text-sm">Total: {selectedInvoice?.importe}</p>
-            </div>
-
-            <p className="text-xs text-muted-foreground">Pago: {selectedInvoice?.fecha} — {selectedInvoice?.metodo}</p>
-          </div>
+          )}
           <DialogFooter>
             <Button variant="outline" onClick={handleDownload} className="gap-2"><Download size={14} /> Descargar PDF</Button>
             <Button variant="outline" onClick={() => setSelectedInvoice(null)}>Cerrar</Button>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, AlertTriangle, CreditCard, Building, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useSuscripcion } from "@/hooks/useSuscripcion";
 
 const features = [
   "Gestión activa y seguimiento continuo de tu trámite migratorio.",
@@ -18,6 +19,7 @@ const paymentMethods = [
 ];
 
 const Suscripcion = () => {
+  const { suscripcion, isActive, loading } = useSuscripcion();
   const [method, setMethod] = useState("tarjeta");
   const [showModal, setShowModal] = useState(false);
 
@@ -27,11 +29,27 @@ const Suscripcion = () => {
         Aquí puedes gestionar tu suscripción mensual para la tramitación activa de tus documentos migratorios en España. Mantén tus pagos al día para asegurar la continuidad del servicio.
       </p>
 
+      {/* Status indicator */}
+      {!loading && suscripcion && (
+        <div className={`flex items-center gap-2 text-sm font-medium ${isActive ? "text-success" : "text-warning"}`}>
+          <span className={`w-2.5 h-2.5 rounded-full ${isActive ? "bg-success" : "bg-warning"}`} />
+          {isActive ? "Suscripción activa" : `Estado: ${suscripcion.status}`}
+          {suscripcion.next_billing_date && (
+            <span className="text-xs text-muted-foreground ml-2">
+              Próxima facturación: {new Date(suscripcion.next_billing_date).toLocaleDateString("es-ES")}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Plan card */}
       <div className="bg-card rounded-lg border shadow-sm border-l-4 border-l-primary p-6 space-y-5">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Tarifa Mensual</h3>
-          <p className="text-3xl font-bold text-primary mt-1">69,95€<span className="text-base font-normal text-muted-foreground">/mes</span></p>
+          <p className="text-3xl font-bold text-primary mt-1">
+            {suscripcion ? `${suscripcion.amount.toFixed(2).replace('.', ',')}€` : "69,95€"}
+            <span className="text-base font-normal text-muted-foreground">/mes</span>
+          </p>
         </div>
         <ul className="space-y-2.5">
           {features.map((f, i) => (
@@ -74,7 +92,9 @@ const Suscripcion = () => {
 
       {/* CTA */}
       <div className="flex items-center justify-between">
-        <Button size="lg" onClick={() => setShowModal(true)}>Suscribirse ahora</Button>
+        <Button size="lg" onClick={() => setShowModal(true)}>
+          {isActive ? "Gestionar suscripción" : "Suscribirse ahora"}
+        </Button>
         <button className="text-sm text-muted-foreground hover:text-foreground">Cancelar suscripción</button>
       </div>
 
