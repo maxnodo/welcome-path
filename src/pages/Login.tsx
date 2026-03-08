@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Logo from "@/components/Logo";
@@ -11,16 +11,28 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [waitingForProfile, setWaitingForProfile] = useState(false);
+  const { signIn, profile, isAuthenticated, loading: authLoading, isGestor } = useAuth();
   const navigate = useNavigate();
+
+  // After login, wait for profile to load then redirect by role
+  useEffect(() => {
+    if (waitingForProfile && isAuthenticated && !authLoading && profile) {
+      if (isGestor) {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [waitingForProfile, isAuthenticated, authLoading, profile, isGestor, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     const { error } = await signIn(email, password);
-    setLoading(false);
     if (error) {
+      setLoading(false);
       if (error.message.includes("Invalid login")) {
         setError("Credenciales incorrectas.");
       } else if (error.message.includes("network")) {
@@ -29,7 +41,7 @@ const Login = () => {
         setError(error.message);
       }
     } else {
-      navigate("/dashboard");
+      setWaitingForProfile(true);
     }
   };
 

@@ -119,7 +119,14 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
         </nav>
         <div className="p-4 border-t border-white/10 space-y-2">
           <p className="text-xs text-white/50">Conectado como</p>
-          <p className="text-sm text-white font-medium">Admin — {profile?.full_name ?? "Gestor"}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-white font-medium">{profile?.full_name ?? "Gestor"}</p>
+            {profile?.role && ['admin', 'gestor'].includes(profile.role) && (
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-accent text-accent-foreground px-1.5 py-0.5 rounded">
+                {profile.role}
+              </span>
+            )}
+          </div>
           <button
             onClick={async () => { await signOut(); navigate("/admin/login"); }}
             className="flex items-center gap-2 text-xs text-white/50 hover:text-white mt-2"
