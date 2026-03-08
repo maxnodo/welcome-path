@@ -19,17 +19,17 @@ import Chat from "@/pages/Chat";
 import Facturas from "@/pages/Facturas";
 import Citas from "@/pages/Citas";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminExpedientes from "@/pages/admin/AdminExpedientes";
+import AdminMensajes from "@/pages/admin/AdminMensajes";
+import AdminAlertas from "@/pages/admin/AdminAlertas";
+import AdminCitas from "@/pages/admin/AdminCitas";
+import AdminFacturacion from "@/pages/admin/AdminFacturacion";
+import AdminConfiguracion from "@/pages/admin/AdminConfiguracion";
 import NotFound from "@/pages/NotFound";
 import Logo from "@/components/Logo";
 
 const queryClient = new QueryClient();
 
-const AdminPlaceholder = ({ title }: { title: string }) => (
-  <div className="flex flex-col items-center justify-center py-20 text-center">
-    <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
-    <p className="text-muted-foreground mt-2">Sección en construcción</p>
-  </div>
-);
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isGestor, loading, isAuthenticated } = useAuth();
@@ -88,13 +88,13 @@ const App = () => (
             {/* Admin area */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/expedientes" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Expedientes" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/tramites" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Trámites" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/mensajes" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Mensajes" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Alertas" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Citas" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Facturación" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Configuración" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/expedientes" element={<AdminRoute><AdminLayout><AdminExpedientes /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/tramites" element={<AdminRoute><AdminLayout><AdminExpedientes /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/mensajes" element={<AdminRoute><AdminLayout><AdminMensajes /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminAlertas /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminCitas /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminFacturacion /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminConfiguracion /></AdminLayout></AdminRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
