@@ -94,13 +94,13 @@ const App = () => (
             {/* Admin area */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/expedientes" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Expedientes" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/tramites" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Trámites" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/mensajes" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Mensajes" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Alertas" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Citas" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Facturación" /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminPlaceholder title="Configuración" /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/expedientes" element={<AdminRoute><AdminLayout><AdminExpedientes /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/tramites" element={<AdminRoute><AdminLayout><AdminExpedientes /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/mensajes" element={<AdminRoute><AdminLayout><AdminMensajes /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminAlertas /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminCitas /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminFacturacion /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminConfiguracion /></AdminLayout></AdminRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
