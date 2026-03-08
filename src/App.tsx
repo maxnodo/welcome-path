@@ -47,7 +47,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isGestor, loading } = useAuth();
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30">
       <div className="text-center space-y-4">
@@ -56,6 +56,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     </div>
   );
+  if (isAuthenticated && isGestor) return <Navigate to="/admin" replace />;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 };
