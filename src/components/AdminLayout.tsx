@@ -82,6 +82,12 @@ export const AdminLogin = () => {
               {loading ? "Accediendo..." : "Acceder como gestor"}
             </Button>
           </form>
+          <div className="text-center mt-4 pt-4 border-t">
+            <p className="text-sm text-muted-foreground">¿Eres usuario?</p>
+            <Link to="/login" className="text-sm text-primary hover:underline font-medium">
+              Ir al login de cliente
+            </Link>
+          </div>
         </div>
       </div>
     </div>
