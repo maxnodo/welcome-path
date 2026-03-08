@@ -19,6 +19,12 @@ import Chat from "@/pages/Chat";
 import Facturas from "@/pages/Facturas";
 import Citas from "@/pages/Citas";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminExpedientes from "@/pages/admin/AdminExpedientes";
+import AdminMensajes from "@/pages/admin/AdminMensajes";
+import AdminAlertas from "@/pages/admin/AdminAlertas";
+import AdminCitas from "@/pages/admin/AdminCitas";
+import AdminFacturacion from "@/pages/admin/AdminFacturacion";
+import AdminConfiguracion from "@/pages/admin/AdminConfiguracion";
 import NotFound from "@/pages/NotFound";
 import Logo from "@/components/Logo";
 
