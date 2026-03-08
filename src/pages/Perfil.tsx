@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 
 const countries = [
   "Alemania", "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica",
@@ -43,26 +44,13 @@ const FileUploadField = ({ label, required, file, onFileChange }: FileUploadFiel
         {label}{required && <span className="text-destructive ml-1">*</span>}
       </Label>
       <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => ref.current?.click()}
-          className="gap-2"
-        >
-          <Upload size={14} />
-          Subir archivo +
+        <Button type="button" variant="outline" size="sm" onClick={() => ref.current?.click()} className="gap-2">
+          <Upload size={14} /> Subir archivo +
         </Button>
         <span className="text-sm text-muted-foreground">
           {file ? file.name : "Ningún archivo seleccionado"}
         </span>
-        <input
-          ref={ref}
-          type="file"
-          accept=".pdf,.jpg,.jpeg"
-          className="hidden"
-          onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
-        />
+        <input ref={ref} type="file" accept=".pdf,.jpg,.jpeg" className="hidden" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
       </div>
     </div>
   );
@@ -70,24 +58,25 @@ const FileUploadField = ({ label, required, file, onFileChange }: FileUploadFiel
 
 const Perfil = () => {
   const { toast } = useToast();
+  const { profile, updateProfile } = useProfile();
 
-  // Tab 1 state
-  const [nombre, setNombre] = useState("Carlos García");
+  // Tab 1 state - initialized from profile
+  const [nombre, setNombre] = useState("");
   const [tipoDoc, setTipoDoc] = useState("Pasaporte");
   const [numDoc, setNumDoc] = useState("");
   const [fechaNac, setFechaNac] = useState("");
-  const [nacionalidad, setNacionalidad] = useState("México");
+  const [nacionalidad, setNacionalidad] = useState("");
   const [segundaNac, setSegundaNac] = useState("");
   const [estadoCivil, setEstadoCivil] = useState("Soltero");
-  const [phoneCode, setPhoneCode] = useState("+52");
+  const [phoneCode, setPhoneCode] = useState("+34");
   const [telefono, setTelefono] = useState("");
-  const [email, setEmail] = useState("carlos.garcia@email.com");
+  const [email, setEmail] = useState("");
   const [calle, setCalle] = useState("");
   const [numero, setNumero] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [provincia, setProvincia] = useState("");
   const [codigoPostal, setCodigoPostal] = useState("");
-  const [pais, setPais] = useState("México");
+  const [pais, setPais] = useState("");
 
   // Tab 2 state
   const [actuacion, setActuacion] = useState("propio");
@@ -106,10 +95,64 @@ const Perfil = () => {
   const [docAdicional, setDocAdicional] = useState<File | null>(null);
   const [docPruebas, setDocPruebas] = useState<File | null>(null);
 
-  const handleSave = () => {
-    toast({
-      title: "Perfil guardado correctamente",
-      description: "Los cambios han sido guardados.",
+  // Populate from profile
+  useEffect(() => {
+    if (!profile) return;
+    setNombre(profile.full_name ?? "");
+    setTipoDoc(profile.document_type ?? "Pasaporte");
+    setNumDoc(profile.document_number ?? "");
+    setFechaNac(profile.birth_date ?? "");
+    setNacionalidad(profile.nationality ?? "");
+    setSegundaNac(profile.second_nationality ?? "");
+    setEstadoCivil(profile.civil_status ?? "Soltero");
+    const phone = profile.phone ?? "";
+    const code = phoneCodes.find(c => phone.startsWith(c));
+    if (code) {
+      setPhoneCode(code);
+      setTelefono(phone.slice(code.length));
+    } else {
+      setTelefono(phone);
+    }
+    setEmail(profile.email ?? "");
+    setCalle(profile.street ?? "");
+    setNumero(profile.street_number ?? "");
+    setCiudad(profile.city ?? "");
+    setProvincia(profile.province ?? "");
+    setCodigoPostal(profile.postal_code ?? "");
+    setPais(profile.country ?? "");
+    setActuacion(profile.acting_on_behalf ? "tercero" : "propio");
+    setRepNombre(profile.representative_name ?? "");
+    setRepNumDoc(profile.representative_document ?? "");
+    setRepRelacion(profile.representative_relation ?? "");
+    setCheck1(profile.declaration_verified);
+    setCheck2(profile.declaration_responsibility);
+    setCheck3(profile.declaration_understood);
+  }, [profile]);
+
+  const handleSave = async () => {
+    await updateProfile({
+      full_name: nombre,
+      document_type: tipoDoc,
+      document_number: numDoc,
+      birth_date: fechaNac || null,
+      nationality: nacionalidad,
+      second_nationality: segundaNac || null,
+      civil_status: estadoCivil,
+      phone: phoneCode + telefono,
+      email,
+      street: calle || null,
+      street_number: numero || null,
+      city: ciudad || null,
+      province: provincia || null,
+      postal_code: codigoPostal || null,
+      country: pais || null,
+      acting_on_behalf: actuacion === "tercero",
+      representative_name: repNombre || null,
+      representative_document: repNumDoc || null,
+      representative_relation: repRelacion || null,
+      declaration_verified: check1,
+      declaration_responsibility: check2,
+      declaration_understood: check3,
     });
   };
 
@@ -154,7 +197,7 @@ const Perfil = () => {
               <div className="space-y-2">
                 <Label>Nacionalidad actual<RequiredMark /></Label>
                 <Select value={nacionalidad} onValueChange={setNacionalidad}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                   <SelectContent>
                     {countries.map((c) => (
                       <SelectItem key={c} value={c}>{c}</SelectItem>
@@ -238,7 +281,7 @@ const Perfil = () => {
                 <div className="space-y-2">
                   <Label>País</Label>
                   <Select value={pais} onValueChange={setPais}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                     <SelectContent>
                       {countries.map((c) => (
                         <SelectItem key={c} value={c}>{c}</SelectItem>
@@ -321,12 +364,7 @@ const Perfil = () => {
                 { id: "c3", checked: check3, set: setCheck3, text: "Entiendo que la empresa actuará con base en la información suministrada por mí." },
               ].map((item) => (
                 <div key={item.id} className="flex items-start gap-3">
-                  <Checkbox
-                    id={item.id}
-                    checked={item.checked}
-                    onCheckedChange={(v) => item.set(v === true)}
-                    className="mt-0.5"
-                  />
+                  <Checkbox id={item.id} checked={item.checked} onCheckedChange={(v) => item.set(v === true)} className="mt-0.5" />
                   <label htmlFor={item.id} className="text-sm text-foreground leading-snug cursor-pointer">
                     {item.text}<span className="text-destructive ml-1">*</span>
                   </label>

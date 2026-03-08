@@ -6,13 +6,15 @@ import {
 } from "lucide-react";
 import Logo from "./Logo";
 import { useAuth } from "@/context/AuthContext";
+import { useAlertas } from "@/hooks/useAlertas";
+import { useMensajes } from "@/hooks/useMensajes";
 
 const navItems = [
   { label: "Inicio", icon: Home, path: "/dashboard" },
   { label: "Mi Perfil", icon: User, path: "/perfil" },
   { label: "Mis Trámites", icon: FileText, path: "/tramites" },
-  { label: "Mis Mensajes", icon: MessageSquare, path: "/mensajes", badge: 2 },
-  { label: "Mis Alertas", icon: Bell, path: "/alertas", badge: 3 },
+  { label: "Mis Mensajes", icon: MessageSquare, path: "/mensajes", badgeKey: "mensajes" },
+  { label: "Mis Alertas", icon: Bell, path: "/alertas", badgeKey: "alertas" },
   { label: "Mi Suscripción", icon: CreditCard, path: "/suscripcion" },
   { label: "Mi Histórico", icon: Clock, path: "/historico" },
   { label: "Ayuda", icon: HelpCircle, path: "/ayuda" },
@@ -38,15 +40,35 @@ const pageTitles: Record<string, string> = {
 const Layout = ({ children }: { children: ReactNode }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { profile, isAuthenticated, loading, signOut } = useAuth();
+  const { unreadCount: alertasUnread } = useAlertas();
+  const { unreadCount: mensajesUnread } = useMensajes();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4">
+          <Logo size="lg" />
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
-  const initials = user?.name
+  const displayName = profile?.full_name ?? "Usuario";
+  const initials = displayName
     .split(" ")
     .map((n) => n[0])
     .join("")
-    .slice(0, 2) ?? "";
+    .slice(0, 2);
+
+  const getBadge = (key?: string) => {
+    if (key === "alertas") return alertasUnread;
+    if (key === "mensajes") return mensajesUnread;
+    return 0;
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -59,6 +81,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <nav className="flex-1 overflow-y-auto py-2">
           {navItems.map((item) => {
             const active = pathname === item.path;
+            const badge = getBadge(item.badgeKey);
             return (
               <Link
                 key={item.path}
@@ -71,9 +94,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
               >
                 <item.icon size={18} />
                 <span className="flex-1">{item.label}</span>
-                {item.badge && item.badge > 0 && (
+                {badge > 0 && (
                   <span className="bg-destructive text-destructive-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {item.badge}
+                    {badge}
                   </span>
                 )}
               </Link>
@@ -92,7 +115,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <span>contacto@welcome-ifa.com</span>
           </div>
           <button
-            onClick={() => { logout(); navigate("/login"); }}
+            onClick={async () => { await signOut(); navigate("/login"); }}
             className="flex items-center gap-2 mt-3 text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
           >
             <LogOut size={14} />
@@ -109,18 +132,20 @@ const Layout = ({ children }: { children: ReactNode }) => {
             {pageTitles[pathname] ?? "Welcome"}
           </h1>
           <div className="flex items-center gap-4">
-            <button className="relative text-muted-foreground hover:text-foreground transition-colors">
+            <button className="relative text-muted-foreground hover:text-foreground transition-colors" onClick={() => navigate("/alertas")}>
               <Bell size={20} />
-              <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                3
-              </span>
+              {alertasUnread > 0 && (
+                <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {alertasUnread}
+                </span>
+              )}
             </button>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
                 {initials}
               </div>
               <span className="text-sm text-foreground hidden md:block">
-                Bienvenido, <span className="font-medium">{user?.name}</span>
+                Bienvenido, <span className="font-medium">{displayName}</span>
               </span>
             </div>
           </div>

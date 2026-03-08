@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 const adminNavItems = [
   { label: "Dashboard", icon: BarChart3, path: "/admin" },
@@ -19,18 +20,25 @@ const adminNavItems = [
   { label: "Configuración", icon: Settings, path: "/admin/configuracion" },
 ];
 
-// Admin auth context (simple)
-let adminLoggedIn = false;
-
 export const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    adminLoggedIn = true;
-    navigate("/admin");
+    setError("");
+    setLoading(true);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+    if (error) {
+      setError("Credenciales incorrectas.");
+    } else {
+      navigate("/admin");
+    }
   };
 
   return (
@@ -42,16 +50,23 @@ export const AdminLogin = () => {
         </div>
         <div className="bg-card rounded-lg border shadow-lg p-8">
           <h2 className="text-lg font-semibold text-center mb-6 text-foreground">Acceso al panel</h2>
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md p-3 mb-4">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label>Correo electrónico</Label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@welcome-ifa.com" />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@welcome-ifa.com" required />
             </div>
             <div className="space-y-2">
               <Label>Contraseña</Label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
             </div>
-            <Button type="submit" className="w-full">Acceder como gestor</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Accediendo..." : "Acceder como gestor"}
+            </Button>
           </form>
         </div>
       </div>
@@ -62,6 +77,7 @@ export const AdminLogin = () => {
 export const AdminLayout = ({ children }: { children: ReactNode }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { profile, signOut } = useAuth();
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -89,9 +105,9 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
         </nav>
         <div className="p-4 border-t border-white/10 space-y-2">
           <p className="text-xs text-white/50">Conectado como</p>
-          <p className="text-sm text-white font-medium">Admin — María López</p>
+          <p className="text-sm text-white font-medium">Admin — {profile?.full_name ?? "Gestor"}</p>
           <button
-            onClick={() => { adminLoggedIn = false; navigate("/admin/login"); }}
+            onClick={async () => { await signOut(); navigate("/admin/login"); }}
             className="flex items-center gap-2 text-xs text-white/50 hover:text-white mt-2"
           >
             <LogOut size={14} /> Cerrar sesión

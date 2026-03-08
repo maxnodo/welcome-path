@@ -9,13 +9,28 @@ import { Label } from "@/components/ui/label";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login();
-    navigate("/dashboard");
+    setError("");
+    setLoading(true);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+    if (error) {
+      if (error.message.includes("Invalid login")) {
+        setError("Credenciales incorrectas.");
+      } else if (error.message.includes("network")) {
+        setError("Error de conexión.");
+      } else {
+        setError(error.message);
+      }
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -28,6 +43,12 @@ const Login = () => {
         <div className="bg-card rounded-lg border shadow-sm p-8">
           <h2 className="text-xl font-semibold text-center mb-6 text-foreground">Iniciar sesión</h2>
 
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md p-3 mb-4">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
@@ -37,6 +58,7 @@ const Login = () => {
                 placeholder="tu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
 
@@ -48,6 +70,7 @@ const Login = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
 
@@ -57,8 +80,8 @@ const Login = () => {
               </button>
             </div>
 
-            <Button type="submit" className="w-full">
-              Iniciar sesión
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
           </form>
         </div>
