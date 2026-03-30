@@ -56,7 +56,7 @@ export const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(220_46%_12%)]">
+    <div className="min-h-screen flex items-center justify-center bg-sidebar">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white tracking-wide">WELCOME ADMIN</h1>
