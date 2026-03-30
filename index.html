@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario Oficina Extranjería — Welcome IFA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #1B2A4A;
+      --navy-80:   #2a3d63;
+      --navy-light:#e8edf5;
+      --blue:      #2E5EAA;
+      --blue-light:#dce8f7;
+      --blue-dark: #1e4080;
+      --accent:    #3b82f6;
+      --white:     #ffffff;
+      --gray-50:   #f8fafc;
+      --gray-100:  #f1f5f9;
+      --gray-200:  #e2e8f0;
+      --gray-400:  #94a3b8;
+      --gray-600:  #475569;
+      --gray-800:  #1e293b;
+      --green:     #16a34a;
+      --green-bg:  #dcfce7;
+      --orange:    #ea580c;
+      --orange-bg: #ffedd5;
+      --red:       #dc2626;
+      --red-bg:    #fee2e2;
+      --radius:    10px;
+      --shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -2px rgba(0,0,0,.05);
+      --transition: 150ms cubic-bezier(.4,0,.2,1);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--navy);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 rgba(255,255,255,.05);
+    }
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -.2px;
+      text-decoration: none;
+    }
+    .topbar-logo {
+      width: 28px; height: 28px;
+      background: var(--blue);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .topbar-logo svg { width: 16px; height: 16px; }
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray-400);
+      font-size: 12px;
+    }
+    .badge-status {
+      background: rgba(46,94,170,.35);
+      color: #93c5fd;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      margin-bottom: 28px;
+    }
+    .breadcrumb {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb span { color: var(--gray-600); }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -.4px;
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 13px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrapper {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-label { font-size: 12px; font-weight: 600; color: var(--navy); }
+    .progress-count { font-size: 12px; color: var(--gray-400); }
+    .progress-track {
+      background: var(--gray-100);
+      border-radius: 20px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--accent) 100%);
+      border-radius: 20px;
+      width: 0%;
+      transition: width .4s cubic-bezier(.4,0,.2,1);
+    }
+    .progress-steps {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .step-pill {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid transparent;
+    }
+    .step-pill.inactive  { background: var(--gray-100); color: var(--gray-400); }
+    .step-pill.active    { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+    .step-pill.done      { background: var(--green-bg); color: var(--green); }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: box-shadow var(--transition);
+    }
+    .section-card:hover { box-shadow: var(--shadow-md); }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      cursor: pointer;
+      user-select: none;
+      background: var(--white);
+      border-bottom: 1px solid transparent;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .section-card.open .section-header {
+      border-bottom-color: var(--gray-200);
+      background: var(--gray-50);
+    }
+
+    .section-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--navy-light);
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--transition);
+    }
+    .section-card.done .section-num {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+    .section-card.open .section-num {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .section-title-wrap { flex: 1; }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      letter-spacing: -.1px;
+    }
+    .section-meta {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-top: 1px;
+    }
+    .section-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .badge-pending  { background: var(--gray-100);   color: var(--gray-400); }
+    .badge-progress { background: var(--blue-light);  color: var(--blue); }
+    .badge-done     { background: var(--green-bg);    color: var(--green); }
+
+    .section-chevron {
+      color: var(--gray-400);
+      transition: transform var(--transition);
+      flex-shrink: 0;
+    }
+    .section-card.open .section-chevron { transform: rotate(180deg); }
+
+    /* ── SECTION BODY ── */
+    .section-body {
+      display: none;
+      padding: 20px;
+    }
+    .section-card.open .section-body { display: block; }
+
+    /* ── FIELD GRID ── */
+    .field-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .field-grid-2 { grid-template-columns: 1fr 1fr; }
+    .field-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    @media(max-width: 600px) {
+      .field-grid-2, .field-grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── FIELD ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy);
+      letter-spacing: .1px;
+    }
+    .field-label .required { color: var(--red); margin-left: 2px; }
+
+    .field input[type="text"],
+    .field input[type="date"],
+    .field input[type="email"],
+    .field input[type="tel"],
+    .field select,
+    .field textarea {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--gray-800);
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 7px;
+      padding: 8px 11px;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      width: 100%;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(46,94,170,.12);
+    }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field select { cursor: pointer; }
+
+    /* ── CHECKBOX ITEMS ── */
+    .check-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    @media(max-width:600px){ .check-grid { grid-template-columns: 1fr; } }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all var(--transition);
+      background: var(--white);
+    }
+    .check-item:hover { border-color: var(--blue); background: var(--blue-light); }
+    .check-item.checked {
+      border-color: var(--blue);
+      background: var(--blue-light);
+    }
+    .check-item input[type="checkbox"] { display: none; }
+    .check-box {
+      width: 16px; height: 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--transition);
+      background: var(--white);
+    }
+    .check-item.checked .check-box {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+    .check-box svg { display: none; }
+    .check-item.checked .check-box svg { display: block; }
+    .check-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-600);
+      flex: 1;
+    }
+    .check-item.checked .check-text { color: var(--navy); }
+
+    /* ── RADIO PILLS ── */
+    .radio-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .radio-pill {
+      padding: 6px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+    }
+    .radio-pill:hover { border-color: var(--blue); color: var(--blue); }
+    .radio-pill.selected {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+    }
+    .radio-pill input { display: none; }
+
+    /* ── VIABILIDAD ── */
+    .viabilidad-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .via-card {
+      flex: 1; min-width: 120px;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .via-card.alta   { --vc: var(--green); --vcbg: var(--green-bg); }
+    .via-card.media  { --vc: var(--orange); --vcbg: var(--orange-bg); }
+    .via-card.baja   { --vc: var(--red); --vcbg: var(--red-bg); }
+
+    .via-card:hover  { border-color: var(--vc); background: var(--vcbg); }
+    .via-card.selected { border-color: var(--vc); background: var(--vcbg); }
+    .via-card .via-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--vc);
+      margin: 0 auto 6px;
+      opacity: .5;
+      transition: opacity var(--transition);
+    }
+    .via-card.selected .via-dot { opacity: 1; }
+    .via-card .via-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      transition: color var(--transition);
+    }
+    .via-card.selected .via-label { color: var(--vc); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--gray-100);
+      margin: 16px 0;
+    }
+    .subsection-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--gray-400);
+      margin-bottom: 12px;
+    }
+
+    /* ── ALERT BOX ── */
+    .alert-info {
+      background: var(--blue-light);
+      border: 1px solid rgba(46,94,170,.2);
+      border-radius: 7px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--blue-dark);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .alert-info svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── ACTIONS BAR ── */
+    .actions-bar {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      margin-top: 24px;
+    }
+    .actions-left { display: flex; gap: 8px; align-items: center; }
+    .actions-right { display: flex; gap: 8px; align-items: center; }
+
+    .btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: var(--navy-80); box-shadow: 0 2px 8px rgba(27,42,74,.25); }
+    .btn-secondary {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+    .btn-secondary:hover { background: #c3d9f1; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--gray-600);
+      border: 1px solid var(--gray-200);
+    }
+    .btn-ghost:hover { background: var(--gray-100); }
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+    .btn-danger:hover { background: #fecaca; }
+
+    /* ── SAVE INDICATOR ── */
+    .save-indicator {
+      font-size: 11px;
+      color: var(--gray-400);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .save-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gray-300);
+    }
+    .save-dot.saved { background: var(--green); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: var(--navy);
+      color: var(--white);
+      padding: 12px 18px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── EMPTY STATE ── */
+    .section-intro {
+      color: var(--gray-400);
+      font-size: 12px;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background: var(--gray-50);
+      border-radius: 7px;
+      border-left: 3px solid var(--blue);
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <a href="#" class="topbar-brand">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2L3 7v11h5v-5h4v5h5V7L10 2z" fill="white" opacity=".9"/>
+      </svg>
+    </div>
+    Welcome IFA
+  </a>
+  <div class="topbar-meta">
+    <span class="badge-status">Formulario Extranjería</span>
+    <span>v2</span>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="page-wrapper">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l7 6H1l7-6z"/></svg>
+      Expedientes <span>›</span> Análisis Inicial <span>›</span> Formulario Extranjería
+    </div>
+    <div class="page-title">Formulario Oficina de Extranjería</div>
+    <div class="page-subtitle">Evaluación inicial del perfil migratorio del cliente</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrapper">
+    <div class="progress-header">
+      <span class="progress-label">Progreso del formulario</span>
+      <span class="progress-count" id="progressCount">0 / 8 secciones</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-steps" id="progressSteps">
+      <span class="step-pill active" data-idx="0">1. Identificación</span>
+      <span class="step-pill inactive" data-idx="1">2. Análisis Migratorio</span>
+      <span class="step-pill inactive" data-idx="2">3. Familia</span>
+      <span class="step-pill inactive" data-idx="3">4. Laboral</span>
+      <span class="step-pill inactive" data-idx="4">5. Documental</span>
+      <span class="step-pill inactive" data-idx="5">6. Riesgos</span>
+      <span class="step-pill inactive" data-idx="6">7. Evaluación</span>
+      <span class="step-pill inactive" data-idx="7">8. Próximos pasos</span>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 1: IDENTIFICACIÓN ─── -->
+  <div class="section-card open" data-section="0">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">1</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Identificación del Cliente</div>
+        <div class="section-meta">Datos personales y de contacto</div>
+      </div>
+      <span class="section-badge badge-progress">En curso</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="field-grid field-grid-2">
+        <div class="field">
+          <label class="field-label">Nombre completo <span class="required">*</span></label>
+          <input type="text" placeholder="Ej. María García López" />
+        </div>
+        <div class="field">
+          <label class="field-label">Fecha de nacimiento</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label class="field-label">Nacionalidad <span class="required">*</span></label>
+          <select>
+            <option value="">Seleccionar…</option>
+            <option>Venezuela</option>
+            <option>Colombia</option>
+            <option>Marruecos</option>
+            <option>Ecuador</option>
+            <option>Perú</option>
+            <option>Bolivia</option>
+            <option>Argentina</option>
+            <option>Honduras</option>
+            <option>República Dominicana</option>
+            <option>Senegal</option>
+            <option>China</option>
+            <option>Pakistán</option>
+            <option>Otra</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Tipo de documento</label>
+          <select>
+            <option value="">Seleccionar…</option>
+            <option>Pasaporte</option>
+            <option>NIE</option>
+            <option>TIE</option>
+            <option>Sin documento</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Número de documento</label>
+          <input type="text" placeholder="Ej. AB1234567" />
+        </div>
+        <div class="field">
+          <label class="field-label">Caducidad documento</label>
+          <input type="date" />
+        </div>
+        <div class="field">
+          <label class="field-label">Teléfono</label>
+          <input type="tel" placeholder="+34 600 000 000" />
+        </div>
+        <div class="field">
+          <label class="field-label">Email</label>
+          <input type="email" placeholder="cliente@email.com" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 2: ANÁLISIS MIGRATORIO ─── -->
+  <div class="section-card" data-section="1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">2</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Análisis Migratorio</div>
+        <div class="section-meta">Situación legal actual y antecedentes</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="field-grid">
+        <div class="field">
+          <label class="field-label">Situación migratoria actual <span class="required">*</span></label>
+          <select>
+            <option value="">Seleccionar…</option>
+            <option>Regular – con permiso de residencia</option>
+            <option>Regular – visado en vigor</option>
+            <option>Irregular – sin permiso</option>
+            <option>En proceso de regularización</option>
+            <option>Solicitante de asilo</option>
+            <option>Refugiado reconocido</option>
+          </select>
+        </div>
+      </div>
+      <hr class="divider" />
+      <div class="subsection-title">Tiempo en España</div>
+      <div class="radio-group" id="tiempoRadio">
+        <label class="radio-pill selected"><input type="radio" name="tiempo" value="menos1" /> Menos de 1 año</label>
+        <label class="radio-pill"><input type="radio" name="tiempo" value="1-2" /> 1-2 años</label>
+        <label class="radio-pill"><input type="radio" name="tiempo" value="2-3" /> 2-3 años</label>
+        <label class="radio-pill"><input type="radio" name="tiempo" value="3-5" /> 3-5 años</label>
+        <label class="radio-pill"><input type="radio" name="tiempo" value="mas5" /> Más de 5 años</label>
+        <label class="radio-pill"><input type="radio" name="tiempo" value="mas10" /> Más de 10 años</label>
+      </div>
+      <hr class="divider" />
+      <div class="subsection-title">Vía migratoria aplicable</div>
+      <div class="check-grid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Arraigo social</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Arraigo familiar</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Arraigo laboral</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Familiar de comunitario</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Nacionalidad española</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Residencia de larga duración</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Protección internacional</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" />
+          <div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Otra vía</span>
+        </label>
+      </div>
+      <hr class="divider" />
+      <div class="field">
+        <label class="field-label">Historial migratorio relevante</label>
+        <textarea placeholder="Entradas y salidas del país, permisos anteriores, procedimientos…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 3: FAMILIA ─── -->
+  <div class="section-card" data-section="2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">3</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Análisis Familiar</div>
+        <div class="section-meta">Clave estratégica para la regularización</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="alert-info">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--blue)"><circle cx="8" cy="8" r="7" stroke="var(--blue)" stroke-width="1.5" fill="none"/><path d="M8 7v4M8 5.5v.5" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Esta sección puede desbloquear vías migratorias prioritarias. Completar con especial atención.
+      </div>
+      <div class="subsection-title">Hijos</div>
+      <div class="check-grid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Hijos nacidos en España</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Hijos con nacionalidad española</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Hijos con nacionalidad UE</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Hijos con residencia legal en España</span>
+        </label>
+      </div>
+      <hr class="divider" />
+      <div class="subsection-title">Familiar Comunitario</div>
+      <div class="check-grid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Existe familiar comunitario</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Posible vía: familiar de comunitario</span>
+        </label>
+      </div>
+      <hr class="divider" />
+      <div class="field-grid field-grid-2">
+        <div class="field">
+          <label class="field-label">Tipo de vínculo familiar</label>
+          <select>
+            <option value="">Seleccionar…</option>
+            <option>Cónyuge / Pareja de hecho</option>
+            <option>Hijo/a</option>
+            <option>Padre / Madre</option>
+            <option>Hermano/a</option>
+            <option>Abuelo/a</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Impacto en regularización</label>
+          <select>
+            <option value="">Seleccionar…</option>
+            <option>Vía principal</option>
+            <option>Argumento de apoyo</option>
+            <option>Sin impacto directo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 4: LABORAL ─── -->
+  <div class="section-card" data-section="3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">4</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Análisis Laboral</div>
+        <div class="section-meta">Situación de empleo y cotización</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="field-grid field-grid-2">
+        <div class="field">
+          <label class="field-label">¿Trabaja actualmente?</label>
+          <div class="radio-group">
+            <label class="radio-pill selected"><input type="radio" name="trabaja" value="si"/> Sí</label>
+            <label class="radio-pill"><input type="radio" name="trabaja" value="no"/> No</label>
+            <label class="radio-pill"><input type="radio" name="trabaja" value="informal"/> Informal</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Tipo de trabajo</label>
+          <select>
+            <option value="">Seleccionar…</option>
+            <option>Por cuenta ajena</option>
+            <option>Por cuenta propia (autónomo)</option>
+            <option>Economía informal</option>
+            <option>Sin actividad laboral</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">¿Tiene contrato?</label>
+          <div class="radio-group">
+            <label class="radio-pill selected"><input type="radio" name="contrato" value="si"/> Sí</label>
+            <label class="radio-pill"><input type="radio" name="contrato" value="no"/> No</label>
+            <label class="radio-pill"><input type="radio" name="contrato" value="verbal"/> Verbal</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">¿Nóminas disponibles?</label>
+          <div class="radio-group">
+            <label class="radio-pill selected"><input type="radio" name="nominas" value="si"/> Sí</label>
+            <label class="radio-pill"><input type="radio" name="nominas" value="no"/> No</label>
+            <label class="radio-pill"><input type="radio" name="nominas" value="parcial"/> Parciales</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Alta en Seguridad Social</label>
+          <div class="radio-group">
+            <label class="radio-pill selected"><input type="radio" name="ss" value="si"/> Sí</label>
+            <label class="radio-pill"><input type="radio" name="ss" value="no"/> No</label>
+            <label class="radio-pill"><input type="radio" name="ss" value="anterior"/> Anterior</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Número de Seguridad Social</label>
+          <input type="text" placeholder="Ej. 28 1234567890" />
+        </div>
+        <div class="field" style="grid-column: 1/-1">
+          <label class="field-label">Viabilidad laboral</label>
+          <textarea placeholder="Valoración sobre la relación laboral y su utilidad para el expediente…" style="min-height:64px"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 5: DOCUMENTAL ─── -->
+  <div class="section-card" data-section="4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">5</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Análisis Documental</div>
+        <div class="section-meta">Disponibilidad de documentación clave</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="check-grid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Pasaporte válido</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Certificados penales</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Empadronamiento</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Pruebas de estancia</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Docs. familiares (nacimientos, UE)</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Otros documentos</span>
+        </label>
+      </div>
+      <hr class="divider" />
+      <div class="field">
+        <label class="field-label">Notas sobre documentación</label>
+        <textarea placeholder="Documentos pendientes, fechas de caducidad relevantes, apostillas…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 6: RIESGOS ─── -->
+  <div class="section-card" data-section="5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">6</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Riesgos</div>
+        <div class="section-meta">Factores que pueden dificultar el expediente</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="check-grid">
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Antecedentes penales</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Expediente de expulsión</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Falta de pruebas de estancia</span>
+        </label>
+        <label class="check-item" onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="check-text">Inconsistencias documentales</span>
+        </label>
+      </div>
+      <hr class="divider" />
+      <div class="field">
+        <label class="field-label">Descripción de riesgos</label>
+        <textarea placeholder="Detallar cualquier circunstancia que pueda complicar el expediente…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 7: EVALUACIÓN ─── -->
+  <div class="section-card" data-section="6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">7</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Evaluación</div>
+        <div class="section-meta">Diagnóstico y estrategia del caso</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="subsection-title">Viabilidad del expediente</div>
+      <div class="viabilidad-group">
+        <div class="via-card alta" onclick="selectViabilidad(this)">
+          <div class="via-dot"></div>
+          <div class="via-label">Alta</div>
+        </div>
+        <div class="via-card media selected" onclick="selectViabilidad(this)">
+          <div class="via-dot"></div>
+          <div class="via-label">Media</div>
+        </div>
+        <div class="via-card baja" onclick="selectViabilidad(this)">
+          <div class="via-dot"></div>
+          <div class="via-label">Baja</div>
+        </div>
+      </div>
+      <hr class="divider" />
+      <div class="field-grid">
+        <div class="field">
+          <label class="field-label">Estrategia recomendada</label>
+          <textarea placeholder="Estrategia principal y justificación…"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Trámite principal</label>
+          <select>
+            <option value="">Seleccionar trámite…</option>
+            <option>Arraigo social (art. 124 RLOE)</option>
+            <option>Arraigo familiar (art. 124 bis RLOE)</option>
+            <option>Arraigo laboral (art. 123 RLOE)</option>
+            <option>Familiar de ciudadano UE (RD 240/2007)</option>
+            <option>Nacionalidad por residencia</option>
+            <option>Residencia larga duración</option>
+            <option>Protección subsidiaria</option>
+            <option>Otro trámite</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Alternativas</label>
+          <textarea placeholder="Vías alternativas si la principal no prospera…" style="min-height:64px"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Notas internas</label>
+          <textarea placeholder="Observaciones confidenciales del gestor…" style="min-height:64px"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECCIÓN 8: PRÓXIMOS PASOS ─── -->
+  <div class="section-card" data-section="7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">8</div>
+      <div class="section-title-wrap">
+        <div class="section-title">Próximos Pasos</div>
+        <div class="section-meta">Documentación pendiente y seguimiento</div>
+      </div>
+      <span class="section-badge badge-pending">Pendiente</span>
+      <svg class="section-chevron" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 6l4 4 4-4"/>
+      </svg>
+    </div>
+    <div class="section-body">
+      <div class="field-grid">
+        <div class="field">
+          <label class="field-label">Documentación pendiente</label>
+          <textarea placeholder="Listar documentos que el cliente debe aportar…"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Acciones a realizar por el gestor</label>
+          <textarea placeholder="Tareas internas, consultas, gestiones a iniciar…"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Fecha de seguimiento</label>
+          <input type="date" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS BAR -->
+  <div class="actions-bar">
+    <div class="actions-left">
+      <div class="save-indicator">
+        <div class="save-dot saved" id="saveDot"></div>
+        <span id="saveLabel">Guardado automáticamente</span>
+      </div>
+    </div>
+    <div class="actions-right">
+      <button class="btn btn-ghost" onclick="resetForm()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0-2a8 8 0 110 16A8 8 0 018 0zm.75 4.75a.75.75 0 00-1.5 0V8c0 .414.336.75.75.75h3a.75.75 0 000-1.5H8.75V4.75z"/></svg>
+        Limpiar
+      </button>
+      <button class="btn btn-secondary" onclick="exportForm()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1v8.5M5 7l3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+        Exportar
+      </button>
+      <button class="btn btn-primary" onclick="saveForm()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="white"><path d="M2 3a1 1 0 011-1h7.5L13 4.5V13a1 1 0 01-1 1H3a1 1 0 01-1-1V3zm9 1.5L9.5 3H4v10h8V4.5z"/></svg>
+        Guardar formulario
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="7" fill="#16a34a"/>
+    <path d="M5 8l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span id="toastMsg">Formulario guardado correctamente</span>
+</div>
+
+<script>
+  // ── ACCORDION ──
+  function toggleSection(header) {
+    const card = header.closest('.section-card');
+    const isOpen = card.classList.contains('open');
+    card.classList.toggle('open', !isOpen);
+    updateBadge(card);
+  }
+
+  // ── CHECKBOX TOGGLE ──
+  function toggleCheck(label) {
+    label.classList.toggle('checked');
+    updateProgress();
+  }
+
+  // ── RADIO PILLS ──
+  document.querySelectorAll('.radio-group').forEach(group => {
+    group.querySelectorAll('.radio-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        group.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+      });
+    });
+  });
+
+  // ── VIABILIDAD ──
+  function selectViabilidad(card) {
+    document.querySelectorAll('.via-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+
+  // ── STEP PILLS NAV ──
+  document.querySelectorAll('.step-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const idx = parseInt(pill.dataset.idx);
+      const card = document.querySelectorAll('.section-card')[idx];
+      card.classList.add('open');
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    const cards = document.querySelectorAll('.section-card');
+    let done = 0;
+    cards.forEach(card => {
+      const inputs = card.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], select, textarea');
+      const checks = card.querySelectorAll('.check-item.checked');
+      let filled = 0;
+      inputs.forEach(i => { if (i.value && i.value !== '') filled++; });
+      filled += checks.length;
+      if (filled > 0) done++;
+    });
+    const pct = Math.round((done / 8) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = done + ' / 8 secciones';
+
+    const pills = document.querySelectorAll('.step-pill');
+    cards.forEach((card, i) => {
+      const isDone = card.classList.contains('done');
+      if (pills[i]) {
+        pills[i].className = 'step-pill ' + (isDone ? 'done' : (card.classList.contains('open') ? 'active' : 'inactive'));
+      }
+    });
+    autoSave();
+  }
+
+  function updateBadge(card) {
+    const badge = card.querySelector('.section-badge');
+    if (!badge) return;
+    const inputs = card.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], select, textarea');
+    const checks = card.querySelectorAll('.check-item.checked');
+    let filled = 0;
+    inputs.forEach(i => { if (i.value && i.value !== '') filled++; });
+    filled += checks.length;
+    if (filled > 0) {
+      badge.className = 'section-badge badge-progress';
+      badge.textContent = 'En curso';
+    }
+    updateProgress();
+  }
+
+  // Listen to all inputs
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('input', () => updateProgress());
+    el.addEventListener('change', () => updateProgress());
+  });
+
+  // ── SAVE ──
+  let saveTimer;
+  function autoSave() {
+    clearTimeout(saveTimer);
+    document.getElementById('saveDot').classList.remove('saved');
+    document.getElementById('saveLabel').textContent = 'Guardando…';
+    saveTimer = setTimeout(() => {
+      document.getElementById('saveDot').classList.add('saved');
+      document.getElementById('saveLabel').textContent = 'Guardado automáticamente';
+    }, 1200);
+  }
+
+  function saveForm() {
+    showToast('Formulario guardado correctamente');
+    document.getElementById('saveDot').classList.add('saved');
+    document.getElementById('saveLabel').textContent = 'Guardado ahora';
+  }
+
+  function resetForm() {
+    if (!confirm('¿Limpiar todos los campos?')) return;
+    document.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], textarea').forEach(i => i.value = '');
+    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+    document.querySelectorAll('.check-item.checked').forEach(c => c.classList.remove('checked'));
+    document.querySelectorAll('.radio-pill.selected').forEach(r => r.classList.remove('selected'));
+    updateProgress();
+    showToast('Formulario limpiado');
+  }
+
+  function exportForm() {
+    const sections = [];
+    document.querySelectorAll('.section-card').forEach(card => {
+      const title = card.querySelector('.section-title')?.textContent || '';
+      const data = {};
+      card.querySelectorAll('input, select, textarea').forEach(i => {
+        const label = i.closest('.field')?.querySelector('.field-label')?.textContent?.trim()?.replace('*','').trim();
+        if (label && i.value) data[label] = i.value;
+      });
+      card.querySelectorAll('.check-item.checked .check-text').forEach(c => {
+        if (!data['Marcados']) data['Marcados'] = [];
+        data['Marcados'].push(c.textContent);
+      });
+      sections.push({ section: title, data });
+    });
+    const json = JSON.stringify(sections, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'formulario_extranjeria_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    showToast('Formulario exportado como JSON');
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Init
+  updateProgress();
+</script>
+</body>
+</html>
