@@ -82,6 +82,10 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
       setError("Nombre, correo electrónico y teléfono son obligatorios.");
       return;
     }
+    if (!consentimiento) {
+      setError("Debes aceptar la política de privacidad para continuar.");
+      return;
+    }
     setError("");
     setLoading(true);
 
@@ -219,7 +223,26 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <div className="flex items-start space-x-2">
+        <Checkbox
+          id="consentimiento"
+          checked={consentimiento}
+          onCheckedChange={(checked) => setConsentimiento(checked === true)}
+        />
+        <label htmlFor="consentimiento" className="text-sm text-muted-foreground leading-snug cursor-pointer">
+          Acepto la{" "}
+          <a
+            href="https://go-welcome.com/politica-de-privacidad/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-secondary underline hover:text-secondary/80"
+          >
+            política de privacidad
+          </a>
+        </label>
+      </div>
+
+      <Button type="submit" className="w-full" disabled={loading || !consentimiento}>
         {loading ? "Enviando..." : "Enviar solicitud"}
       </Button>
     </form>
