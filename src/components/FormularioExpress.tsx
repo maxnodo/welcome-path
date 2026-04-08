@@ -70,7 +70,6 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [consentimiento, setConsentimiento] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const toggleMulti = (arr: string[], value: string) =>
     arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
