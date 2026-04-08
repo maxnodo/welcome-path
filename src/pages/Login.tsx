@@ -4,12 +4,15 @@ import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FormularioExpress from "@/components/FormularioExpress";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
   const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,60 +30,77 @@ const Login = () => {
         setError(error.message);
       }
     }
-    // On success, PublicRoute will handle redirect based on role
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-[520px] px-4">
         <div className="text-center mb-10">
           <Logo size="lg" />
         </div>
 
         <div className="bg-card rounded-lg border shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-center mb-6 text-foreground">Iniciar sesión</h2>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login">Acceder a mi cuenta</TabsTrigger>
+              <TabsTrigger value="preinscripcion">Pre-inscribirme</TabsTrigger>
+            </TabsList>
 
-          {error && (
-            <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md p-3 mb-4">
-              {error}
-            </div>
-          )}
+            <TabsContent value="login">
+              <h2 className="text-xl font-semibold text-center mb-6 text-foreground">
+                Iniciar sesión
+              </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+              {error && (
+                <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-md p-3 mb-4">
+                  {error}
+                </div>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Correo electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
 
-            <div className="text-right">
-              <button type="button" className="text-sm text-secondary hover:underline">
-                ¿Olvidaste tu contraseña?
-              </button>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
-            </Button>
-          </form>
+                <div className="text-right">
+                  <button type="button" className="text-sm text-secondary hover:underline">
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="preinscripcion">
+              <h2 className="text-xl font-semibold text-center mb-6 text-foreground">
+                Formulario Express
+              </h2>
+              <FormularioExpress onBack={() => setActiveTab("login")} />
+            </TabsContent>
+          </Tabs>
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">

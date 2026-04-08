@@ -25,6 +25,7 @@ import AdminAlertas from "@/pages/admin/AdminAlertas";
 import AdminCitas from "@/pages/admin/AdminCitas";
 import AdminFacturacion from "@/pages/admin/AdminFacturacion";
 import AdminConfiguracion from "@/pages/admin/AdminConfiguracion";
+import AdminPreinscritos from "@/pages/admin/AdminPreinscritos";
 import NotFound from "@/pages/NotFound";
 import Logo from "@/components/Logo";
 
@@ -94,6 +95,7 @@ const App = () => (
             <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminAlertas /></AdminLayout></AdminRoute>} />
             <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminCitas /></AdminLayout></AdminRoute>} />
             <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminFacturacion /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/preinscritos" element={<AdminRoute><AdminLayout><AdminPreinscritos /></AdminLayout></AdminRoute>} />
             <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminConfiguracion /></AdminLayout></AdminRoute>} />
 
             {/* Redirects */}
