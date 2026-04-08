@@ -2,7 +2,7 @@ import { useState, useEffect, ReactNode } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   BarChart3, Users, ClipboardList, MessageSquare, Bell, Calendar,
-  CreditCard, Settings, LogOut,
+  CreditCard, Settings, LogOut, UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ const adminNavItems = [
   { label: "Alertas", icon: Bell, path: "/admin/alertas" },
   { label: "Citas", icon: Calendar, path: "/admin/citas" },
   { label: "Facturación", icon: CreditCard, path: "/admin/facturacion" },
+  { label: "Pre-inscritos", icon: UserPlus, path: "/admin/preinscritos" },
   { label: "Configuración", icon: Settings, path: "/admin/configuracion" },
 ];
 
