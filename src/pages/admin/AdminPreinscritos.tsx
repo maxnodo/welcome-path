@@ -8,6 +8,7 @@ import {
 interface Lead {
   id: string;
   nombre: string;
+  email: string | null;
   telefono: string;
   pais_origen: string | null;
   necesidad: string | null;
@@ -64,6 +65,7 @@ const AdminPreinscritos = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Nombre</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Teléfono</TableHead>
                 <TableHead>País</TableHead>
                 <TableHead>Necesidad</TableHead>
@@ -77,6 +79,7 @@ const AdminPreinscritos = () => {
               {leads.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell className="font-medium">{lead.nombre}</TableCell>
+                  <TableCell>{lead.email ?? "—"}</TableCell>
                   <TableCell>{lead.telefono}</TableCell>
                   <TableCell>{lead.pais_origen ?? "—"}</TableCell>
                   <TableCell className="max-w-[200px]">
