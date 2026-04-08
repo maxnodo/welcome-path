@@ -58,6 +58,7 @@ interface FormularioExpressProps {
 
 const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
   const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [paisOrigen, setPaisOrigen] = useState("");
   const [necesidad, setNecesidad] = useState<string[]>([]);
@@ -75,8 +76,8 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre.trim() || !telefono.trim()) {
-      setError("Nombre y teléfono son obligatorios.");
+    if (!nombre.trim() || !email.trim() || !telefono.trim()) {
+      setError("Nombre, correo electrónico y teléfono son obligatorios.");
       return;
     }
     setError("");
@@ -84,6 +85,7 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
 
     const { error: dbError } = await supabase.from("leads").insert({
       nombre: nombre.trim(),
+      email: email.trim(),
       telefono: telefono.trim(),
       pais_origen: paisOrigen.trim() || null,
       necesidad: necesidad.join(", ") || null,
@@ -132,12 +134,24 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="lead-nombre">Nombre *</Label>
+        <Label htmlFor="lead-nombre">Nombre completo *</Label>
         <Input
           id="lead-nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           placeholder="Tu nombre completo"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="lead-email">Correo electrónico *</Label>
+        <Input
+          id="lead-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="tu@email.com"
           required
         />
       </div>
