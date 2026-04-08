@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,7 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [consentimiento, setConsentimiento] = useState(false);
 
   const toggleMulti = (arr: string[], value: string) =>
     arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
@@ -78,6 +80,10 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
     e.preventDefault();
     if (!nombre.trim() || !email.trim() || !telefono.trim()) {
       setError("Nombre, correo electrónico y teléfono son obligatorios.");
+      return;
+    }
+    if (!consentimiento) {
+      setError("Debes aceptar la política de privacidad para continuar.");
       return;
     }
     setError("");
@@ -217,7 +223,26 @@ const FormularioExpress = ({ onBack }: FormularioExpressProps) => {
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <div className="flex items-start space-x-2">
+        <Checkbox
+          id="consentimiento"
+          checked={consentimiento}
+          onCheckedChange={(checked) => setConsentimiento(checked === true)}
+        />
+        <label htmlFor="consentimiento" className="text-sm text-muted-foreground leading-snug cursor-pointer">
+          Acepto la{" "}
+          <a
+            href="https://go-welcome.com/politica-de-privacidad/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-secondary underline hover:text-secondary/80"
+          >
+            política de privacidad
+          </a>
+        </label>
+      </div>
+
+      <Button type="submit" className="w-full" disabled={loading || !consentimiento}>
         {loading ? "Enviando..." : "Enviar solicitud"}
       </Button>
     </form>
