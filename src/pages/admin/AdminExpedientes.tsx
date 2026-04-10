@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Search, Filter, Eye, Download } from "lucide-react";
+import { Search, Filter, Eye, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
+import { useAuth } from "@/context/AuthContext";
 import { Expediente, ExpedienteStatus } from "@/types/database.types";
 
 const allStatuses: ExpedienteStatus[] = [
@@ -44,12 +46,15 @@ const statusColor = (s: string) => {
 
 const AdminExpedientes = () => {
   const { toast } = useToast();
-  const { expedientes, loading, updateExpediente } = useExpedientes();
+  const { isAdmin } = useAuth();
+  const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
   const [notes, setNotes] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const filtered = expedientes.filter((e) => {
     const matchSearch =
