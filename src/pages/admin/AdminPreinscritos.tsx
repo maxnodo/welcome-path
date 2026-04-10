@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRightLeft, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useAdminLeads } from "@/hooks/useAdminLeads";
+import { useAdminLeads, Lead } from "@/hooks/useAdminLeads";
 import { useGestores } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +21,15 @@ const AdminPreinscritos = () => {
   const { gestores } = useGestores();
   const { toast } = useToast();
   const [converting, setConverting] = useState<string | null>(null);
-  const [confirmConvert, setConfirmConvert] = useState<string | null>(null);
+  const [convertLead, setConvertLead] = useState<Lead | null>(null);
+  const [convertTramite, setConvertTramite] = useState("");
+  const [tramites, setTramites] = useState<{ code: string; name: string }[]>([]);
+
+  useEffect(() => {
+    supabase.from('tramites_catalog').select('code, name').eq('is_active', true).then(({ data }) => {
+      setTramites(data ?? []);
+    });
+  }, []);
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -39,22 +45,24 @@ const AdminPreinscritos = () => {
     }
   };
 
-  const handleConvertLead = async (leadId: string) => {
-    const lead = leads.find(l => l.id === leadId);
-    if (!lead || !lead.advisor_id || !user) return;
+  const openConvertDialog = (lead: Lead) => {
+    setConvertLead(lead);
+    setConvertTramite("");
+  };
 
-    setConverting(leadId);
+  const handleConvertLead = async () => {
+    if (!convertLead || !convertLead.advisor_id || !user || !convertTramite) return;
 
-    // Create expediente without user_id (lead has no account yet)
-    const tramiteCode = lead.necesidad?.split(", ")[0] ?? "general";
+    setConverting(convertLead.id);
+
     const { data: expData, error: expError } = await supabase
       .from('expedientes')
       .insert({
         user_id: null,
-        tramite_code: tramiteCode,
+        tramite_code: convertTramite,
         status: 'no_iniciado' as const,
-        advisor_id: lead.advisor_id,
-        origin_country: lead.pais_origen ?? null,
+        advisor_id: convertLead.advisor_id,
+        origin_country: convertLead.pais_origen ?? null,
       })
       .select('id, tramite_code')
       .maybeSingle();
@@ -65,21 +73,20 @@ const AdminPreinscritos = () => {
       return;
     }
 
-    // Mark lead as converted
-    await updateLead(leadId, { status: 'converted' });
+    await updateLead(convertLead.id, { status: 'converted' });
 
-    // Notify assigned gestor
+    const tramiteName = tramites.find(t => t.code === convertTramite)?.name ?? convertTramite;
     await notifyGestorAssignment({
-      advisorId: lead.advisor_id,
-      tramiteName: tramiteCode,
-      userName: lead.nombre,
+      advisorId: convertLead.advisor_id,
+      tramiteName,
+      userName: convertLead.nombre,
       expedienteId: expData?.id ?? null,
       createdBy: user.id,
     });
 
-    toast({ title: "Lead convertido", description: `Se creó un expediente para ${lead.nombre} y se notificó al gestor.` });
+    toast({ title: "Lead convertido", description: `Se creó un expediente para ${convertLead.nombre} y se notificó al gestor.` });
     setConverting(null);
-    setConfirmConvert(null);
+    setConvertLead(null);
   };
 
   const getGestorName = (id: string | null) => {
@@ -179,7 +186,7 @@ const AdminPreinscritos = () => {
                           size="sm"
                           className="h-7 text-xs gap-1"
                           disabled={!lead.advisor_id || converting === lead.id}
-                          onClick={() => setConfirmConvert(lead.id)}
+                          onClick={() => openConvertDialog(lead)}
                         >
                           <ArrowRightLeft size={12} />
                           {converting === lead.id ? "Convirtiendo..." : "Convertir"}
@@ -194,23 +201,59 @@ const AdminPreinscritos = () => {
         </div>
       )}
 
-      {/* Confirm conversion dialog */}
-      <AlertDialog open={!!confirmConvert} onOpenChange={() => setConfirmConvert(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Convertir lead en expediente?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se creará un nuevo expediente asignado al gestor seleccionado. El lead quedará marcado como convertido.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmConvert && handleConvertLead(confirmConvert)}>
-              Convertir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Convert lead dialog with tramite selector */}
+      <Dialog open={!!convertLead} onOpenChange={() => setConvertLead(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Convertir lead en expediente</DialogTitle>
+          </DialogHeader>
+          {convertLead && (
+            <div className="space-y-4">
+              <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
+                <p className="font-medium text-foreground">{convertLead.nombre}</p>
+                <p className="text-muted-foreground">{convertLead.email ?? convertLead.telefono}</p>
+                {convertLead.necesidad && (
+                  <div className="pt-1">
+                    <span className="text-xs text-muted-foreground">Necesidad indicada: </span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {convertLead.necesidad.split(", ").map((n) => (
+                        <span key={n} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{n}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm">Trámite a crear <span className="text-destructive">*</span></Label>
+                <Select value={convertTramite} onValueChange={setConvertTramite}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar trámite del catálogo..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tramites.map(t => (
+                      <SelectItem key={t.code} value={t.code}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="text-sm text-muted-foreground">
+                <p>Gestor asignado: <span className="text-foreground font-medium">{getGestorName(convertLead.advisor_id)}</span></p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConvertLead(null)}>Cancelar</Button>
+            <Button
+              onClick={handleConvertLead}
+              disabled={!convertTramite || converting === convertLead?.id}
+            >
+              {converting === convertLead?.id ? "Convirtiendo..." : "Crear expediente"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
