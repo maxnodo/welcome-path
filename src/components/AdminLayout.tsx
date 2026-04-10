@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
-  BarChart3, Users, ClipboardList, MessageSquare, Bell, Calendar,
+  BarChart3, Users, MessageSquare, Bell, Calendar,
   CreditCard, Settings, LogOut, UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,16 +9,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 
-const adminNavItems = [
+interface NavItem {
+  label: string;
+  icon: any;
+  path: string;
+  adminOnly?: boolean;
+}
+
+const adminNavItems: NavItem[] = [
   { label: "Dashboard", icon: BarChart3, path: "/admin" },
   { label: "Expedientes", icon: Users, path: "/admin/expedientes" },
-  { label: "Trámites", icon: ClipboardList, path: "/admin/tramites" },
   { label: "Mensajes", icon: MessageSquare, path: "/admin/mensajes" },
   { label: "Alertas", icon: Bell, path: "/admin/alertas" },
   { label: "Citas", icon: Calendar, path: "/admin/citas" },
   { label: "Facturación", icon: CreditCard, path: "/admin/facturacion" },
   { label: "Pre-inscritos", icon: UserPlus, path: "/admin/preinscritos" },
-  { label: "Configuración", icon: Settings, path: "/admin/configuracion" },
+  { label: "Usuarios", icon: Users, path: "/admin/usuarios", adminOnly: true },
+  { label: "Configuración", icon: Settings, path: "/admin/configuracion", adminOnly: true },
 ];
 
 export const AdminLogin = () => {
@@ -30,7 +37,6 @@ export const AdminLogin = () => {
   const { signIn, isGestor, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Once authenticated and profile loaded, redirect
   useEffect(() => {
     if (waitingForProfile && isAuthenticated && !authLoading) {
       if (isGestor) {
@@ -98,17 +104,18 @@ export const AdminLogin = () => {
 export const AdminLayout = ({ children }: { children: ReactNode }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, isAdmin } = useAuth();
+
+  const visibleNavItems = adminNavItems.filter(item => !item.adminOnly || isAdmin);
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
       <aside className="w-60 bg-[hsl(220_55%_12%)] text-white flex flex-col shrink-0">
         <div className="p-5 border-b border-white/10">
           <h1 className="text-lg font-bold tracking-widest">WELCOME ADMIN</h1>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
-          {adminNavItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const active = pathname === item.path || (item.path !== "/admin" && pathname.startsWith(item.path));
             return (
               <Link
@@ -143,11 +150,10 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-14 border-b bg-card flex items-center px-6 shrink-0">
           <h1 className="text-base font-semibold text-foreground">
-            {adminNavItems.find((n) => pathname === n.path || (n.path !== "/admin" && pathname.startsWith(n.path)))?.label ?? "Dashboard"}
+            {visibleNavItems.find((n) => pathname === n.path || (n.path !== "/admin" && pathname.startsWith(n.path)))?.label ?? "Dashboard"}
           </h1>
         </header>
         <main className="flex-1 overflow-y-auto bg-muted/30 p-6">{children}</main>

@@ -1,39 +1,11 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-
-interface Lead {
-  id: string;
-  nombre: string;
-  email: string | null;
-  telefono: string;
-  pais_origen: string | null;
-  necesidad: string | null;
-  ubicacion: string | null;
-  cuando: string | null;
-  descripcion: string | null;
-  created_at: string;
-}
+import { useAdminLeads } from "@/hooks/useAdminLeads";
 
 const AdminPreinscritos = () => {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLeads = async () => {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (!error && data) setLeads(data);
-      setLoading(false);
-    };
-    fetchLeads();
-  }, []);
+  const { leads, loading } = useAdminLeads();
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
