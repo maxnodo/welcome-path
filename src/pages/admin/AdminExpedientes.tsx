@@ -85,6 +85,20 @@ const AdminExpedientes = () => {
     setSelectedExp(null);
   };
 
+  const handleDelete = async () => {
+    if (!selectedExp) return;
+    setDeleting(true);
+    const { error } = await deleteExpediente(selectedExp.id);
+    setDeleting(false);
+    if (!error) {
+      toast({ title: "Eliminado", description: "Expediente y documentos asociados eliminados." });
+    } else {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+    setShowDeleteConfirm(false);
+    setSelectedExp(null);
+  };
+
   const statusCounts = allStatuses.map((s) => ({
     status: s,
     label: statusLabels[s],
