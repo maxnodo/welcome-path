@@ -122,7 +122,20 @@ const AdminDashboard = () => {
     setSelectedExp(null);
   };
 
-  const handleCreateExpediente = async () => {
+  const handleDeleteExpediente = async () => {
+    if (!selectedExp) return;
+    setDeleting(true);
+    const { error } = await deleteExpediente(selectedExp.id);
+    setDeleting(false);
+    if (!error) {
+      toast({ title: "Eliminado", description: "Expediente y documentos asociados eliminados." });
+    } else {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+    setShowDeleteConfirm(false);
+    setSelectedExp(null);
+  };
+
     if (!newExpUserId || !newExpTramite) return;
     setCreatingExp(true);
     const { error } = await supabase.from('expedientes').insert({
