@@ -136,6 +136,7 @@ const AdminDashboard = () => {
     setSelectedExp(null);
   };
 
+  const handleCreateExpediente = async () => {
     if (!newExpUserId || !newExpTramite) return;
     setCreatingExp(true);
     const { error } = await supabase.from('expedientes').insert({
