@@ -30,7 +30,7 @@ export function useExpedientes() {
 
     if (!user) return
     const channel = supabase
-      .channel('expedientes-realtime')
+      .channel(`expedientes-realtime-${user.id}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',

@@ -25,7 +25,7 @@ export function useMensajes() {
 
     if (!user) return
     const channel = supabase
-      .channel('mensajes-realtime')
+      .channel(`mensajes-realtime-${user.id}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
