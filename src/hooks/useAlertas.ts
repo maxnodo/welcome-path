@@ -25,7 +25,7 @@ export function useAlertas() {
 
     if (!user) return
     const channel = supabase
-      .channel('alertas-realtime')
+      .channel(`alertas-realtime-${user.id}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
