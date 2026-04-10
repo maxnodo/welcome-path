@@ -52,12 +52,12 @@ const AdminPreinscritos = () => {
       .insert({
         user_id: null,
         tramite_code: tramiteCode,
-        status: 'no_iniciado',
+        status: 'no_iniciado' as const,
         advisor_id: lead.advisor_id,
         origin_country: lead.pais_origen ?? null,
       })
-      .select()
-      .single();
+      .select('id, tramite_code')
+      .maybeSingle();
 
     if (expError) {
       toast({ title: "Error al crear expediente", description: expError.message, variant: "destructive" });
