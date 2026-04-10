@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { Expediente } from '@/types/database.types'
 
+let expedientesChannelCounter = 0
+
 export function useExpedientes() {
   const { user, isGestor } = useAuth()
   const [expedientes, setExpedientes] = useState<Expediente[]>([])
@@ -29,8 +31,9 @@ export function useExpedientes() {
     fetchExpedientes()
 
     if (!user) return
+    const channelName = `expedientes-rt-${user.id}-${++expedientesChannelCounter}`
     const channel = supabase
-      .channel(`expedientes-realtime-${user.id}`)
+      .channel(channelName)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',

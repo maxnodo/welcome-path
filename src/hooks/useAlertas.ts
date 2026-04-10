@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { Alerta } from '@/types/database.types'
+
+let alertasChannelCounter = 0
 
 export function useAlertas() {
   const { user } = useAuth()
@@ -24,8 +26,9 @@ export function useAlertas() {
     fetchAlertas()
 
     if (!user) return
+    const channelName = `alertas-rt-${user.id}-${++alertasChannelCounter}`
     const channel = supabase
-      .channel(`alertas-realtime-${user.id}`)
+      .channel(channelName)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
