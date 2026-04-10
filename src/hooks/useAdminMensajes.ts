@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+
+let adminMensajesCounter = 0
 import { useAuth } from '@/context/AuthContext'
 import { Mensaje } from '@/types/database.types'
 
@@ -24,7 +26,7 @@ export function useAdminMensajes() {
 
     if (!user) return
     const channel = supabase
-      .channel('admin-mensajes-realtime')
+      .channel(`admin-mensajes-rt-${++adminMensajesCounter}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
