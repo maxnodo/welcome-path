@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -83,9 +84,9 @@ const Login = () => {
                 </div>
 
                 <div className="text-right">
-                  <button type="button" className="text-sm text-secondary hover:underline">
+                  <Link to="/forgot-password" className="text-sm text-secondary hover:underline">
                     ¿Olvidaste tu contraseña?
-                  </button>
+                  </Link>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>

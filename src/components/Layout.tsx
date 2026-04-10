@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useLocation, useNavigate, Link, Navigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import {
   Home, User, FileText, MessageSquare, Bell, CreditCard,
   Clock, HelpCircle, MessageCircle, Receipt, Calendar, LogOut, Phone, Mail,
@@ -55,7 +55,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  
 
   const displayName = profile?.full_name ?? "Usuario";
   const initials = displayName
