@@ -72,7 +72,7 @@ export interface TramiteCatalog {
 
 export interface Expediente {
   id: string
-  user_id: string
+  user_id: string | null
   tramite_code: string
   status: ExpedienteStatus
   expediente_number: string | null

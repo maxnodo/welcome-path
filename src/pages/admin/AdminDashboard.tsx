@@ -10,13 +10,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { useAlertas } from "@/hooks/useAlertas";
 import { useCitas } from "@/hooks/useCitas";
+import { useGestores } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Expediente, ExpedienteStatus, AlertaType, Profile } from "@/types/database.types";
+import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
 
 const allStatuses: ExpedienteStatus[] = [
   "no_iniciado", "documentacion_incompleta", "en_revision", "requerimiento_adicional",
@@ -57,6 +60,8 @@ const alertaTypes: { value: AlertaType; label: string }[] = [
   { value: "resolucion", label: "Resolución" },
 ];
 
+const INACTIVE_STATUSES = ["archivado", "denegado", "finalizado"];
+
 const AdminDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -64,8 +69,10 @@ const AdminDashboard = () => {
   const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
   const { alertas } = useAlertas();
   const { citas } = useCitas();
+  const { gestores } = useGestores();
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
+  const [detailAdvisorId, setDetailAdvisorId] = useState<string>("");
   const [notes, setNotes] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -76,6 +83,7 @@ const AdminDashboard = () => {
   const [tramites, setTramites] = useState<{ id: string; code: string; name: string }[]>([]);
   const [newExpUserId, setNewExpUserId] = useState("");
   const [newExpTramite, setNewExpTramite] = useState("");
+  const [newExpAdvisorId, setNewExpAdvisorId] = useState("");
   const [creatingExp, setCreatingExp] = useState(false);
 
   // Mass alert dialog
@@ -95,8 +103,29 @@ const AdminDashboard = () => {
     });
   }, []);
 
+  // Workload data (admin only)
+  const workloadData = gestores.map(g => {
+    const assigned = expedientes.filter(e => e.advisor_id === g.id);
+    const active = assigned.filter(e => !INACTIVE_STATUSES.includes(e.status)).length;
+    const pendingReview = assigned.filter(e => e.status === "en_revision").length;
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 7);
+    const weeklyCitas = citas.filter(c =>
+      c.advisor_id === g.id &&
+      new Date(c.scheduled_at) >= weekStart &&
+      new Date(c.scheduled_at) < weekEnd
+    ).length;
+    return { ...g, active, pendingReview, weeklyCitas, total: assigned.length };
+  });
+
+  const maxActive = Math.max(...workloadData.map(w => w.active), 1);
+
   const kpis = [
-    { label: "Expedientes activos", value: expedientes.filter(e => !["archivado", "denegado", "finalizado"].includes(e.status)).length, icon: Users, color: "text-secondary bg-secondary/10" },
+    { label: "Expedientes activos", value: expedientes.filter(e => !INACTIVE_STATUSES.includes(e.status)).length, icon: Users, color: "text-secondary bg-secondary/10" },
     { label: "Pendientes revisión", value: expedientes.filter(e => e.status === "en_revision").length, icon: Clock, color: "text-warning bg-warning/10" },
     { label: "Citas esta semana", value: citas.length, icon: Calendar, color: "text-primary bg-primary/10" },
     { label: "Alertas urgentes", value: alertas.filter(a => a.type === "urgente" && !a.is_read).length, icon: AlertTriangle, color: "text-destructive bg-destructive/10" },
@@ -105,16 +134,28 @@ const AdminDashboard = () => {
   const openDetail = (exp: Expediente) => {
     setSelectedExp(exp);
     setDetailStatus(exp.status);
+    setDetailAdvisorId(exp.advisor_id ?? "");
     setNotes(exp.internal_notes ?? "");
   };
 
   const saveChanges = async () => {
-    if (!selectedExp) return;
+    if (!selectedExp || !user) return;
+    const advisorChanged = detailAdvisorId && detailAdvisorId !== (selectedExp.advisor_id ?? "");
     const { error } = await updateExpediente(selectedExp.id, {
       status: detailStatus,
       internal_notes: notes || null,
+      advisor_id: detailAdvisorId || null,
     });
     if (!error) {
+      if (advisorChanged) {
+        await notifyGestorAssignment({
+          advisorId: detailAdvisorId,
+          tramiteName: selectedExp.tramites_catalog?.name ?? selectedExp.tramite_code,
+          userName: "Cliente del expediente",
+          expedienteId: selectedExp.id,
+          createdBy: user.id,
+        });
+      }
       toast({ title: "Cambios guardados", description: `Expediente ${selectedExp.expediente_number ?? selectedExp.id} actualizado.` });
     } else {
       toast({ title: "Error al guardar", description: error.message, variant: "destructive" });
@@ -137,19 +178,31 @@ const AdminDashboard = () => {
   };
 
   const handleCreateExpediente = async () => {
-    if (!newExpUserId || !newExpTramite) return;
+    if (!newExpUserId || !newExpTramite || !newExpAdvisorId || !user) return;
     setCreatingExp(true);
-    const { error } = await supabase.from('expedientes').insert({
+    const { data, error } = await supabase.from('expedientes').insert({
       user_id: newExpUserId,
       tramite_code: newExpTramite,
       status: 'no_iniciado' as ExpedienteStatus,
-    });
+      advisor_id: newExpAdvisorId,
+    }).select('*, tramites_catalog(*)').single();
     setCreatingExp(false);
     if (!error) {
-      toast({ title: "Expediente creado", description: "El expediente se ha creado correctamente." });
+      // Notify assigned gestor
+      const tramiteName = data?.tramites_catalog?.name ?? newExpTramite;
+      const assignedUser = allUsers.find(u => u.id === newExpUserId);
+      await notifyGestorAssignment({
+        advisorId: newExpAdvisorId,
+        tramiteName,
+        userName: assignedUser?.full_name ?? assignedUser?.email ?? "Nuevo usuario",
+        expedienteId: data?.id ?? null,
+        createdBy: user.id,
+      });
+      toast({ title: "Expediente creado", description: "El expediente se ha creado y el gestor ha sido notificado." });
       setShowNewExp(false);
       setNewExpUserId("");
       setNewExpTramite("");
+      setNewExpAdvisorId("");
     } else {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     }
@@ -184,6 +237,12 @@ const AdminDashboard = () => {
     );
   };
 
+  const getGestorName = (id: string | null) => {
+    if (!id) return "Sin asignar";
+    const g = gestores.find(g => g.id === id);
+    return g?.full_name ?? g?.email ?? "Desconocido";
+  };
+
   const pendingAlerts = alertas.filter(a => !a.is_read).slice(0, 5);
 
   return (
@@ -208,6 +267,32 @@ const AdminDashboard = () => {
         })}
       </div>
 
+      {/* Workload card — admin only */}
+      {isAdmin && workloadData.length > 0 && (
+        <div className="bg-card rounded-lg border shadow-sm p-5 space-y-4">
+          <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
+            <Users size={16} /> Carga de trabajo por gestor
+          </h3>
+          <div className="space-y-3">
+            {workloadData.map(w => (
+              <div key={w.id} className="flex items-center gap-4">
+                <div className="w-36 shrink-0">
+                  <p className="text-sm font-medium text-foreground truncate">{w.full_name ?? w.email}</p>
+                </div>
+                <div className="flex-1 flex items-center gap-2">
+                  <Progress value={(w.active / maxActive) * 100} className="h-2 flex-1" />
+                </div>
+                <div className="flex items-center gap-3 shrink-0 text-xs">
+                  <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">{w.active} activos</span>
+                  <span className="bg-warning/10 text-warning px-2 py-0.5 rounded-full font-medium">{w.pendingReview} revisión</span>
+                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{w.weeklyCitas} citas</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Expedientes table */}
         <div className="lg:col-span-2 bg-card rounded-lg border shadow-sm overflow-hidden">
@@ -219,7 +304,7 @@ const AdminDashboard = () => {
               <tr className="border-b bg-muted/50 text-left">
                 <th className="px-4 py-2.5 font-medium text-muted-foreground">Trámite</th>
                 <th className="px-4 py-2.5 font-medium text-muted-foreground">Estado</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Expediente</th>
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">Gestor</th>
                 <th className="px-4 py-2.5 font-medium text-muted-foreground">Acciones</th>
               </tr>
             </thead>
@@ -236,7 +321,7 @@ const AdminDashboard = () => {
                       {statusLabels[exp.status] ?? exp.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground text-xs">{exp.expediente_number ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-xs">{getGestorName(exp.advisor_id)}</td>
                   <td className="px-4 py-3">
                     <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => openDetail(exp)}>
                       <Eye size={12} /> Ver
@@ -323,6 +408,26 @@ const AdminDashboard = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Gestor selector */}
+              <div className="space-y-2">
+                <Label className="text-sm">Gestor asignado</Label>
+                {isAdmin ? (
+                  <Select value={detailAdvisorId} onValueChange={setDetailAdvisorId}>
+                    <SelectTrigger><SelectValue placeholder="Sin asignar" /></SelectTrigger>
+                    <SelectContent>
+                      {gestores.map(g => (
+                        <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email ?? g.id}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <p className="text-sm text-foreground bg-muted/50 rounded px-3 py-2">
+                    {getGestorName(selectedExp.advisor_id)}
+                  </p>
+                )}
+              </div>
+
               <div className="space-y-2">
                 <Label className="text-sm">Notas internas (no visibles para el cliente)</Label>
                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Añadir notas internas..." rows={3} />
@@ -407,10 +512,21 @@ const AdminDashboard = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-2">
+              <Label className="text-sm">Gestor asignado</Label>
+              <Select value={newExpAdvisorId} onValueChange={setNewExpAdvisorId}>
+                <SelectTrigger><SelectValue placeholder="Seleccionar gestor" /></SelectTrigger>
+                <SelectContent>
+                  {gestores.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email ?? g.id}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowNewExp(false)}>Cancelar</Button>
-            <Button onClick={handleCreateExpediente} disabled={creatingExp || !newExpUserId || !newExpTramite}>
+            <Button onClick={handleCreateExpediente} disabled={creatingExp || !newExpUserId || !newExpTramite || !newExpAdvisorId}>
               {creatingExp ? "Creando..." : "Crear expediente"}
             </Button>
           </DialogFooter>
