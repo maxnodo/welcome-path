@@ -6,7 +6,7 @@ import { Expediente } from '@/types/database.types'
 let expedientesChannelCounter = 0
 
 export function useExpedientes() {
-  const { user, isGestor } = useAuth()
+  const { user, isGestor, isAdmin } = useAuth()
   const [expedientes, setExpedientes] = useState<Expediente[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -18,7 +18,13 @@ export function useExpedientes() {
       .select('*, tramites_catalog(*), documentos(*)')
       .order('created_at', { ascending: false })
 
-    if (!isGestor) {
+    if (isAdmin) {
+      // Admin sees all expedientes
+    } else if (isGestor) {
+      // Gestor only sees expedientes assigned to them via advisor_id
+      query = query.eq('advisor_id', user.id)
+    } else {
+      // Regular user sees only their own
       query = query.eq('user_id', user.id)
     }
 
@@ -38,12 +44,12 @@ export function useExpedientes() {
         event: '*',
         schema: 'public',
         table: 'expedientes',
-        ...(isGestor ? {} : { filter: `user_id=eq.${user.id}` }),
+        ...(isAdmin ? {} : isGestor ? { filter: `advisor_id=eq.${user.id}` } : { filter: `user_id=eq.${user.id}` }),
       }, () => fetchExpedientes())
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [user?.id, isGestor])
+  }, [user?.id, isGestor, isAdmin])
 
   async function createExpediente(tramiteCode: string, originCountry?: string, solicitudType?: string) {
     if (!user) return null
@@ -68,5 +74,21 @@ export function useExpedientes() {
     return { error }
   }
 
-  return { expedientes, loading, createExpediente, updateExpediente, refetch: fetchExpedientes }
+  async function deleteExpediente(id: string) {
+    // First delete associated documents from storage and DB
+    const { data: docs } = await supabase.from('documentos').select('id, file_path').eq('expediente_id', id)
+    if (docs && docs.length > 0) {
+      const filePaths = docs.map(d => d.file_path).filter(Boolean)
+      if (filePaths.length > 0) {
+        await supabase.storage.from('documentos-tramite').remove(filePaths)
+      }
+      await supabase.from('documentos').delete().eq('expediente_id', id)
+    }
+    // Delete the expediente
+    const { error } = await supabase.from('expedientes').delete().eq('id', id)
+    if (!error) await fetchExpedientes()
+    return { error }
+  }
+
+  return { expedientes, loading, createExpediente, updateExpediente, deleteExpediente, refetch: fetchExpedientes }
 }

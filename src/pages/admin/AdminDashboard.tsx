@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Clock, Calendar, AlertTriangle, Eye, UserPlus, Send, BarChart3 } from "lucide-react";
+import { Users, Clock, Calendar, AlertTriangle, Eye, UserPlus, Send, BarChart3, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -59,13 +60,15 @@ const alertaTypes: { value: AlertaType; label: string }[] = [
 const AdminDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { expedientes, loading, updateExpediente } = useExpedientes();
+  const { user, isAdmin } = useAuth();
+  const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
   const { alertas } = useAlertas();
   const { citas } = useCitas();
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
   const [notes, setNotes] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // New expediente dialog
   const [showNewExp, setShowNewExp] = useState(false);
@@ -116,6 +119,20 @@ const AdminDashboard = () => {
     } else {
       toast({ title: "Error al guardar", description: error.message, variant: "destructive" });
     }
+    setSelectedExp(null);
+  };
+
+  const handleDeleteExpediente = async () => {
+    if (!selectedExp) return;
+    setDeleting(true);
+    const { error } = await deleteExpediente(selectedExp.id);
+    setDeleting(false);
+    if (!error) {
+      toast({ title: "Eliminado", description: "Expediente y documentos asociados eliminados." });
+    } else {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+    setShowDeleteConfirm(false);
     setSelectedExp(null);
   };
 
@@ -327,12 +344,39 @@ const AdminDashboard = () => {
               )}
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedExp(null)}>Cerrar</Button>
-            <Button onClick={saveChanges}>Guardar cambios</Button>
+          <DialogFooter className="flex justify-between">
+            <div>
+              {isAdmin && (
+                <Button variant="destructive" size="sm" className="gap-1" onClick={() => setShowDeleteConfirm(true)}>
+                  <Trash2 size={14} /> Eliminar expediente
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setSelectedExp(null)}>Cerrar</Button>
+              <Button onClick={saveChanges}>Guardar cambios</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar expediente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente el expediente y todos sus documentos asociados. No se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteExpediente} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* New expediente dialog */}
       <Dialog open={showNewExp} onOpenChange={setShowNewExp}>

@@ -3,6 +3,7 @@ import { Search, Filter, Receipt, DollarSign, AlertTriangle } from "lucide-react
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminFacturas } from "@/hooks/useAdminFacturas";
+import { useAuth } from "@/context/AuthContext";
 
 const statusLabels: Record<string, string> = {
   pagada: "Pagada",
@@ -20,6 +21,7 @@ const statusColor: Record<string, string> = {
 
 const AdminFacturacion = () => {
   const { facturas, loading } = useAdminFacturas();
+  const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -39,29 +41,31 @@ const AdminFacturacion = () => {
   return (
     <div className="space-y-6">
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-success/10 text-success flex items-center justify-center"><DollarSign size={20} /></div>
-          <div>
-            <p className="text-xs text-muted-foreground">Facturado (pagado)</p>
-            <p className="text-2xl font-bold text-foreground">{totalRevenue.toFixed(2)} €</p>
+      {isAdmin && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-success/10 text-success flex items-center justify-center"><DollarSign size={20} /></div>
+            <div>
+              <p className="text-xs text-muted-foreground">Facturado (pagado)</p>
+              <p className="text-2xl font-bold text-foreground">{totalRevenue.toFixed(2)} €</p>
+            </div>
+          </div>
+          <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-warning/10 text-warning flex items-center justify-center"><Receipt size={20} /></div>
+            <div>
+              <p className="text-xs text-muted-foreground">Pendiente de cobro</p>
+              <p className="text-2xl font-bold text-foreground">{pendingAmount.toFixed(2)} €</p>
+            </div>
+          </div>
+          <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center"><AlertTriangle size={20} /></div>
+            <div>
+              <p className="text-xs text-muted-foreground">Pagos fallidos</p>
+              <p className="text-2xl font-bold text-foreground">{failedCount}</p>
+            </div>
           </div>
         </div>
-        <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-warning/10 text-warning flex items-center justify-center"><Receipt size={20} /></div>
-          <div>
-            <p className="text-xs text-muted-foreground">Pendiente de cobro</p>
-            <p className="text-2xl font-bold text-foreground">{pendingAmount.toFixed(2)} €</p>
-          </div>
-        </div>
-        <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center"><AlertTriangle size={20} /></div>
-          <div>
-            <p className="text-xs text-muted-foreground">Pagos fallidos</p>
-            <p className="text-2xl font-bold text-foreground">{failedCount}</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Toolbar */}
       <div className="flex items-center gap-3">
