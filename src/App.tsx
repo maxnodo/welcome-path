@@ -8,6 +8,8 @@ import Layout from "@/components/Layout";
 import { AdminLayout, AdminLogin } from "@/components/AdminLayout";
 import Login from "@/pages/Login";
 import Preinscripcion from "@/pages/Preinscripcion";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import Perfil from "@/pages/Perfil";
 import Tramites from "@/pages/Tramites";
@@ -87,6 +89,8 @@ const App = () => (
           <Routes>
             {/* Public */}
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/preinscripcion" element={<Preinscripcion />} />
 
             {/* User area */}
