@@ -67,6 +67,8 @@ const AdminDashboard = () => {
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
   const [notes, setNotes] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // New expediente dialog
   const [showNewExp, setShowNewExp] = useState(false);
