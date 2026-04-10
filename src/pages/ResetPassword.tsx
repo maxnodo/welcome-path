@@ -17,21 +17,21 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user arrived via recovery link
-    supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setValidSession(true);
       }
       setChecking(false);
     });
 
-    // Also check current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setValidSession(true);
       }
       setChecking(false);
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
