@@ -29,11 +29,11 @@ import AdminCitas from "@/pages/admin/AdminCitas";
 import AdminFacturacion from "@/pages/admin/AdminFacturacion";
 import AdminConfiguracion from "@/pages/admin/AdminConfiguracion";
 import AdminPreinscritos from "@/pages/admin/AdminPreinscritos";
+import AdminUsuarios from "@/pages/admin/AdminUsuarios";
 import NotFound from "@/pages/NotFound";
 import Logo from "@/components/Logo";
 
 const queryClient = new QueryClient();
-
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -61,6 +61,22 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   );
   if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
   if (!isGestor) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
+
+const AdminOnlyRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAdmin, isGestor, loading, isAuthenticated } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="text-center space-y-4">
+        <Logo size="lg" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+      </div>
+    </div>
+  );
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  if (!isGestor) return <Navigate to="/dashboard" replace />;
+  if (!isAdmin) return <Navigate to="/admin" replace />;
   return <>{children}</>;
 };
 
@@ -110,13 +126,13 @@ const App = () => (
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminRoute>} />
             <Route path="/admin/expedientes" element={<AdminRoute><AdminLayout><AdminExpedientes /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/tramites" element={<AdminRoute><AdminLayout><AdminExpedientes /></AdminLayout></AdminRoute>} />
             <Route path="/admin/mensajes" element={<AdminRoute><AdminLayout><AdminMensajes /></AdminLayout></AdminRoute>} />
             <Route path="/admin/alertas" element={<AdminRoute><AdminLayout><AdminAlertas /></AdminLayout></AdminRoute>} />
             <Route path="/admin/citas" element={<AdminRoute><AdminLayout><AdminCitas /></AdminLayout></AdminRoute>} />
             <Route path="/admin/facturacion" element={<AdminRoute><AdminLayout><AdminFacturacion /></AdminLayout></AdminRoute>} />
             <Route path="/admin/preinscritos" element={<AdminRoute><AdminLayout><AdminPreinscritos /></AdminLayout></AdminRoute>} />
-            <Route path="/admin/configuracion" element={<AdminRoute><AdminLayout><AdminConfiguracion /></AdminLayout></AdminRoute>} />
+            <Route path="/admin/configuracion" element={<AdminOnlyRoute><AdminLayout><AdminConfiguracion /></AdminLayout></AdminOnlyRoute>} />
+            <Route path="/admin/usuarios" element={<AdminOnlyRoute><AdminLayout><AdminUsuarios /></AdminLayout></AdminOnlyRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
