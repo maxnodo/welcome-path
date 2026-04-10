@@ -53,6 +53,7 @@ const AdminExpedientes = () => {
   const { gestores } = useGestores();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterGestor, setFilterGestor] = useState<string>("all");
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
   const [detailAdvisorId, setDetailAdvisorId] = useState<string>("");
@@ -66,7 +67,8 @@ const AdminExpedientes = () => {
       (e.tramites_catalog?.name ?? e.tramite_code).toLowerCase().includes(search.toLowerCase()) ||
       (e.expediente_number ?? "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "all" || e.status === filterStatus;
-    return matchSearch && matchStatus;
+    const matchGestor = filterGestor === "all" || (filterGestor === "none" ? !e.advisor_id : e.advisor_id === filterGestor);
+    return matchSearch && matchStatus && matchGestor;
   });
 
   const openDetail = (exp: Expediente) => {
@@ -167,6 +169,20 @@ const AdminExpedientes = () => {
             ))}
           </SelectContent>
         </Select>
+        {isAdmin && (
+          <Select value={filterGestor} onValueChange={setFilterGestor}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filtrar gestor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los gestores</SelectItem>
+              <SelectItem value="none">Sin asignar</SelectItem>
+              {gestores.map(g => (
+                <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Table */}
