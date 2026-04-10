@@ -247,12 +247,39 @@ const AdminExpedientes = () => {
               )}
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedExp(null)}>Cerrar</Button>
-            <Button onClick={saveChanges}>Guardar cambios</Button>
+          <DialogFooter className="flex justify-between">
+            <div>
+              {isAdmin && (
+                <Button variant="destructive" size="sm" className="gap-1" onClick={() => setShowDeleteConfirm(true)}>
+                  <Trash2 size={14} /> Eliminar expediente
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setSelectedExp(null)}>Cerrar</Button>
+              <Button onClick={saveChanges}>Guardar cambios</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar expediente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente el expediente y todos sus documentos asociados. No se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
