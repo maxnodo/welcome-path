@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
+import { useGestores } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { Expediente, ExpedienteStatus } from "@/types/database.types";
+import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
 
 const allStatuses: ExpedienteStatus[] = [
   "no_iniciado", "documentacion_incompleta", "en_revision", "requerimiento_adicional",
@@ -46,12 +48,14 @@ const statusColor = (s: string) => {
 
 const AdminExpedientes = () => {
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
+  const { gestores } = useGestores();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
+  const [detailAdvisorId, setDetailAdvisorId] = useState<string>("");
   const [notes, setNotes] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -68,16 +72,28 @@ const AdminExpedientes = () => {
   const openDetail = (exp: Expediente) => {
     setSelectedExp(exp);
     setDetailStatus(exp.status);
+    setDetailAdvisorId(exp.advisor_id ?? "");
     setNotes(exp.internal_notes ?? "");
   };
 
   const saveChanges = async () => {
-    if (!selectedExp) return;
+    if (!selectedExp || !user) return;
+    const advisorChanged = detailAdvisorId && detailAdvisorId !== (selectedExp.advisor_id ?? "");
     const { error } = await updateExpediente(selectedExp.id, {
       status: detailStatus,
       internal_notes: notes || null,
+      advisor_id: detailAdvisorId || null,
     });
     if (!error) {
+      if (advisorChanged) {
+        await notifyGestorAssignment({
+          advisorId: detailAdvisorId,
+          tramiteName: selectedExp.tramites_catalog?.name ?? selectedExp.tramite_code,
+          userName: "Cliente del expediente",
+          expedienteId: selectedExp.id,
+          createdBy: user.id,
+        });
+      }
       toast({ title: "Guardado", description: `Expediente actualizado.` });
     } else {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -104,6 +120,12 @@ const AdminExpedientes = () => {
     label: statusLabels[s],
     count: expedientes.filter((e) => e.status === s).length,
   }));
+
+  const getGestorName = (advisorId: string | null) => {
+    if (!advisorId) return "Sin asignar";
+    const g = gestores.find(g => g.id === advisorId);
+    return g?.full_name ?? g?.email ?? "Desconocido";
+  };
 
   return (
     <div className="space-y-6">
@@ -155,6 +177,7 @@ const AdminExpedientes = () => {
               <th className="px-4 py-3 font-medium text-muted-foreground">Trámite</th>
               <th className="px-4 py-3 font-medium text-muted-foreground">Nº Expediente</th>
               <th className="px-4 py-3 font-medium text-muted-foreground">Estado</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">Gestor</th>
               <th className="px-4 py-3 font-medium text-muted-foreground">País</th>
               <th className="px-4 py-3 font-medium text-muted-foreground">Documentos</th>
               <th className="px-4 py-3 font-medium text-muted-foreground">Creado</th>
@@ -163,9 +186,9 @@ const AdminExpedientes = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">Cargando expedientes...</td></tr>
+              <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">Cargando expedientes...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No se encontraron expedientes.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">No se encontraron expedientes.</td></tr>
             ) : filtered.map((exp) => (
               <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-medium text-foreground">{exp.tramites_catalog?.name ?? exp.tramite_code}</td>
@@ -175,6 +198,7 @@ const AdminExpedientes = () => {
                     {statusLabels[exp.status] ?? exp.status}
                   </span>
                 </td>
+                <td className="px-4 py-3 text-muted-foreground text-xs">{getGestorName(exp.advisor_id)}</td>
                 <td className="px-4 py-3 text-muted-foreground text-xs">{exp.origin_country ?? "—"}</td>
                 <td className="px-4 py-3 text-muted-foreground text-xs">{exp.documentos?.length ?? 0}</td>
                 <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(exp.created_at).toLocaleDateString("es-ES")}</td>
@@ -220,6 +244,25 @@ const AdminExpedientes = () => {
                     {allStatuses.map((s) => <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Gestor selector: editable for admin, read-only for gestor */}
+              <div className="space-y-2">
+                <Label className="text-sm">Gestor asignado</Label>
+                {isAdmin ? (
+                  <Select value={detailAdvisorId} onValueChange={setDetailAdvisorId}>
+                    <SelectTrigger><SelectValue placeholder="Sin asignar" /></SelectTrigger>
+                    <SelectContent>
+                      {gestores.map(g => (
+                        <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email ?? g.id}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <p className="text-sm text-foreground bg-muted/50 rounded px-3 py-2">
+                    {getGestorName(selectedExp.advisor_id)}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
