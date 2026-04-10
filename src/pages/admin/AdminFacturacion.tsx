@@ -66,7 +66,6 @@ const AdminFacturacion = () => {
           </div>
         </div>
       )}
-      </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3">
