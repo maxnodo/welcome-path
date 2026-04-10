@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { Mensaje } from '@/types/database.types'
 
+let mensajesChannelCounter = 0
+
 export function useMensajes() {
   const { user } = useAuth()
   const [mensajes, setMensajes] = useState<Mensaje[]>([])
@@ -24,8 +26,9 @@ export function useMensajes() {
     fetchMensajes()
 
     if (!user) return
+    const channelName = `mensajes-rt-${user.id}-${++mensajesChannelCounter}`
     const channel = supabase
-      .channel(`mensajes-realtime-${user.id}`)
+      .channel(channelName)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
