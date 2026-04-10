@@ -33,7 +33,34 @@ import Logo from "@/components/Logo";
 const queryClient = new QueryClient();
 
 
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="text-center space-y-4">
+        <Logo size="lg" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+      </div>
+    </div>
+  );
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
+
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isGestor, loading, isAuthenticated } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30">
+      <div className="text-center space-y-4">
+        <Logo size="lg" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+      </div>
+    </div>
+  );
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  if (!isGestor) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+};
   const { isGestor, loading, isAuthenticated } = useAuth();
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30">
@@ -76,17 +103,17 @@ const App = () => (
             <Route path="/preinscripcion" element={<Preinscripcion />} />
 
             {/* User area */}
-            <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-            <Route path="/perfil" element={<Layout><Perfil /></Layout>} />
-            <Route path="/tramites" element={<Layout><Tramites /></Layout>} />
-            <Route path="/mensajes" element={<Layout><Mensajes /></Layout>} />
-            <Route path="/alertas" element={<Layout><Alertas /></Layout>} />
-            <Route path="/suscripcion" element={<Layout><Suscripcion /></Layout>} />
-            <Route path="/historico" element={<Layout><Historico /></Layout>} />
-            <Route path="/ayuda" element={<Layout><Ayuda /></Layout>} />
-            <Route path="/chat" element={<Layout><Chat /></Layout>} />
-            <Route path="/facturas" element={<Layout><Facturas /></Layout>} />
-            <Route path="/citas" element={<Layout><Citas /></Layout>} />
+            <Route path="/dashboard" element={<PrivateRoute><Layout><Dashboard /></Layout></PrivateRoute>} />
+            <Route path="/perfil" element={<PrivateRoute><Layout><Perfil /></Layout></PrivateRoute>} />
+            <Route path="/tramites" element={<PrivateRoute><Layout><Tramites /></Layout></PrivateRoute>} />
+            <Route path="/mensajes" element={<PrivateRoute><Layout><Mensajes /></Layout></PrivateRoute>} />
+            <Route path="/alertas" element={<PrivateRoute><Layout><Alertas /></Layout></PrivateRoute>} />
+            <Route path="/suscripcion" element={<PrivateRoute><Layout><Suscripcion /></Layout></PrivateRoute>} />
+            <Route path="/historico" element={<PrivateRoute><Layout><Historico /></Layout></PrivateRoute>} />
+            <Route path="/ayuda" element={<PrivateRoute><Layout><Ayuda /></Layout></PrivateRoute>} />
+            <Route path="/chat" element={<PrivateRoute><Layout><Chat /></Layout></PrivateRoute>} />
+            <Route path="/facturas" element={<PrivateRoute><Layout><Facturas /></Layout></PrivateRoute>} />
+            <Route path="/citas" element={<PrivateRoute><Layout><Citas /></Layout></PrivateRoute>} />
 
             {/* Admin area */}
             <Route path="/admin/login" element={<AdminLogin />} />

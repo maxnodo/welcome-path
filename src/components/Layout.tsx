@@ -55,7 +55,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  
 
   const displayName = profile?.full_name ?? "Usuario";
   const initials = displayName
