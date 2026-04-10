@@ -14,6 +14,8 @@ export interface Lead {
   ubicacion: string | null
   cuando: string | null
   descripcion: string | null
+  advisor_id: string | null
+  status: 'pending' | 'converted'
   created_at: string
 }
 
@@ -22,31 +24,38 @@ export function useAdminLeads() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
 
+  async function fetchLeads() {
+    if (!user || !isGestor) return
+    setLoading(true)
+    const { data } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false })
+    setLeads((data as Lead[]) ?? [])
+    setLoading(false)
+  }
+
   useEffect(() => {
     if (!user || !isGestor) return
     const channelName = `leads-rt-${user.id}-${++mountCounter}`
 
-    async function fetch() {
-      setLoading(true)
-      const { data } = await supabase
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false })
-      setLeads((data as Lead[]) ?? [])
-      setLoading(false)
-    }
-
-    fetch()
+    fetchLeads()
 
     const channel = supabase
       .channel(channelName)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, (payload) => {
-        setLeads(prev => [payload.new as Lead, ...prev])
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
+        fetchLeads()
       })
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
   }, [user?.id, isGestor])
 
-  return { leads, loading }
+  async function updateLead(id: string, updates: Partial<Lead>) {
+    const { error } = await supabase.from('leads').update(updates).eq('id', id)
+    if (!error) await fetchLeads()
+    return { error }
+  }
+
+  return { leads, loading, updateLead, refetch: fetchLeads }
 }
