@@ -6,17 +6,25 @@ import { useAuth } from '@/context/AuthContext'
 import { Mensaje } from '@/types/database.types'
 
 export function useAdminMensajes() {
-  const { user, isGestor } = useAuth()
+  const { user, isGestor, isAdmin } = useAuth()
   const [mensajes, setMensajes] = useState<Mensaje[]>([])
   const [loading, setLoading] = useState(true)
 
   async function fetchMensajes() {
     if (!user || !isGestor) return
     setLoading(true)
-    const { data } = await supabase
+
+    let query = supabase
       .from('mensajes')
       .select('*, sender:profiles!mensajes_sender_id_fkey(*), receiver:profiles!mensajes_receiver_id_fkey(*)')
       .order('created_at', { ascending: false })
+
+    // Gestor (not admin) only sees conversations they are part of
+    if (isGestor && !isAdmin) {
+      query = query.or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+    }
+
+    const { data } = await query
     setMensajes((data as Mensaje[]) ?? [])
     setLoading(false)
   }
@@ -35,7 +43,7 @@ export function useAdminMensajes() {
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [user?.id, isGestor])
+  }, [user?.id, isGestor, isAdmin])
 
   async function sendReply(receiverId: string, content: string, expedienteId?: string) {
     if (!user) return
