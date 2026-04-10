@@ -60,8 +60,8 @@ const alertaTypes: { value: AlertaType; label: string }[] = [
 const AdminDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { expedientes, loading, updateExpediente } = useExpedientes();
+  const { user, isAdmin } = useAuth();
+  const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
   const { alertas } = useAlertas();
   const { citas } = useCitas();
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
