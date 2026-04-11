@@ -1,50 +1,49 @@
 
 
-## Plan: Scalable Workload Visualization
+## Plan: 3 correcciones en gestión de expedientes
 
-### Problem
-The current list format (name + progress bar + badges per row) won't scale when there are 10+ gestors — it becomes a long, hard-to-scan wall of rows.
+### Corrección 1: Opción "Sin asignar" en selectores de gestor
 
-### Proposed Alternative: Compact Card Grid with Summary Bar
+**Problema**: Una vez asignado un gestor, no se puede des-asignar porque falta una opción vacía.
 
-**Layout**: Replace the single list with a responsive grid of compact cards (3-4 per row on desktop). Each card shows one gestor with:
-- Name (truncated)
-- A donut/ring chart showing active vs capacity (lightweight, CSS-only)
-- Key metrics as small numbers below (activos, revisión, citas)
-- Color-coded border: green (low load), amber (medium), red (high)
+**Cambios**:
+- **AdminDashboard.tsx** (línea ~440): Agregar `<SelectItem value="__none__">Sin asignar</SelectItem>` como primera opción en el selector de gestor del modal de detalle.
+- **AdminDashboard.tsx** (`openDetail`): Inicializar `detailAdvisorId` como `"__none__"` cuando `advisor_id` es null.
+- **AdminDashboard.tsx** (`saveChanges`): Convertir `"__none__"` a `null` antes de guardar.
+- **AdminExpedientes.tsx** (línea ~217): Mismo cambio en el selector de gestor del modal de detalle.
+- **AdminExpedientes.tsx** (`openDetail` y `saveChanges`): Misma lógica de conversión.
 
-**Additional element**: A top summary row showing:
-- Total active expedientes across all gestors
-- Average load per gestor
-- Number of gestors at high capacity
+> Nota: Radix Select no permite `value=""`, por eso se usa un valor centinela `"__none__"`.
 
-### Why this scales
-- Grid wraps naturally — 5 gestors = 2 rows, 20 gestors = 5-7 rows, all compact
-- Visual color coding lets admins spot overloaded gestors at a glance without reading every number
-- Cards can be sorted/filtered (e.g., "show only overloaded")
+### Corrección 2: Admin en la card de carga de trabajo
 
-### Technical Changes
+**Problema**: Línea 136 de AdminDashboard filtra `g.role !== 'admin'`, excluyendo al admin de la card de workload, pero los selectores de gestor sí lo incluyen.
 
-**`src/pages/admin/AdminDashboard.tsx`**
-- Replace the workload list section (lines 271-294) with a card grid
-- Each card: `bg-card rounded-lg border-l-4` with color based on load threshold
-- Use CSS ring/donut via `conic-gradient` for the mini chart (no new dependencies)
-- Add a small summary row above the grid with aggregate stats
-- Cards arranged in `grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3`
+**Cambio**:
+- **AdminDashboard.tsx** (línea 136): Eliminar el filtro `.filter(g => g.role !== 'admin')` para que el admin aparezca en la card de carga de trabajo junto a los gestores.
 
-### Visual Reference
-```text
-┌─ Summary: 12 activos total │ Promedio: 3/gestor │ 1 sobrecargado ─┐
+### Corrección 3: `bg-current/5` en ExpedientesList
 
-┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ 🟢 María │  │ 🟡 Pedro │  │ 🔴 Admin │  │ 🟢 Laura │
-│  ◉ 3     │  │  ◉ 5     │  │  ◉ 8     │  │  ◉ 1     │
-│ 1rev 0ci │  │ 2rev 1ci │  │ 3rev 2ci │  │ 0rev 0ci │
-└──────────┘  └──────────┘  └──────────┘  └──────────┘
-```
+**Problema**: La clase `bg-current/5` en los badges de estado (línea ~69) no funciona correctamente en Tailwind.
 
-### Load thresholds (configurable)
-- Green: 0-3 active expedientes
-- Amber: 4-6
-- Red: 7+
+**Cambio**:
+- **ExpedientesList.tsx**: Agregar una propiedad `bg` a cada entrada de `statusConfig` con clases explícitas de background, y usarla en el badge en lugar de `bg-current/5`.
+
+Mapa de colores:
+| Estado | Background |
+|--------|-----------|
+| no_iniciado | `bg-muted` |
+| documentacion_incompleta | `bg-warning/10` |
+| en_revision | `bg-secondary/10` |
+| requerimiento_adicional | `bg-orange-500/10` |
+| presentado | `bg-purple-500/10` |
+| aprobado | `bg-success/10` |
+| finalizado | `bg-primary/10` |
+| denegado | `bg-destructive/10` |
+| archivado | `bg-muted` |
+
+### Archivos afectados
+1. `src/pages/admin/AdminDashboard.tsx` — correcciones 1 y 2
+2. `src/pages/admin/AdminExpedientes.tsx` — corrección 1
+3. `src/components/ExpedientesList.tsx` — corrección 3
 
