@@ -3,6 +3,8 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { Alerta } from '@/types/database.types'
 
+let adminAlertasCounter = 0
+
 export function useAdminAlertas() {
   const { user, isGestor, isAdmin } = useAuth()
   const [alertas, setAlertas] = useState<Alerta[]>([])
@@ -15,16 +17,12 @@ export function useAdminAlertas() {
     let data: any[] | null = null
 
     if (isAdmin) {
-      // Admin sees all alertas
       const res = await supabase
         .from('alertas')
         .select('*, expediente:expedientes(*), user:profiles!alertas_user_id_fkey(*)')
         .order('created_at', { ascending: false })
       data = res.data
     } else {
-      // Gestor only sees alertas linked to expedientes they manage (advisor_id = user.id).
-      // NOTE: Alertas without expediente_id (general alerts) will NOT be visible
-      // to gestors with this inner join — only admins can see those.
       const res = await supabase
         .from('alertas')
         .select('*, expediente:expedientes!inner(*), user:profiles!alertas_user_id_fkey(*)')
@@ -38,7 +36,18 @@ export function useAdminAlertas() {
   }
 
   useEffect(() => {
+    if (!user || !isGestor) return
+
     fetchAlertas()
+
+    const channelName = `admin-alertas-rt-${user.id}-${++adminAlertasCounter}`
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'alertas' }, () => fetchAlertas())
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'alertas' }, () => fetchAlertas())
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [user?.id, isGestor, isAdmin])
 
   async function deleteAlerta(id: string) {
