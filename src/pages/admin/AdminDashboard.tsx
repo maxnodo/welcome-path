@@ -319,7 +319,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Card grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2">
               {workloadData.map(w => {
                 const load = getLoadColor(w.active);
                 const pct = Math.min((w.active / capacity) * 100, 100);
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
                 return (
                   <div
                     key={w.id}
-                    className={`bg-card rounded-lg border border-l-4 ${load.border} shadow-sm p-4 flex flex-col items-center gap-3`}
+                    className={`min-w-[180px] flex-shrink-0 bg-card rounded-lg border border-l-4 ${load.border} shadow-sm p-4 flex flex-col items-center gap-3`}
                   >
                     {/* Name */}
                     <p className="text-sm font-medium text-foreground truncate w-full text-center">
