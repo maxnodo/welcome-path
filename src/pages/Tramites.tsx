@@ -320,6 +320,7 @@ const Tramites = () => {
           const isOpen = expanded === t.id;
           const st = states[t.id];
           const status = statuses[t.id];
+          const count = expedienteCounts[t.id] ?? 0;
           const { label: statusLabel, color: statusColor } = statusConfig[status];
           const allDocs = getAllDocs(t, st);
 
