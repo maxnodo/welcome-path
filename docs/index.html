@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WCE Welcome &mdash; Documentaci&oacute;n del Proyecto</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Mobile toggle -->
+<button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">&#9776;</button>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><span>WCE</span> Welcome</div>
+    <div class="sidebar-subtitle">Immigration &amp; Foreign Affairs</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <div class="nav-group-title">General</div>
+      <a href="#overview" class="nav-link active">Vista General</a>
+      <a href="#arquitectura" class="nav-link">Arquitectura</a>
+      <a href="#roles" class="nav-link">Roles y Permisos</a>
+      <a href="#tablas" class="nav-link">Tablas de Datos</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Autenticaci&oacute;n</div>
+      <a href="#login" class="nav-link">Login</a>
+      <a href="#forgot-password" class="nav-link">Recuperar Contrase&ntilde;a</a>
+      <a href="#reset-password" class="nav-link">Restablecer Contrase&ntilde;a</a>
+      <a href="#admin-login" class="nav-link">Login Admin</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Panel Usuario</div>
+      <a href="#user-dashboard" class="nav-link">Dashboard</a>
+      <a href="#perfil" class="nav-link">Mi Perfil</a>
+      <a href="#tramites" class="nav-link">Mis Tr&aacute;mites</a>
+      <a href="#mensajes" class="nav-link">Mensajes</a>
+      <a href="#alertas" class="nav-link">Alertas</a>
+      <a href="#suscripcion" class="nav-link">Suscripci&oacute;n</a>
+      <a href="#facturas" class="nav-link">Facturas</a>
+      <a href="#citas" class="nav-link">Citas</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Panel Admin/Gestor</div>
+      <a href="#admin-dashboard" class="nav-link">Dashboard Admin</a>
+      <a href="#admin-expedientes" class="nav-link">Expedientes</a>
+      <a href="#admin-mensajes" class="nav-link">Mensajes</a>
+      <a href="#admin-alertas" class="nav-link">Alertas</a>
+      <a href="#admin-citas" class="nav-link">Citas</a>
+      <a href="#admin-facturacion" class="nav-link">Facturaci&oacute;n</a>
+      <a href="#admin-preinscritos" class="nav-link">Pre-inscritos</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Solo Admin</div>
+      <a href="#admin-usuarios" class="nav-link">Usuarios</a>
+      <a href="#admin-configuracion" class="nav-link">Configuraci&oacute;n</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Flujos</div>
+      <a href="#flujo-preinscripcion" class="nav-link">Pre-inscripci&oacute;n</a>
+      <a href="#flujo-asignacion" class="nav-link">Asignaci&oacute;n Gestor</a>
+      <a href="#flujo-multigestor" class="nav-link">Multi-gestor Scoping</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">v1.0 &middot; Abril 2026</div>
+</aside>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<main class="main">
+<div class="content">
+
+<!-- ============================================================
+     SECTION 1: OVERVIEW
+     ============================================================ -->
+<section id="overview">
+  <h1>WCE Welcome &mdash; Immigration &amp; Foreign Affairs</h1>
+  <p class="section-intro">Sistema de gesti&oacute;n de casos para despacho de extranjer&iacute;a en Barcelona. Plataforma integral que conecta usuarios, gestores y administradores en un flujo de trabajo unificado para tr&aacute;mites migratorios.</p>
+
+  <h3>Stack Tecnol&oacute;gico</h3>
+  <div class="tech-stack">
+    <span class="tech-pill">React 18</span>
+    <span class="tech-pill">TypeScript</span>
+    <span class="tech-pill">Vite</span>
+    <span class="tech-pill">Supabase</span>
+    <span class="tech-pill">shadcn/ui</span>
+    <span class="tech-pill">Tailwind CSS</span>
+    <span class="tech-pill">Lovable</span>
+  </div>
+
+  <h3 id="arquitectura">Arquitectura</h3>
+  <div class="arch-diagram">
+    <div class="arch-box frontend">Frontend<br><small>React + Vite</small></div>
+    <div class="arch-arrow">&rarr;</div>
+    <div class="arch-box auth">Supabase Auth<br><small>JWT + RLS</small></div>
+    <div class="arch-arrow">&rarr;</div>
+    <div class="arch-box db">PostgreSQL<br><small>11 tablas</small></div>
+    <div class="arch-arrow">&rarr;</div>
+    <div class="arch-box storage">Storage<br><small>Documentos</small></div>
+    <div class="arch-arrow">&rarr;</div>
+    <div class="arch-box realtime">Realtime<br><small>Mensajes + Alertas</small></div>
+  </div>
+
+  <h3 id="roles">Roles del Sistema</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Rol</th><th>Acceso</th><th>Descripci&oacute;n</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-admin">Admin</span></td>
+          <td>Total</td>
+          <td>Acceso completo. Gestiona usuarios, configuraci&oacute;n y ve todos los datos del sistema.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-gestor">Gestor</span></td>
+          <td>Parcial</td>
+          <td>Gestiona solo los expedientes asignados. Sin acceso a configuraci&oacute;n ni gesti&oacute;n de usuarios.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-user">User</span></td>
+          <td>Propio</td>
+          <td>Ve &uacute;nicamente sus propios datos: perfil, tr&aacute;mites, mensajes, alertas, citas y facturas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tablas">Tablas de la Base de Datos</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Tabla</th><th>Descripci&oacute;n</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>profiles</code></td><td>Perfiles de usuario con datos personales y rol</td></tr>
+        <tr><td>2</td><td><code>expedientes</code></td><td>Casos/expedientes con estado, tipo de tr&aacute;mite y gestor asignado</td></tr>
+        <tr><td>3</td><td><code>documentos</code></td><td>Archivos subidos vinculados a expedientes</td></tr>
+        <tr><td>4</td><td><code>mensajes</code></td><td>Mensajes bidireccionales entre usuarios y gestores</td></tr>
+        <tr><td>5</td><td><code>alertas</code></td><td>Notificaciones con tipo y estado le&iacute;do/no le&iacute;do</td></tr>
+        <tr><td>6</td><td><code>citas</code></td><td>Citas programadas con tipo, duraci&oacute;n y asesor</td></tr>
+        <tr><td>7</td><td><code>facturas</code></td><td>Facturas con base imponible, IVA, total y estado</td></tr>
+        <tr><td>8</td><td><code>suscripciones</code></td><td>Planes de suscripci&oacute;n y datos de pago</td></tr>
+        <tr><td>9</td><td><code>leads</code></td><td>Pre-inscritos desde FormularioExpress</td></tr>
+        <tr><td>10</td><td><code>tramites_catalog</code></td><td>Cat&aacute;logo de tipos de tr&aacute;mite disponibles</td></tr>
+        <tr><td>11</td><td><code>app_settings</code></td><td>Configuraci&oacute;n global de la aplicaci&oacute;n</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2: AUTENTICACION
+     ============================================================ -->
+<h2 id="autenticacion">Autenticaci&oacute;n</h2>
+<p class="section-intro">Flujos de acceso p&uacute;blico gestionados por Supabase Auth. Incluye login de usuarios, recuperaci&oacute;n de contrase&ntilde;a y login separado para administradores/gestores.</p>
+
+<!-- LOGIN -->
+<section class="screen-doc" id="login">
+  <h3>Login <span class="screen-route">/login</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-public">P&uacute;blico</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/login</div>
+    </div>
+    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:360px;background:#f0f4ff;">
+      <div style="width:360px;">
+        <div style="text-align:center;margin-bottom:16px;font-weight:700;font-size:16px;color:var(--content-text);">WCE Welcome</div>
+        <div class="wf-tabs" style="margin-bottom:16px;">
+          <div class="wf-tab active">Acceder a mi cuenta</div>
+          <div class="wf-tab">Pre-inscribirme</div>
+        </div>
+        <div class="wf-col" style="gap:10px;">
+          <div class="wf-input">Email</div>
+          <div class="wf-input">Contrase&ntilde;a</div>
+          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Iniciar Sesi&oacute;n</div>
+          <div style="text-align:center;font-size:10px;color:var(--primary);cursor:pointer;">&iquest;Olvidaste tu contrase&ntilde;a?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Dos pesta&ntilde;as: &laquo;Acceder a mi cuenta&raquo; (email + contrase&ntilde;a) y &laquo;Pre-inscribirme&raquo; (FormularioExpress)</li>
+    <li>FormularioExpress crea un registro en la tabla <code>leads</code></li>
+    <li>Enlace a recuperaci&oacute;n de contrase&ntilde;a</li>
+    <li>Validaci&oacute;n en tiempo real de campos</li>
+    <li>Redirecci&oacute;n autom&aacute;tica seg&uacute;n rol: user &rarr; <code>/dashboard</code>, admin/gestor &rarr; <code>/admin</code></li>
+  </ul>
+</section>
+
+<!-- FORGOT PASSWORD -->
+<section class="screen-doc" id="forgot-password">
+  <h3>Recuperar Contrase&ntilde;a <span class="screen-route">/forgot-password</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-public">P&uacute;blico</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/forgot-password</div>
+    </div>
+    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:280px;background:#f0f4ff;">
+      <div style="width:360px;">
+        <div style="text-align:center;margin-bottom:8px;font-weight:700;font-size:14px;color:var(--content-text);">Recuperar Contrase&ntilde;a</div>
+        <p style="text-align:center;font-size:10px;margin-bottom:12px;">Introduce tu email para recibir un enlace de restablecimiento.</p>
+        <div class="wf-col" style="gap:10px;">
+          <div class="wf-input">Email</div>
+          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Enviar Enlace</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Campo de email con validaci&oacute;n</li>
+    <li>Env&iacute;a enlace de restablecimiento v&iacute;a Supabase Auth</li>
+    <li>Mensaje de confirmaci&oacute;n tras env&iacute;o</li>
+  </ul>
+</section>
+
+<!-- RESET PASSWORD -->
+<section class="screen-doc" id="reset-password">
+  <h3>Restablecer Contrase&ntilde;a <span class="screen-route">/reset-password</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-public">P&uacute;blico (v&iacute;a enlace email)</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/reset-password?token=...</div>
+    </div>
+    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:280px;background:#f0f4ff;">
+      <div style="width:360px;">
+        <div style="text-align:center;margin-bottom:8px;font-weight:700;font-size:14px;color:var(--content-text);">Nueva Contrase&ntilde;a</div>
+        <div class="wf-col" style="gap:10px;">
+          <div class="wf-input">Nueva contrase&ntilde;a</div>
+          <div class="wf-input">Confirmar contrase&ntilde;a</div>
+          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Guardar Contrase&ntilde;a</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Acceso mediante token en URL enviado por email</li>
+    <li>Dos campos: nueva contrase&ntilde;a y confirmaci&oacute;n</li>
+    <li>Validaci&oacute;n de seguridad de contrase&ntilde;a</li>
+    <li>Redirecci&oacute;n a login tras &eacute;xito</li>
+  </ul>
+</section>
+
+<!-- ADMIN LOGIN -->
+<section class="screen-doc" id="admin-login">
+  <h3>Login Admin <span class="screen-route">/admin/login</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-public">P&uacute;blico</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/login</div>
+    </div>
+    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:320px;background:#0f172a;">
+      <div style="width:360px;">
+        <div style="text-align:center;margin-bottom:16px;font-weight:700;font-size:16px;color:#fff;">Panel de Gesti&oacute;n</div>
+        <div class="wf-col" style="gap:10px;">
+          <div class="wf-input" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#a0aec0;">Email corporativo</div>
+          <div class="wf-input" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#a0aec0;">Contrase&ntilde;a</div>
+          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Acceder al Panel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>P&aacute;gina de login separada con tema oscuro</li>
+    <li>Exclusiva para roles admin y gestor</li>
+    <li>Verifica el rol del usuario tras autenticaci&oacute;n</li>
+    <li>Redirecci&oacute;n a <code>/admin</code> tras login exitoso</li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     SECTION 3: PANEL USUARIO
+     ============================================================ -->
+<h2 id="panel-usuario">Panel de Usuario</h2>
+<p class="section-intro">Panel privado para usuarios (PrivateRoute). Layout con barra lateral de navegaci&oacute;n. Acceso solo a datos propios del usuario autenticado.</p>
+
+<!-- USER DASHBOARD -->
+<section class="screen-doc" id="user-dashboard">
+  <h3>Dashboard <span class="screen-route">/dashboard</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/dashboard</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item active">Dashboard</div>
+        <div class="wf-nav-item">Mi Perfil</div>
+        <div class="wf-nav-item">Tr&aacute;mites</div>
+        <div class="wf-nav-item">Mensajes</div>
+        <div class="wf-nav-item">Alertas</div>
+        <div class="wf-nav-item">Suscripci&oacute;n</div>
+        <div class="wf-nav-item">Facturas</div>
+        <div class="wf-nav-item">Citas</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Mi Panel</div>
+        <div class="wf-row">
+          <!-- User card -->
+          <div class="wf-col wf-flex-1">
+            <div class="wf-box wf-box-primary" style="display:flex;align-items:center;gap:10px;">
+              <div class="wf-avatar">JG</div>
+              <div>
+                <div style="font-weight:700;font-size:12px;color:var(--primary);">Juan Garc&iacute;a</div>
+                <div style="font-size:9px;">Colombia &middot; NIE: Y1234567X</div>
+              </div>
+            </div>
+          </div>
+          <!-- Quick cards -->
+          <div class="wf-col wf-flex-2">
+            <div class="wf-grid wf-grid-5" style="font-size:9px;">
+              <div class="wf-box wf-box-muted" style="text-align:center;">Perfil</div>
+              <div class="wf-box wf-box-muted" style="text-align:center;">Tr&aacute;mites</div>
+              <div class="wf-box wf-box-primary" style="text-align:center;">Mensajes <span class="wf-badge wf-badge-red">3</span></div>
+              <div class="wf-box wf-box-warning" style="text-align:center;">Alertas <span class="wf-badge wf-badge-red">2</span></div>
+              <div class="wf-box wf-box-muted" style="text-align:center;">Suscripci&oacute;n</div>
+              <div class="wf-box wf-box-muted" style="text-align:center;">Hist&oacute;rico</div>
+              <div class="wf-box wf-box-muted" style="text-align:center;">Ayuda</div>
+              <div class="wf-box wf-box-success" style="text-align:center;">Chat en Vivo</div>
+              <div class="wf-box wf-box-muted" style="text-align:center;">Facturas</div>
+              <div class="wf-box wf-box-muted" style="text-align:center;">Citas</div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-box wf-box-primary" style="text-align:center;font-size:11px;font-weight:600;">
+          &iquest;Necesitas ayuda con un nuevo tr&aacute;mite? &mdash; Iniciar consulta
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Columna izquierda con tarjeta de usuario: iniciales, nombre, nacionalidad</li>
+    <li>Grid de 10 tarjetas de acceso r&aacute;pido con badges de notificaciones</li>
+    <li>Tarjetas con badge: Mensajes (no le&iacute;dos) y Alertas (pendientes)</li>
+    <li>Banner CTA inferior para iniciar nueva consulta</li>
+    <li>Datos en tiempo real v&iacute;a Supabase Realtime</li>
+  </ul>
+</section>
+
+<!-- MI PERFIL -->
+<section class="screen-doc" id="perfil">
+  <h3>Mi Perfil <span class="screen-route">/perfil</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/perfil</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item">Dashboard</div>
+        <div class="wf-nav-item active">Mi Perfil</div>
+        <div class="wf-nav-item">Tr&aacute;mites</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Mi Perfil</div>
+        <div class="wf-grid wf-grid-2">
+          <div class="wf-input">Nombre completo</div>
+          <div class="wf-input">Nacionalidad</div>
+          <div class="wf-input">N&uacute;mero de documento</div>
+          <div class="wf-input">Direcci&oacute;n</div>
+          <div class="wf-input">Estado migratorio</div>
+          <div class="wf-input">Tipo de visa</div>
+          <div class="wf-input" style="grid-column:span 2;">Representante legal asignado</div>
+        </div>
+        <div style="margin-top:8px;">
+          <span class="wf-btn wf-btn-primary">Guardar Cambios</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Formulario con datos personales: nombre, nacionalidad, documento, direcci&oacute;n</li>
+    <li>Informaci&oacute;n migratoria: estado migratorio, tipo de visa</li>
+    <li>Representante legal asignado (solo lectura)</li>
+    <li>Guardado en tabla <code>profiles</code></li>
+  </ul>
+</section>
+
+<!-- MIS TRAMITES -->
+<section class="screen-doc" id="tramites">
+  <h3>Mis Tr&aacute;mites <span class="screen-route">/tramites</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/tramites</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item">Dashboard</div>
+        <div class="wf-nav-item">Mi Perfil</div>
+        <div class="wf-nav-item active">Tr&aacute;mites</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Mis Tr&aacute;mites</div>
+        <div class="wf-accordion">
+          <div class="wf-accordion-item" style="font-weight:600;color:var(--primary);">NIE (N&uacute;mero de Identidad de Extranjero) <span style="font-size:9px;">&blacktriangledown;</span></div>
+          <div class="wf-accordion-item" style="padding-left:24px;flex-direction:column;align-items:flex-start;gap:6px;">
+            <div>Pa&iacute;s: <span class="wf-badge wf-badge-blue">Colombia</span></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="wf-badge wf-badge-green">Pasaporte &check;</span>
+              <span class="wf-badge wf-badge-amber">Empadronamiento &uarr;</span>
+              <span class="wf-badge wf-badge-gray">Foto carnet</span>
+            </div>
+            <span class="wf-btn wf-btn-primary" style="margin-top:4px;">Enviar Documentaci&oacute;n</span>
+          </div>
+          <div class="wf-accordion-item">DNI <span style="font-size:9px;">&blacktriangleright;</span></div>
+          <div class="wf-accordion-item">Nacionalidad <span style="font-size:9px;">&blacktriangleright;</span></div>
+          <div class="wf-accordion-item">Arraigo <span style="font-size:9px;">&blacktriangleright;</span></div>
+          <div class="wf-accordion-item">Renovaci&oacute;n <span style="font-size:9px;">&blacktriangleright;</span></div>
+          <div class="wf-accordion-item">Reagrupaci&oacute;n <span style="font-size:9px;">&blacktriangleright;</span></div>
+        </div>
+        <div class="wf-box wf-box-muted" style="margin-top:8px;">
+          <div style="font-weight:600;margin-bottom:4px;">Expedientes activos</div>
+          <div style="display:flex;gap:6px;">
+            <span class="wf-badge wf-badge-blue">EXP-2026-0042</span>
+            <span class="wf-badge wf-badge-green">En proceso</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Lista tipo acorde&oacute;n con 6 tr&aacute;mites: NIE, DNI, Nacionalidad, Arraigo, Renovaci&oacute;n, Reagrupaci&oacute;n</li>
+    <li>Cada tr&aacute;mite expande: descripci&oacute;n, selector de pa&iacute;s, checklist de documentos</li>
+    <li>Bot&oacute;n de subida para cada documento requerido</li>
+    <li>Checkboxes de confirmaci&oacute;n y bot&oacute;n de env&iacute;o</li>
+    <li>Componente ExpedientesList muestra estado real del expediente desde la BD</li>
+    <li>Estados de documento: subido, pendiente, no subido</li>
+  </ul>
+</section>
+
+<!-- MENSAJES -->
+<section class="screen-doc" id="mensajes">
+  <h3>Mensajes <span class="screen-route">/mensajes</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/mensajes</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item">Dashboard</div>
+        <div class="wf-nav-item active">Mensajes</div>
+      </div>
+      <div class="wf-content" style="flex-direction:row;">
+        <div class="wf-chat-list wf-flex-1">
+          <div class="wf-chat-item active">Mar&iacute;a L&oacute;pez (Gestora) <span class="wf-badge wf-badge-red" style="margin-left:4px;">2</span></div>
+          <div class="wf-chat-item">Soporte WCE</div>
+        </div>
+        <div class="wf-col wf-flex-3" style="background:#fafbfc;border-radius:8px;padding:12px;">
+          <div style="font-weight:600;font-size:11px;border-bottom:1px solid var(--border);padding-bottom:6px;">Mar&iacute;a L&oacute;pez</div>
+          <div class="wf-col" style="flex:1;gap:8px;padding:8px 0;">
+            <div class="wf-chat-bubble received">Hola Juan, necesito el empadronamiento actualizado.</div>
+            <div class="wf-chat-bubble sent">De acuerdo, lo env&iacute;o hoy.</div>
+            <div class="wf-chat-bubble received">Perfecto, gracias.</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <div class="wf-input" style="flex:1;">Escribe un mensaje...</div>
+            <span class="wf-btn wf-btn-primary">Enviar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Interfaz de chat con lista de conversaciones a la izquierda</li>
+    <li>Mensajes bidireccionales con gestores</li>
+    <li>Badges de mensajes no le&iacute;dos</li>
+    <li>Actualizaci&oacute;n en tiempo real v&iacute;a Supabase Realtime</li>
+    <li>Almacenado en tabla <code>mensajes</code></li>
+  </ul>
+</section>
+
+<!-- ALERTAS -->
+<section class="screen-doc" id="alertas">
+  <h3>Alertas <span class="screen-route">/alertas</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/alertas</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item">Dashboard</div>
+        <div class="wf-nav-item active">Alertas</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header" style="display:flex;justify-content:space-between;align-items:center;">Alertas <span class="wf-btn wf-btn-outline" style="font-size:9px;">Marcar todas como le&iacute;das</span></div>
+        <div class="wf-col" style="gap:6px;">
+          <div class="wf-box wf-box-destructive" style="display:flex;justify-content:space-between;">
+            <span><span class="wf-badge wf-badge-red">Urgente</span> Documentaci&oacute;n vencida &mdash; NIE</span>
+            <span style="font-size:9px;">Hace 2h</span>
+          </div>
+          <div class="wf-box wf-box-warning" style="display:flex;justify-content:space-between;">
+            <span><span class="wf-badge wf-badge-amber">Recordatorio</span> Cita programada para el 15/04</span>
+            <span style="font-size:9px;">Hace 1d</span>
+          </div>
+          <div class="wf-box wf-box-muted" style="display:flex;justify-content:space-between;opacity:0.6;">
+            <span><span class="wf-badge wf-badge-gray">Resoluci&oacute;n</span> Su tr&aacute;mite ha sido aprobado</span>
+            <span style="font-size:9px;">Hace 3d &check;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Tipos de alerta: <code>urgente</code>, <code>recordatorio</code>, <code>presentacion_pendiente</code>, <code>resolucion</code></li>
+    <li>Estados: le&iacute;da / no le&iacute;da con indicador visual</li>
+    <li>Bot&oacute;n &laquo;Marcar todas como le&iacute;das&raquo;</li>
+    <li>Ordenadas por fecha, m&aacute;s recientes primero</li>
+    <li>Codificaci&oacute;n por colores seg&uacute;n tipo</li>
+  </ul>
+</section>
+
+<!-- SUSCRIPCION -->
+<section class="screen-doc" id="suscripcion">
+  <h3>Suscripci&oacute;n <span class="screen-route">/suscripcion</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/suscripcion</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item active">Suscripci&oacute;n</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Mi Suscripci&oacute;n</div>
+        <div class="wf-box wf-box-primary">
+          <div style="font-weight:700;font-size:13px;color:var(--primary);">Plan Premium</div>
+          <div style="font-size:10px;margin-top:4px;">49,00 &euro;/mes &middot; Pr&oacute;xima facturaci&oacute;n: 01/05/2026</div>
+        </div>
+        <div class="wf-grid wf-grid-2">
+          <div class="wf-box wf-box-muted">
+            <div style="font-weight:600;">M&eacute;todo de pago</div>
+            <div>VISA **** 4242</div>
+          </div>
+          <div class="wf-box wf-box-muted">
+            <div style="font-weight:600;">Renovaci&oacute;n autom&aacute;tica</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><span class="wf-toggle"></span> Activada</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Detalles del plan activo con precio</li>
+    <li>M&eacute;todo de pago registrado</li>
+    <li>Fecha de pr&oacute;xima facturaci&oacute;n</li>
+    <li>Toggle de renovaci&oacute;n autom&aacute;tica</li>
+    <li>Datos desde tabla <code>suscripciones</code></li>
+  </ul>
+</section>
+
+<!-- FACTURAS -->
+<section class="screen-doc" id="facturas">
+  <h3>Facturas <span class="screen-route">/facturas</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/facturas</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item active">Facturas</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Mis Facturas</div>
+        <table class="wf-table">
+          <thead>
+            <tr><th>N&uacute;mero</th><th>Periodo</th><th>Concepto</th><th>Base</th><th>IVA</th><th>Total</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>F-2026-012</td><td>Mar 2026</td><td>Plan Premium</td><td>40,50&euro;</td><td>8,50&euro;</td><td>49,00&euro;</td>
+              <td><span class="wf-badge wf-badge-green">Pagada</span></td>
+            </tr>
+            <tr>
+              <td>F-2026-011</td><td>Feb 2026</td><td>Plan Premium</td><td>40,50&euro;</td><td>8,50&euro;</td><td>49,00&euro;</td>
+              <td><span class="wf-badge wf-badge-green">Pagada</span></td>
+            </tr>
+            <tr>
+              <td>F-2026-010</td><td>Ene 2026</td><td>Plan Premium</td><td>40,50&euro;</td><td>8,50&euro;</td><td>49,00&euro;</td>
+              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Tabla con columnas: n&uacute;mero, periodo, concepto, base imponible, IVA, total, estado, fecha</li>
+    <li>Estados: <code>pagada</code>, <code>pendiente</code>, <code>fallida</code>, <code>cancelada</code></li>
+    <li>Codificaci&oacute;n por colores seg&uacute;n estado</li>
+    <li>Datos desde tabla <code>facturas</code></li>
+  </ul>
+</section>
+
+<!-- CITAS -->
+<section class="screen-doc" id="citas">
+  <h3>Citas <span class="screen-route">/citas</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-user">User</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/citas</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar">
+        <div class="wf-logo">WCE Welcome</div>
+        <div class="wf-nav-item active">Citas</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Mis Citas</div>
+        <div class="wf-col" style="gap:8px;">
+          <div class="wf-box wf-box-primary" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <span class="wf-badge wf-badge-blue">Videollamada</span>
+              <span style="font-weight:600;margin-left:6px;">Revisi&oacute;n expediente NIE</span>
+              <div style="font-size:9px;margin-top:4px;">15/04/2026 &middot; 10:00 &middot; 30 min &middot; Mar&iacute;a L&oacute;pez</div>
+            </div>
+            <span class="wf-badge wf-badge-green">Confirmada</span>
+          </div>
+          <div class="wf-box wf-box-muted" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <span class="wf-badge wf-badge-gray">Presencial</span>
+              <span style="font-weight:600;margin-left:6px;">Firma de documentos</span>
+              <div style="font-size:9px;margin-top:4px;">22/04/2026 &middot; 16:00 &middot; 45 min &middot; Carlos Ruiz</div>
+            </div>
+            <span class="wf-badge wf-badge-amber">Pendiente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Lista de citas pr&oacute;ximas con detalles</li>
+    <li>Tipos: <code>llamada</code>, <code>videollamada</code>, <code>presencial</code>, <code>reuni&oacute;n</code></li>
+    <li>Muestra: tipo, estado, fecha, duraci&oacute;n, nombre del asesor</li>
+    <li>Datos desde tabla <code>citas</code></li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     SECTION 4: PANEL ADMIN/GESTOR
+     ============================================================ -->
+<h2 id="panel-admin">Panel Admin / Gestor</h2>
+<p class="section-intro">Panel de gesti&oacute;n (AdminRoute + AdminLayout). Barra lateral oscura. Los gestores ven solo los datos de sus expedientes asignados; los admins ven todo.</p>
+
+<!-- ADMIN DASHBOARD -->
+<section class="screen-doc" id="admin-dashboard">
+  <h3>Dashboard Admin <span class="screen-route">/admin</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Dashboard</div>
+        <div class="wf-nav-item">Expedientes</div>
+        <div class="wf-nav-item">Mensajes</div>
+        <div class="wf-nav-item">Alertas</div>
+        <div class="wf-nav-item">Citas</div>
+        <div class="wf-nav-item">Facturaci&oacute;n</div>
+        <div class="wf-nav-item">Pre-inscritos</div>
+        <div class="wf-nav-item">Usuarios</div>
+        <div class="wf-nav-item">Config</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Panel de Gesti&oacute;n</div>
+        <!-- KPI Cards -->
+        <div class="wf-grid wf-grid-4">
+          <div class="wf-box wf-box-primary wf-kpi">
+            <div class="wf-kpi-value">47</div>
+            <div class="wf-kpi-label">Expedientes Activos</div>
+          </div>
+          <div class="wf-box wf-box-warning wf-kpi">
+            <div class="wf-kpi-value">12</div>
+            <div class="wf-kpi-label">Pendientes Revisi&oacute;n</div>
+          </div>
+          <div class="wf-box wf-box-success wf-kpi">
+            <div class="wf-kpi-value">8</div>
+            <div class="wf-kpi-label">Citas Semana</div>
+          </div>
+          <div class="wf-box wf-box-destructive wf-kpi">
+            <div class="wf-kpi-value">3</div>
+            <div class="wf-kpi-label">Alertas Urgentes</div>
+          </div>
+        </div>
+        <!-- Workload (admin only) -->
+        <div class="wf-box wf-box-muted">
+          <div style="font-weight:600;font-size:11px;margin-bottom:8px;">Carga de Trabajo por Gestor <span class="wf-badge wf-badge-red" style="font-size:8px;">Solo Admin</span></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="width:80px;font-size:10px;">Mar&iacute;a L.</span>
+            <div class="wf-progress" style="flex:1;"><div class="wf-progress-bar" style="width:75%;background:var(--primary);"></div></div>
+            <span style="font-size:10px;">15 exp.</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:80px;font-size:10px;">Carlos R.</span>
+            <div class="wf-progress" style="flex:1;"><div class="wf-progress-bar" style="width:45%;background:var(--success);"></div></div>
+            <span style="font-size:10px;">9 exp.</span>
+          </div>
+        </div>
+        <!-- Quick actions -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="wf-btn wf-btn-primary">+ Nuevo Expediente</span>
+          <span class="wf-btn wf-btn-outline">Alerta Masiva</span>
+          <span class="wf-btn wf-btn-outline">Ver Agenda</span>
+          <span class="wf-btn wf-btn-outline" style="opacity:0.5;">Generar Informe</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>4 tarjetas KPI: expedientes activos, pendientes revisi&oacute;n, citas semana, alertas urgentes</li>
+    <li>Tarjeta de carga de trabajo por gestor con barras de progreso (solo admin)</li>
+    <li>Tabla de expedientes con columna de gestor</li>
+    <li>Acciones r&aacute;pidas: Nuevo expediente (di&aacute;logo), Alerta masiva (batch insert), Ver agenda, Generar informe (deshabilitado)</li>
+    <li>Modal de detalle con estado, gestor, notas y documentos</li>
+    <li>Bot&oacute;n de eliminar expediente (solo admin)</li>
+  </ul>
+</section>
+
+<!-- ADMIN EXPEDIENTES -->
+<section class="screen-doc" id="admin-expedientes">
+  <h3>Expedientes <span class="screen-route">/admin/expedientes</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/expedientes</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item">Dashboard</div>
+        <div class="wf-nav-item active">Expedientes</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Expedientes</div>
+        <!-- Filters -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+          <span class="wf-badge wf-badge-blue" style="cursor:pointer;">Todos</span>
+          <span class="wf-badge wf-badge-green">En proceso</span>
+          <span class="wf-badge wf-badge-amber">Pendiente</span>
+          <span class="wf-badge wf-badge-red">Urgente</span>
+          <span class="wf-badge wf-badge-gray">Completado</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <div class="wf-input" style="flex:1;">Buscar expediente...</div>
+          <div class="wf-input" style="width:140px;">Filtrar por gestor <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
+        </div>
+        <table class="wf-table">
+          <thead>
+            <tr><th>Tr&aacute;mite</th><th>N&uacute;mero</th><th>Estado</th><th>Gestor</th><th>Pa&iacute;s</th><th>Docs</th><th>Fecha</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>NIE</td><td>EXP-2026-0042</td>
+              <td><span class="wf-badge wf-badge-green">En proceso</span></td>
+              <td>Mar&iacute;a L.</td><td>Colombia</td><td>3/5</td><td>10/04</td>
+            </tr>
+            <tr>
+              <td>Arraigo</td><td>EXP-2026-0041</td>
+              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
+              <td>Carlos R.</td><td>Venezuela</td><td>1/4</td><td>09/04</td>
+            </tr>
+            <tr>
+              <td>Nacionalidad</td><td>EXP-2026-0040</td>
+              <td><span class="wf-badge wf-badge-red">Urgente</span></td>
+              <td>Mar&iacute;a L.</td><td>Ecuador</td><td>4/4</td><td>08/04</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Filtros por estado con pills de colores</li>
+    <li>Barra de b&uacute;squeda por nombre/n&uacute;mero</li>
+    <li>Filtro por gestor (solo visible para admin)</li>
+    <li>Tabla completa: tr&aacute;mite, n&uacute;mero, estado, gestor, pa&iacute;s, documentos, fecha</li>
+    <li>Modal de detalle igual al del dashboard</li>
+    <li>Bot&oacute;n de eliminar (solo admin)</li>
+    <li>Gestor ve solo expedientes donde <code>advisor_id = self</code></li>
+  </ul>
+</section>
+
+<!-- ADMIN MENSAJES -->
+<section class="screen-doc" id="admin-mensajes">
+  <h3>Mensajes Admin <span class="screen-route">/admin/mensajes</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/mensajes</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item">Dashboard</div>
+        <div class="wf-nav-item active">Mensajes</div>
+      </div>
+      <div class="wf-content" style="flex-direction:row;">
+        <div class="wf-chat-list wf-flex-1">
+          <div class="wf-chat-item active">Juan Garc&iacute;a <span class="wf-badge wf-badge-red" style="margin-left:4px;">1</span></div>
+          <div class="wf-chat-item">Ana Mart&iacute;nez</div>
+          <div class="wf-chat-item">Pedro Su&aacute;rez</div>
+        </div>
+        <div class="wf-col wf-flex-3" style="background:#fafbfc;border-radius:8px;padding:12px;">
+          <div style="font-weight:600;font-size:11px;border-bottom:1px solid var(--border);padding-bottom:6px;">Juan Garc&iacute;a &middot; EXP-2026-0042</div>
+          <div class="wf-col" style="flex:1;gap:8px;padding:8px 0;">
+            <div class="wf-chat-bubble sent">Hola Juan, necesito el empadronamiento.</div>
+            <div class="wf-chat-bubble received">Lo env&iacute;o hoy.</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <div class="wf-input" style="flex:1;">Responder...</div>
+            <span class="wf-btn wf-btn-primary">Enviar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Sidebar de conversaciones + &aacute;rea de chat</li>
+    <li>Gestores ven solo sus conversaciones propias</li>
+    <li>Admin ve todas las conversaciones del sistema</li>
+    <li>Vinculaci&oacute;n con expediente en el encabezado del chat</li>
+  </ul>
+</section>
+
+<!-- ADMIN ALERTAS -->
+<section class="screen-doc" id="admin-alertas">
+  <h3>Alertas Admin <span class="screen-route">/admin/alertas</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/alertas</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Alertas</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Alertas</div>
+        <div class="wf-grid wf-grid-3" style="margin-bottom:8px;">
+          <div class="wf-box wf-box-muted wf-kpi">
+            <div class="wf-kpi-value">24</div>
+            <div class="wf-kpi-label">Total</div>
+          </div>
+          <div class="wf-box wf-box-warning wf-kpi">
+            <div class="wf-kpi-value">8</div>
+            <div class="wf-kpi-label">No Le&iacute;das</div>
+          </div>
+          <div class="wf-box wf-box-destructive wf-kpi">
+            <div class="wf-kpi-value">3</div>
+            <div class="wf-kpi-label">Urgentes</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <span class="wf-badge wf-badge-blue">Todas</span>
+          <span class="wf-badge wf-badge-red">Urgente</span>
+          <span class="wf-badge wf-badge-amber">Recordatorio</span>
+          <span class="wf-badge wf-badge-gray">No le&iacute;das</span>
+        </div>
+        <div class="wf-col" style="gap:4px;">
+          <div class="wf-box wf-box-destructive" style="display:flex;justify-content:space-between;align-items:center;">
+            <span><span class="wf-badge wf-badge-red">Urgente</span> Vencimiento EXP-0042</span>
+            <span class="wf-btn wf-btn-destructive" style="font-size:8px;">Eliminar</span>
+          </div>
+          <div class="wf-box wf-box-warning" style="display:flex;justify-content:space-between;align-items:center;">
+            <span><span class="wf-badge wf-badge-amber">Recordatorio</span> Cita pendiente &mdash; Ana M.</span>
+            <span class="wf-btn wf-btn-destructive" style="font-size:8px;">Eliminar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Tarjetas estad&iacute;sticas: total, no le&iacute;das, urgentes</li>
+    <li>Filtros por tipo y estado de lectura</li>
+    <li>Lista con bot&oacute;n de eliminar por alerta</li>
+    <li>Gestor ve solo alertas de expedientes asignados (inner join con <code>expedientes.advisor_id</code>)</li>
+  </ul>
+</section>
+
+<!-- ADMIN CITAS -->
+<section class="screen-doc" id="admin-citas">
+  <h3>Citas Admin <span class="screen-route">/admin/citas</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/citas</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Citas</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Citas</div>
+        <div class="wf-grid wf-grid-3" style="margin-bottom:8px;">
+          <div class="wf-box wf-box-primary wf-kpi">
+            <div class="wf-kpi-value">3</div>
+            <div class="wf-kpi-label">Hoy</div>
+          </div>
+          <div class="wf-box wf-box-success wf-kpi">
+            <div class="wf-kpi-value">8</div>
+            <div class="wf-kpi-label">Pr&oacute;ximas</div>
+          </div>
+          <div class="wf-box wf-box-muted wf-kpi">
+            <div class="wf-kpi-value">156</div>
+            <div class="wf-kpi-label">Total</div>
+          </div>
+        </div>
+        <table class="wf-table">
+          <thead>
+            <tr><th>Tipo</th><th>Cliente</th><th>Fecha</th><th>Duraci&oacute;n</th><th>Estado</th><th>Acci&oacute;n</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="wf-badge wf-badge-blue">Videollamada</span></td>
+              <td>Juan G.</td><td>15/04 10:00</td><td>30 min</td>
+              <td><span class="wf-badge wf-badge-green">Confirmada</span></td>
+              <td><span style="font-size:9px;color:var(--primary);cursor:pointer;">Cambiar &blacktriangledown;</span></td>
+            </tr>
+            <tr>
+              <td><span class="wf-badge wf-badge-gray">Presencial</span></td>
+              <td>Ana M.</td><td>16/04 16:00</td><td>45 min</td>
+              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
+              <td><span style="font-size:9px;color:var(--primary);cursor:pointer;">Cambiar &blacktriangledown;</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Estad&iacute;sticas: citas de hoy, pr&oacute;ximas y total</li>
+    <li>Tabla con tipo, cliente, fecha, duraci&oacute;n, estado</li>
+    <li>Dropdown de cambio de estado por cita</li>
+    <li>Gestor ve solo sus citas (filtrado por <code>advisor_id</code>)</li>
+  </ul>
+</section>
+
+<!-- ADMIN FACTURACION -->
+<section class="screen-doc" id="admin-facturacion">
+  <h3>Facturaci&oacute;n <span class="screen-route">/admin/facturacion</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/facturacion</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Facturaci&oacute;n</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Facturaci&oacute;n</div>
+        <div class="wf-grid wf-grid-4" style="margin-bottom:8px;">
+          <div class="wf-box wf-box-success wf-kpi">
+            <div class="wf-kpi-value">12.450&euro;</div>
+            <div class="wf-kpi-label">Facturado Mes <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
+          </div>
+          <div class="wf-box wf-box-primary wf-kpi">
+            <div class="wf-kpi-value">2.350&euro;</div>
+            <div class="wf-kpi-label">Pendiente <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
+          </div>
+          <div class="wf-box wf-box-warning wf-kpi">
+            <div class="wf-kpi-value">3</div>
+            <div class="wf-kpi-label">Fallidas <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
+          </div>
+          <div class="wf-box wf-box-muted wf-kpi">
+            <div class="wf-kpi-value">89</div>
+            <div class="wf-kpi-label">Total Facturas</div>
+          </div>
+        </div>
+        <table class="wf-table">
+          <thead>
+            <tr><th>N&uacute;mero</th><th>Cliente</th><th>Concepto</th><th>Total</th><th>Estado</th><th>Fecha</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>F-2026-089</td><td>Juan G.</td><td>Plan Premium</td><td>49,00&euro;</td>
+              <td><span class="wf-badge wf-badge-green">Pagada</span></td><td>01/04</td>
+            </tr>
+            <tr>
+              <td>F-2026-088</td><td>Ana M.</td><td>Plan B&aacute;sico</td><td>29,00&euro;</td>
+              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td><td>01/04</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Tarjetas de totales: facturado mes, pendiente, fallidas (visibles SOLO para admin)</li>
+    <li>Tabla general de facturas para admin y gestor</li>
+    <li>Columnas: n&uacute;mero, cliente, concepto, total, estado, fecha</li>
+  </ul>
+</section>
+
+<!-- ADMIN PREINSCRITOS -->
+<section class="screen-doc" id="admin-preinscritos">
+  <h3>Pre-inscritos <span class="screen-route">/admin/preinscritos</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+    <span class="badge badge-gestor">Gestor</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/preinscritos</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Pre-inscritos</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Pre-inscritos (Leads)</div>
+        <table class="wf-table">
+          <thead>
+            <tr><th>Nombre</th><th>Email</th><th>Tel.</th><th>Pa&iacute;s</th><th>Necesidad</th><th>Fecha</th><th>Gestor</th><th>Estado</th><th>Acciones</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Luis P&eacute;rez</td><td>luis@mail.com</td><td>+34 612...</td><td>Per&uacute;</td><td>NIE</td><td>10/04</td>
+              <td>
+                <span style="font-size:9px;color:var(--primary);">Asignar &blacktriangledown; <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></span>
+              </td>
+              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
+              <td>
+                <span class="wf-btn wf-btn-primary" style="font-size:8px;">Convertir <span class="wf-badge wf-badge-red" style="font-size:6px;">Admin</span></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Rosa D&iacute;az</td><td>rosa@mail.com</td><td>+34 655...</td><td>Bolivia</td><td>Arraigo</td><td>09/04</td>
+              <td>Mar&iacute;a L.</td>
+              <td><span class="wf-badge wf-badge-green">Convertido</span></td>
+              <td><span style="font-size:9px;color:var(--muted);">EXP-0041</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Tabla de leads: nombre, email, tel&eacute;fono, pa&iacute;s, necesidad, fecha, gestor, estado, acciones</li>
+    <li>Dropdown para asignar gestor (solo admin)</li>
+    <li>Bot&oacute;n &laquo;Convertir&raquo; a expediente con di&aacute;logo de selecci&oacute;n de tr&aacute;mite (solo admin)</li>
+    <li>Estados: <code>pending</code>, <code>converted</code></li>
+    <li>Datos desde tabla <code>leads</code></li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     SECTION 5: SOLO ADMIN
+     ============================================================ -->
+<h2 id="solo-admin">Solo Admin</h2>
+<p class="section-intro">Pantallas protegidas por AdminOnlyRoute. Acceso exclusivo para el rol admin. Gesti&oacute;n de usuarios y configuraci&oacute;n global del sistema.</p>
+
+<!-- USUARIOS -->
+<section class="screen-doc" id="admin-usuarios">
+  <h3>Usuarios <span class="screen-route">/admin/usuarios</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/usuarios</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Usuarios</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Gesti&oacute;n de Usuarios</div>
+        <table class="wf-table">
+          <thead>
+            <tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Fecha Registro</th><th>Acci&oacute;n</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Juan Garc&iacute;a</td><td>juan@mail.com</td>
+              <td><span class="wf-badge wf-badge-green">user</span></td>
+              <td>01/01/2026</td>
+              <td><span style="font-size:9px;color:var(--primary);">Cambiar Rol &blacktriangledown;</span></td>
+            </tr>
+            <tr>
+              <td>Mar&iacute;a L&oacute;pez</td><td>maria@wce.com</td>
+              <td><span class="wf-badge wf-badge-blue">gestor</span></td>
+              <td>15/09/2025</td>
+              <td><span style="font-size:9px;color:var(--primary);">Cambiar Rol &blacktriangledown;</span></td>
+            </tr>
+            <tr>
+              <td>Admin WCE</td><td>admin@wce.com</td>
+              <td><span class="wf-badge wf-badge-red">admin</span></td>
+              <td>01/01/2025</td>
+              <td><span style="font-size:9px;color:var(--muted);">&mdash;</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="wf-box wf-box-warning" style="margin-top:8px;font-size:10px;">
+          Di&aacute;logo de confirmaci&oacute;n: &laquo;&iquest;Cambiar rol de Juan Garc&iacute;a a gestor?&raquo;<br>
+          Usa funci&oacute;n <code>SECURITY DEFINER</code> en PostgreSQL.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Tabla de todos los usuarios: nombre, email, rol, fecha de registro</li>
+    <li>Dropdown de cambio de rol con di&aacute;logo de confirmaci&oacute;n</li>
+    <li>Utiliza funci&oacute;n <code>SECURITY DEFINER</code> para cambios de rol seguros</li>
+    <li>Acceso exclusivo para admin (AdminOnlyRoute)</li>
+  </ul>
+</section>
+
+<!-- CONFIGURACION -->
+<section class="screen-doc" id="admin-configuracion">
+  <h3>Configuraci&oacute;n <span class="screen-route">/admin/configuracion</span></h3>
+  <div class="roles-row">
+    <span class="badge badge-admin">Admin</span>
+  </div>
+
+  <div class="wireframe">
+    <div class="wireframe-title-bar">
+      <div class="wireframe-dots"><span></span><span></span><span></span></div>
+      <div class="wireframe-url">app.wcewelcome.com/admin/configuracion</div>
+    </div>
+    <div class="wireframe-body">
+      <div class="wf-sidebar wf-sidebar-dark">
+        <div class="wf-logo">WCE Admin</div>
+        <div class="wf-nav-item active">Config</div>
+      </div>
+      <div class="wf-content">
+        <div class="wf-header">Configuraci&oacute;n</div>
+        <div class="wf-col" style="gap:12px;">
+          <!-- Datos empresa -->
+          <div class="wf-box wf-box-muted">
+            <div style="font-weight:700;font-size:11px;margin-bottom:8px;">Datos de la Empresa</div>
+            <div class="wf-grid wf-grid-2" style="gap:6px;">
+              <div class="wf-input">Nombre: WCE Welcome S.L.</div>
+              <div class="wf-input">Email: info@wcewelcome.com</div>
+              <div class="wf-input">Tel&eacute;fono: +34 93 XXX XX XX</div>
+              <div class="wf-input">CIF: B12345678</div>
+            </div>
+          </div>
+          <!-- Notificaciones -->
+          <div class="wf-box wf-box-muted">
+            <div style="font-weight:700;font-size:11px;margin-bottom:8px;">Notificaciones</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;">
+              <span>Email al crear expediente</span> <span class="wf-toggle"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;">
+              <span>Alerta al gestor asignado</span> <span class="wf-toggle"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;">
+              <span>Resumen semanal</span> <span class="wf-toggle off"></span>
+            </div>
+          </div>
+          <!-- Seguridad -->
+          <div class="wf-box wf-box-muted">
+            <div style="font-weight:700;font-size:11px;margin-bottom:8px;">Seguridad</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;">
+              <span>Autenticaci&oacute;n 2FA</span> <span class="wf-toggle off"></span>
+            </div>
+            <div style="font-size:10px;">Registro de actividad: <span class="wf-badge wf-badge-green">Activo</span></div>
+          </div>
+          <!-- Apariencia & DB -->
+          <div class="wf-row">
+            <div class="wf-box wf-box-muted wf-flex-1">
+              <div style="font-weight:700;font-size:11px;margin-bottom:4px;">Apariencia</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;">
+                <span>Modo oscuro</span> <span class="wf-toggle off"></span>
+              </div>
+            </div>
+            <div class="wf-box wf-box-muted wf-flex-1">
+              <div style="font-weight:700;font-size:11px;margin-bottom:4px;">Base de Datos</div>
+              <div style="font-size:10px;">Estado: <span class="wf-badge wf-badge-green">Conectada</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Datos de empresa: nombre, email, tel&eacute;fono, CIF</li>
+    <li>Notificaciones: toggles para cada tipo de notificaci&oacute;n</li>
+    <li>Seguridad: 2FA y registro de actividad</li>
+    <li>Apariencia: modo oscuro</li>
+    <li>Base de datos: indicador de estado de conexi&oacute;n</li>
+    <li>Persiste en tabla <code>app_settings</code></li>
+  </ul>
+</section>
+
+<!-- ============================================================
+     SECTION 6: FLUJOS
+     ============================================================ -->
+<h2 id="flujos">Flujos de Trabajo</h2>
+<p class="section-intro">Flujos principales del sistema que conectan las diferentes pantallas y roles.</p>
+
+<!-- FLUJO PRE-INSCRIPCION -->
+<section class="screen-doc" id="flujo-preinscripcion">
+  <h3>Pre-inscripci&oacute;n &rarr; Lead &rarr; Expediente</h3>
+
+  <div class="flow">
+    <div class="flow-step">FormularioExpress<br><small>(p&uacute;blico en /login)</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">Tabla <code>leads</code><br><small>estado: pending</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step highlight">Admin asigna gestor<br><small>/admin/preinscritos</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step highlight">Selecciona tr&aacute;mite<br><small>di&aacute;logo con cat&aacute;logo</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">Convierte a expediente<br><small>tabla <code>expedientes</code></small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">Gestor notificado<br><small>alerta autom&aacute;tica</small></div>
+  </div>
+
+  <ul class="feature-list">
+    <li>El usuario se pre-inscribe v&iacute;a FormularioExpress en la pesta&ntilde;a de login</li>
+    <li>Se crea un registro en la tabla <code>leads</code> con estado <code>pending</code></li>
+    <li>El admin ve el lead en <code>/admin/preinscritos</code> y asigna un gestor</li>
+    <li>El admin selecciona el tipo de tr&aacute;mite desde el cat&aacute;logo (<code>tramites_catalog</code>)</li>
+    <li>Al convertir, se crea un expediente en la tabla <code>expedientes</code></li>
+    <li>Se genera una alerta autom&aacute;tica para el gestor asignado</li>
+  </ul>
+</section>
+
+<!-- FLUJO ASIGNACION -->
+<section class="screen-doc" id="flujo-asignacion">
+  <h3>Asignaci&oacute;n de Gestor</h3>
+
+  <div class="flow">
+    <div class="flow-step highlight">Admin abre modal<br><small>expediente detalle</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">Selecciona gestor<br><small>dropdown de gestores</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">Guarda <code>advisor_id</code><br><small>en expediente</small></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">Auto-alerta creada<br><small>tabla <code>alertas</code></small></div>
+  </div>
+
+  <ul class="feature-list">
+    <li>Admin selecciona gestor en el modal de detalle del expediente</li>
+    <li>Se actualiza el campo <code>advisor_id</code> en el expediente</li>
+    <li>Se crea autom&aacute;ticamente una alerta para el gestor asignado</li>
+    <li>El gestor puede ver inmediatamente el expediente en su panel</li>
+  </ul>
+</section>
+
+<!-- FLUJO MULTI-GESTOR -->
+<section class="screen-doc" id="flujo-multigestor">
+  <h3>Multi-gestor Scoping</h3>
+
+  <div class="card">
+    <p style="margin-bottom:16px;">Cada gestor ve <strong>exclusivamente</strong> los datos vinculados a sus expedientes asignados. El scoping se aplica en todas las pantallas del panel admin/gestor:</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Pantalla</th><th>Filtro para Gestor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Expedientes</td><td><code>expedientes.advisor_id = auth.uid()</code></td></tr>
+          <tr><td>Citas</td><td><code>citas.advisor_id = auth.uid()</code></td></tr>
+          <tr><td>Mensajes</td><td><code>mensajes.sender_id = uid OR receiver_id = uid</code></td></tr>
+          <tr><td>Alertas</td><td><code>INNER JOIN expedientes ON alertas.expediente_id = expedientes.id WHERE expedientes.advisor_id = auth.uid()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="feature-list">
+      <li>Expedientes: filtrado por <code>advisor_id</code></li>
+      <li>Citas: filtrado por <code>advisor_id</code></li>
+      <li>Mensajes: filtrado por <code>sender_id</code> o <code>receiver_id</code></li>
+      <li>Alertas: inner join con expedientes por <code>advisor_id</code></li>
+      <li>El admin siempre ve todos los datos sin restricci&oacute;n</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Footer -->
+<div style="margin-top:64px;padding-top:24px;border-top:2px solid var(--border);text-align:center;color:var(--muted);font-size:13px;">
+  <p>WCE Welcome &mdash; Immigration &amp; Foreign Affairs</p>
+  <p style="font-size:11px;">Documentaci&oacute;n del proyecto &middot; Abril 2026 &middot; Barcelona</p>
+</div>
+
+</div><!-- /content -->
+</main>
+
+<script>
+// Sidebar toggle for mobile
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.querySelector('.sidebar-overlay').classList.toggle('active');
+}
+
+// Active nav link highlighting
+document.addEventListener('scroll', function() {
+  const sections = document.querySelectorAll('section[id], h2[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  let current = '';
+
+  sections.forEach(function(section) {
+    const top = section.offsetTop;
+    if (window.scrollY >= top - 100) {
+      current = section.getAttribute('id');
+    }
+  });
+
+  navLinks.forEach(function(link) {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+
+// Close sidebar on nav click (mobile)
+document.querySelectorAll('.nav-link').forEach(function(link) {
+  link.addEventListener('click', function() {
+    if (window.innerWidth <= 900) {
+      document.getElementById('sidebar').classList.remove('open');
+      document.querySelector('.sidebar-overlay').classList.remove('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
