@@ -1,25 +1,13 @@
 
 
-## Plan: Añadir checkbox de consentimiento al Formulario Express
+## Plan: Remove user card from Dashboard
 
-### Cambio
+The left-column user card (avatar, name, nationality, email) takes up significant space and duplicates info already visible in the top nav.
 
-Agregar un checkbox obligatorio antes del botón "Enviar solicitud" con el texto:
+### Changes
 
-> ☐ Acepto la [política de privacidad](https://go-welcome.com/politica-de-privacidad/)
-
-### Archivo a modificar
-
-**`src/components/FormularioExpress.tsx`**
-
-1. Añadir estado `consentimiento` (boolean, default `false`)
-2. Antes del botón de envío, insertar un bloque con `Checkbox` de shadcn/ui + label con link externo a la política de privacidad
-3. En `handleSubmit`, validar que `consentimiento === true` antes de enviar (mostrar error si no está marcado)
-4. Deshabilitar el botón "Enviar solicitud" si el checkbox no está marcado
-
-### Detalles técnicos
-
-- Usar el componente `Checkbox` existente en `src/components/ui/checkbox.tsx`
-- El link abre en nueva pestaña (`target="_blank" rel="noopener noreferrer"`)
-- No se añaden dependencias nuevas
+**`src/pages/Dashboard.tsx`**
+- Remove the entire left column `<div className="w-64 shrink-0 hidden lg:block">` block with the user card
+- Simplify the outer container from `flex gap-6` to just the cards grid (remove the flex wrapper since there's only one column now)
+- Keep all dashboard cards and the CTA banner as-is
 
