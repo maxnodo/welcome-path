@@ -104,7 +104,7 @@ const AdminDashboard = () => {
   }, []);
 
   // Workload data (admin only)
-  const workloadData = gestores.map(g => {
+  const workloadData = gestores.filter(g => g.role !== 'admin').map(g => {
     const assigned = expedientes.filter(e => e.advisor_id === g.id);
     const active = assigned.filter(e => !INACTIVE_STATUSES.includes(e.status)).length;
     const pendingReview = assigned.filter(e => e.status === "en_revision").length;
