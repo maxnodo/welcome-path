@@ -252,15 +252,16 @@ const Tramites = () => {
     return s;
   });
 
-  // Derive statuses from real expediente data
+  // Derive statuses and counts from real expediente data
   const statuses: Record<string, Status> = {};
+  const expedienteCounts: Record<string, number> = {};
   tramites.forEach((t) => {
     const code = tramiteIdToCode[t.id];
     const matching = expedientes.filter(e => e.tramite_code === code);
+    expedienteCounts[t.id] = matching.length;
     if (matching.length === 0) {
       statuses[t.id] = "no_iniciado";
     } else {
-      // Pick the most relevant (highest priority) status
       const best = matching.reduce((prev, curr) => {
         const prevStatus = mapDbStatus(prev.status);
         const currStatus = mapDbStatus(curr.status);
@@ -319,6 +320,7 @@ const Tramites = () => {
           const isOpen = expanded === t.id;
           const st = states[t.id];
           const status = statuses[t.id];
+          const count = expedienteCounts[t.id] ?? 0;
           const { label: statusLabel, color: statusColor } = statusConfig[status];
           const allDocs = getAllDocs(t, st);
 
@@ -334,6 +336,11 @@ const Tramites = () => {
                 </span>
                 <span className="flex-1 font-medium text-foreground">{t.name}</span>
                 <span className="flex items-center gap-2 text-xs text-muted-foreground shrink-0">
+                  {count > 1 && (
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+                      {count}
+                    </span>
+                  )}
                   <span className={`w-2.5 h-2.5 rounded-full ${statusColor}`} />
                   {statusLabel}
                 </span>
