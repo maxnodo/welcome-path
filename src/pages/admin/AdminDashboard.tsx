@@ -122,7 +122,7 @@ const AdminDashboard = () => {
     return { ...g, active, pendingReview, weeklyCitas, total: assigned.length };
   });
 
-  const maxActive = Math.max(...workloadData.map(w => w.active), 1);
+  
 
   const kpis = [
     { label: "Expedientes activos", value: expedientes.filter(e => !INACTIVE_STATUSES.includes(e.status)).length, icon: Users, color: "text-secondary bg-secondary/10" },
