@@ -8,6 +8,12 @@ export interface Gestor {
   role: string
 }
 
+export function getGestorName(gestores: Gestor[], advisorId: string | null): string {
+  if (!advisorId) return "Sin asignar";
+  const g = gestores.find(g => g.id === advisorId);
+  return g?.full_name ?? g?.email ?? "Desconocido";
+}
+
 export function useGestores() {
   const [gestores, setGestores] = useState<Gestor[]>([])
   const [loading, setLoading] = useState(true)
