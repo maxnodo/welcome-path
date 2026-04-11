@@ -23,9 +23,10 @@ const docStatusConfig: Record<DocumentoStatus, { label: string; color: string }>
 
 interface ExpedientesListProps {
   expedientes: Expediente[];
+  advisorNames?: Map<string, string>;
 }
 
-export function ExpedientesList({ expedientes }: ExpedientesListProps) {
+export function ExpedientesList({ expedientes, advisorNames }: ExpedientesListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (expedientes.length === 0) return null;
@@ -67,9 +68,9 @@ export function ExpedientesList({ expedientes }: ExpedientesListProps) {
                     Creado {dateStr}
                     {exp.origin_country ? ` · ${exp.origin_country}` : ""}
                     {exp.solicitud_type ? ` · ${exp.solicitud_type}` : ""}
-                    {exp.advisor?.full_name && (
+                    {exp.advisor_id && advisorNames?.get(exp.advisor_id) && (
                       <span className="inline-flex items-center gap-1 ml-1">
-                        · <User size={10} className="inline" /> {exp.advisor.full_name}
+                        · <User size={10} className="inline" /> {advisorNames.get(exp.advisor_id)}
                       </span>
                     )}
                   </p>

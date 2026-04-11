@@ -9,6 +9,7 @@ import { useRef } from "react";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { ExpedienteStatus } from "@/types/database.types";
 import { ExpedientesList } from "@/components/ExpedientesList";
+import { useGestores } from "@/hooks/useGestores";
 
 const countries = [
   "Alemania", "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica",
@@ -246,6 +247,8 @@ const createInitialState = (): TramiteState => ({
 const Tramites = () => {
   const { toast } = useToast();
   const { expedientes } = useExpedientes();
+  const { gestores } = useGestores();
+  const advisorNames = new Map(gestores.map(g => [g.id, g.full_name ?? "Sin nombre"]));
   const [expanded, setExpanded] = useState<string | null>(null);
   const [states, setStates] = useState<Record<string, TramiteState>>(() => {
     const s: Record<string, TramiteState> = {};
@@ -356,7 +359,7 @@ const Tramites = () => {
                   <p className="text-sm text-muted-foreground pt-4">{t.description}</p>
 
                   {/* Expedientes list */}
-                  <ExpedientesList expedientes={matchingExpedientes[t.id] ?? []} />
+                  <ExpedientesList expedientes={matchingExpedientes[t.id] ?? []} advisorNames={advisorNames} />
 
                   {/* Type selector for Nacionalidad */}
                   {t.hasTypeSelector && (
