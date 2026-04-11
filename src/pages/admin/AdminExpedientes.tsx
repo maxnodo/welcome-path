@@ -183,6 +183,7 @@ const AdminExpedientes = () => {
             <SelectContent>
               <SelectItem value="all">Todos los gestores</SelectItem>
               <SelectItem value="none">Sin asignar</SelectItem>
+              <SelectItem value="no_user">⚠ Sin usuario vinculado</SelectItem>
               {gestores.map(g => (
                 <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email}</SelectItem>
               ))}
