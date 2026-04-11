@@ -242,11 +242,10 @@ const AdminPreinscritos = () => {
               })}
             </TableBody>
           </Table>
+          {!loading && totalCount > 0 && (
+            <TablePagination page={page} pageSize={pageSize} totalCount={totalCount} onNext={nextPage} onPrev={prevPage} />
+          )}
         </div>
-        {!loading && totalCount > 0 && (
-          <TablePagination page={page} pageSize={pageSize} totalCount={totalCount} onNext={nextPage} onPrev={prevPage} />
-        )}
-      </div>
       )}
 
       {/* Convert lead dialog */}
