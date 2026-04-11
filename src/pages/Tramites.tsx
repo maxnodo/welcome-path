@@ -53,10 +53,10 @@ const statusPriority: Record<Status, number> = {
   doc_incompleta: 8,
   presentado: 7,
   aprobado: 6,
-  no_iniciado: 5,
-  finalizado: 4,
-  denegado: 3,
-  archivado: 2,
+  finalizado: 5,
+  denegado: 4,
+  archivado: 3,
+  no_iniciado: 2,
 };
 
 // Map tramite component id to DB tramite_code
