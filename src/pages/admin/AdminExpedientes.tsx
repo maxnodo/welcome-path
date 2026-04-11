@@ -74,17 +74,18 @@ const AdminExpedientes = () => {
   const openDetail = (exp: Expediente) => {
     setSelectedExp(exp);
     setDetailStatus(exp.status);
-    setDetailAdvisorId(exp.advisor_id ?? "");
+    setDetailAdvisorId(exp.advisor_id ?? "__none__");
     setNotes(exp.internal_notes ?? "");
   };
 
   const saveChanges = async () => {
     if (!selectedExp || !user) return;
-    const advisorChanged = detailAdvisorId && detailAdvisorId !== (selectedExp.advisor_id ?? "");
+    const effectiveAdvisorId = detailAdvisorId === "__none__" ? null : detailAdvisorId;
+    const advisorChanged = effectiveAdvisorId && effectiveAdvisorId !== (selectedExp.advisor_id ?? null);
     const { error } = await updateExpediente(selectedExp.id, {
       status: detailStatus,
       internal_notes: notes || null,
-      advisor_id: detailAdvisorId || null,
+      advisor_id: effectiveAdvisorId,
     });
     if (!error) {
       if (advisorChanged) {
@@ -269,6 +270,7 @@ const AdminExpedientes = () => {
                   <Select value={detailAdvisorId} onValueChange={setDetailAdvisorId}>
                     <SelectTrigger><SelectValue placeholder="Sin asignar" /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">Sin asignar</SelectItem>
                       {gestores.map(g => (
                         <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email ?? g.id}</SelectItem>
                       ))}

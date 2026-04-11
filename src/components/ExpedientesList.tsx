@@ -2,16 +2,16 @@ import { FileText, ChevronRight, Clock, CheckCircle2, XCircle, AlertCircle, User
 import { Expediente, ExpedienteStatus, DocumentoStatus } from "@/types/database.types";
 import { useState } from "react";
 
-const statusConfig: Record<ExpedienteStatus, { label: string; color: string; icon: typeof Clock }> = {
-  no_iniciado: { label: "No iniciado", color: "text-muted-foreground", icon: Clock },
-  documentacion_incompleta: { label: "Doc. incompleta", color: "text-warning", icon: AlertCircle },
-  en_revision: { label: "En revisión", color: "text-secondary", icon: Clock },
-  requerimiento_adicional: { label: "Requerimiento", color: "text-orange-500", icon: AlertCircle },
-  presentado: { label: "Presentado", color: "text-purple-500", icon: Clock },
-  aprobado: { label: "Aprobado", color: "text-success", icon: CheckCircle2 },
-  finalizado: { label: "Finalizado", color: "text-primary", icon: CheckCircle2 },
-  denegado: { label: "Denegado", color: "text-destructive", icon: XCircle },
-  archivado: { label: "Archivado", color: "text-muted-foreground", icon: Clock },
+const statusConfig: Record<ExpedienteStatus, { label: string; color: string; bg: string; icon: typeof Clock }> = {
+  no_iniciado: { label: "No iniciado", color: "text-muted-foreground", bg: "bg-muted", icon: Clock },
+  documentacion_incompleta: { label: "Doc. incompleta", color: "text-warning", bg: "bg-warning/10", icon: AlertCircle },
+  en_revision: { label: "En revisión", color: "text-secondary", bg: "bg-secondary/10", icon: Clock },
+  requerimiento_adicional: { label: "Requerimiento", color: "text-orange-500", bg: "bg-orange-500/10", icon: AlertCircle },
+  presentado: { label: "Presentado", color: "text-purple-500", bg: "bg-purple-500/10", icon: Clock },
+  aprobado: { label: "Aprobado", color: "text-success", bg: "bg-success/10", icon: CheckCircle2 },
+  finalizado: { label: "Finalizado", color: "text-primary", bg: "bg-primary/10", icon: CheckCircle2 },
+  denegado: { label: "Denegado", color: "text-destructive", bg: "bg-destructive/10", icon: XCircle },
+  archivado: { label: "Archivado", color: "text-muted-foreground", bg: "bg-muted", icon: Clock },
 };
 
 const docStatusConfig: Record<DocumentoStatus, { label: string; color: string }> = {
@@ -60,7 +60,7 @@ export function ExpedientesList({ expedientes, advisorNames }: ExpedientesListPr
                     <span className="text-sm font-medium text-foreground truncate">
                       {exp.expediente_number ?? `EXP-${exp.id.slice(0, 8).toUpperCase()}`}
                     </span>
-                    <span className={`text-[11px] px-1.5 py-0.5 rounded font-medium ${st.color} bg-current/5`}>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded font-medium ${st.color} ${st.bg}`}>
                       {st.label}
                     </span>
                   </div>
