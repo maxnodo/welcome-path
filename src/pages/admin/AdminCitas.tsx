@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Calendar, Clock, Phone, Video, Users, MapPin, Search, Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminCitas } from "@/hooks/useAdminCitas";
@@ -40,21 +39,13 @@ const statusColor: Record<string, string> = {
 
 const AdminCitas = () => {
   const { toast } = useToast();
-  const { citas, loading, updateCita, page, totalCount, pageSize, hasMore, nextPage, prevPage } = useAdminCitas();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  const filtered = citas.filter((c) => {
-    const user = (c as any).user;
-    const matchSearch = !search ||
-      (user?.full_name ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchStatus = filterStatus === "all" || c.status === filterStatus;
-    return matchSearch && matchStatus;
-  });
-
-  const today = new Date().toDateString();
-  const todayCitas = citas.filter(c => new Date(c.scheduled_at).toDateString() === today && c.status !== "cancelada");
-  const upcoming = citas.filter(c => new Date(c.scheduled_at) > new Date() && c.status !== "cancelada");
+  const {
+    citas, loading, updateCita, page, totalCount, pageSize, hasMore, nextPage, prevPage,
+    todayCount, upcomingCount, totalCitas,
+  } = useAdminCitas({ search, status: filterStatus });
 
   const handleStatusChange = async (cita: Cita, newStatus: string) => {
     const updates: any = { status: newStatus };
@@ -72,21 +63,21 @@ const AdminCitas = () => {
           <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><Calendar size={20} /></div>
           <div>
             <p className="text-xs text-muted-foreground">Hoy</p>
-            <p className="text-2xl font-bold text-foreground">{todayCitas.length}</p>
+            <p className="text-2xl font-bold text-foreground">{todayCount}</p>
           </div>
         </div>
         <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
           <div className="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center"><Clock size={20} /></div>
           <div>
             <p className="text-xs text-muted-foreground">Próximas</p>
-            <p className="text-2xl font-bold text-foreground">{upcoming.length}</p>
+            <p className="text-2xl font-bold text-foreground">{upcomingCount}</p>
           </div>
         </div>
         <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
           <div className="w-10 h-10 rounded-lg bg-success/10 text-success flex items-center justify-center"><Users size={20} /></div>
           <div>
             <p className="text-xs text-muted-foreground">Total</p>
-            <p className="text-2xl font-bold text-foreground">{citas.length}</p>
+            <p className="text-2xl font-bold text-foreground">{totalCitas}</p>
           </div>
         </div>
       </div>
@@ -122,9 +113,9 @@ const AdminCitas = () => {
           <tbody>
             {loading ? (
               <tr><td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">Cargando...</td></tr>
-            ) : filtered.length === 0 ? (
+            ) : citas.length === 0 ? (
               <tr><td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">No hay citas.</td></tr>
-            ) : filtered.map((cita) => {
+            ) : citas.map((cita) => {
               const TypeIcon = typeIcons[cita.type] ?? Calendar;
               const user = (cita as any).user;
               return (
