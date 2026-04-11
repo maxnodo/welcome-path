@@ -336,6 +336,11 @@ const Tramites = () => {
                 </span>
                 <span className="flex-1 font-medium text-foreground">{t.name}</span>
                 <span className="flex items-center gap-2 text-xs text-muted-foreground shrink-0">
+                  {count > 1 && (
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">
+                      {count}
+                    </span>
+                  )}
                   <span className={`w-2.5 h-2.5 rounded-full ${statusColor}`} />
                   {statusLabel}
                 </span>
