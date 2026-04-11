@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRef } from "react";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { ExpedienteStatus } from "@/types/database.types";
+import { ExpedientesList } from "@/components/ExpedientesList";
 
 const countries = [
   "Alemania", "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica",
