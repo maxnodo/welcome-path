@@ -253,13 +253,15 @@ const Tramites = () => {
     return s;
   });
 
-  // Derive statuses and counts from real expediente data
+  // Derive statuses, counts, and matching expedientes from real data
   const statuses: Record<string, Status> = {};
   const expedienteCounts: Record<string, number> = {};
+  const matchingExpedientes: Record<string, typeof expedientes> = {};
   tramites.forEach((t) => {
     const code = tramiteIdToCode[t.id];
     const matching = expedientes.filter(e => e.tramite_code === code);
     expedienteCounts[t.id] = matching.length;
+    matchingExpedientes[t.id] = matching;
     if (matching.length === 0) {
       statuses[t.id] = "no_iniciado";
     } else {
