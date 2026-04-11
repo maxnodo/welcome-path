@@ -38,5 +38,21 @@ export function useDocumentos() {
     return data?.signedUrl ?? null
   }
 
-  return { uploadDocument, getDocumentUrl }
+  async function updateDocumentStatus(
+    docId: string,
+    status: 'validado' | 'rechazado' | 'en_revision' | 'pendiente',
+    rejectionReason?: string
+  ) {
+    if (!user) return { error: new Error('No autenticado') }
+    const updates: Record<string, unknown> = {
+      status,
+      rejection_reason: status === 'rechazado' ? (rejectionReason ?? null) : null,
+      validated_by: status === 'validado' ? user.id : null,
+      validated_at: status === 'validado' ? new Date().toISOString() : null,
+    }
+    const { error } = await supabase.from('documentos').update(updates).eq('id', docId)
+    return { error }
+  }
+
+  return { uploadDocument, getDocumentUrl, updateDocumentStatus }
 }
