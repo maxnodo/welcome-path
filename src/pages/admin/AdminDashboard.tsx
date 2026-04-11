@@ -14,11 +14,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { useAlertas } from "@/hooks/useAlertas";
-import { useCitas } from "@/hooks/useCitas";
+import { useAdminCitas } from "@/hooks/useAdminCitas";
 import { useGestores } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { Expediente, ExpedienteStatus, AlertaType, Profile } from "@/types/database.types";
+import { Expediente, ExpedienteStatus, AlertaType, Cita, Profile } from "@/types/database.types";
 import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
 
 const allStatuses: ExpedienteStatus[] = [
@@ -62,13 +62,40 @@ const alertaTypes: { value: AlertaType; label: string }[] = [
 
 const INACTIVE_STATUSES = ["archivado", "denegado", "finalizado"];
 
+const getUtcWeekRange = () => {
+  const now = new Date();
+  const utcDay = now.getUTCDay();
+  const daysFromMonday = (utcDay + 6) % 7;
+
+  const weekStart = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - daysFromMonday,
+    0,
+    0,
+    0,
+    0,
+  ));
+
+  const weekEnd = new Date(weekStart);
+  weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
+
+  return { weekStart, weekEnd };
+};
+
+const isCitaInCurrentWeek = (cita: Cita) => {
+  const citaDate = new Date(cita.scheduled_at);
+  const { weekStart, weekEnd } = getUtcWeekRange();
+  return citaDate >= weekStart && citaDate < weekEnd && cita.status !== "cancelada";
+};
+
 const AdminDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
   const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
   const { alertas } = useAlertas();
-  const { citas } = useCitas();
+  const { citas } = useAdminCitas();
   const { gestores } = useGestores();
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
@@ -103,31 +130,21 @@ const AdminDashboard = () => {
     });
   }, []);
 
+  const currentWeekCitas = citas.filter(isCitaInCurrentWeek);
+
   // Workload data (admin only)
   const workloadData = gestores.filter(g => g.role !== 'admin').map(g => {
     const assigned = expedientes.filter(e => e.advisor_id === g.id);
     const active = assigned.filter(e => !INACTIVE_STATUSES.includes(e.status)).length;
     const pendingReview = assigned.filter(e => e.status === "en_revision").length;
-    const now = new Date();
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - now.getDay());
-    weekStart.setHours(0, 0, 0, 0);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 7);
-    const weeklyCitas = citas.filter(c =>
-      c.advisor_id === g.id &&
-      new Date(c.scheduled_at) >= weekStart &&
-      new Date(c.scheduled_at) < weekEnd
-    ).length;
+    const weeklyCitas = currentWeekCitas.filter(c => c.advisor_id === g.id).length;
     return { ...g, active, pendingReview, weeklyCitas, total: assigned.length };
   });
-
-  
 
   const kpis = [
     { label: "Expedientes activos", value: expedientes.filter(e => !INACTIVE_STATUSES.includes(e.status)).length, icon: Users, color: "text-secondary bg-secondary/10" },
     { label: "Pendientes revisión", value: expedientes.filter(e => e.status === "en_revision").length, icon: Clock, color: "text-warning bg-warning/10" },
-    { label: "Citas esta semana", value: citas.length, icon: Calendar, color: "text-primary bg-primary/10" },
+    { label: "Citas esta semana", value: currentWeekCitas.length, icon: Calendar, color: "text-primary bg-primary/10" },
     { label: "Alertas urgentes", value: alertas.filter(a => a.type === "urgente" && !a.is_read).length, icon: AlertTriangle, color: "text-destructive bg-destructive/10" },
   ];
 
