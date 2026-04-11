@@ -384,29 +384,6 @@ const AdminDashboard = () => {
 
         {/* Right column */}
         <div className="space-y-4">
-          <div className="bg-card rounded-lg border shadow-sm p-4 space-y-2">
-            <h3 className="font-semibold text-foreground text-sm">Acciones rápidas</h3>
-            <Button variant="outline" className="w-full justify-start gap-2 text-xs" onClick={() => setShowNewExp(true)}>
-              <UserPlus size={14} /> Nuevo expediente
-            </Button>
-            <Button variant="outline" className="w-full justify-start gap-2 text-xs" onClick={() => setShowMassAlert(true)}>
-              <Send size={14} /> Enviar alerta masiva
-            </Button>
-            <Button variant="outline" className="w-full justify-start gap-2 text-xs" onClick={() => navigate("/admin/citas")}>
-              <Calendar size={14} /> Ver agenda del día
-            </Button>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="w-full">
-                  <Button variant="outline" className="w-full justify-start gap-2 text-xs" disabled>
-                    <BarChart3 size={14} /> Generar informe
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>Próximamente</TooltipContent>
-            </Tooltip>
-          </div>
-
           <div className="bg-card rounded-lg border shadow-sm p-4 space-y-3">
             <h3 className="font-semibold text-foreground text-sm">Alertas pendientes</h3>
             {pendingAlerts.length === 0 ? (
