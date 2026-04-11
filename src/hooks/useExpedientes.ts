@@ -15,7 +15,7 @@ export function useExpedientes() {
     setLoading(true)
     let query = supabase
       .from('expedientes')
-      .select('*, tramites_catalog(*), documentos(*)')
+      .select('*, tramites_catalog(*), documentos(*), advisor:profiles!expedientes_advisor_id_fkey(id, full_name)')
       .order('created_at', { ascending: false })
 
     if (isAdmin) {
