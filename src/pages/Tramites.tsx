@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Check, Upload, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { useRef } from "react";
+import { useExpedientes } from "@/hooks/useExpedientes";
+import { ExpedienteStatus } from "@/types/database.types";
 
 const countries = [
   "Alemania", "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica",
@@ -14,7 +16,7 @@ const countries = [
   "Perú", "Portugal", "Reino Unido", "República Dominicana", "Uruguay", "Venezuela",
 ];
 
-type Status = "no_iniciado" | "doc_incompleta" | "en_revision" | "requerimiento" | "presentado" | "aprobado" | "finalizado";
+type Status = "no_iniciado" | "doc_incompleta" | "en_revision" | "requerimiento" | "presentado" | "aprobado" | "finalizado" | "denegado" | "archivado";
 
 const statusConfig: Record<Status, { label: string; color: string }> = {
   no_iniciado: { label: "No iniciado", color: "bg-gray-400" },
@@ -24,6 +26,47 @@ const statusConfig: Record<Status, { label: string; color: string }> = {
   presentado: { label: "Presentado", color: "bg-purple-500" },
   aprobado: { label: "Aprobado", color: "bg-success" },
   finalizado: { label: "Finalizado", color: "bg-primary" },
+  denegado: { label: "Denegado", color: "bg-destructive" },
+  archivado: { label: "Archivado", color: "bg-muted-foreground" },
+};
+
+// Map DB ExpedienteStatus to component Status
+const mapDbStatus = (dbStatus: ExpedienteStatus): Status => {
+  const map: Record<ExpedienteStatus, Status> = {
+    no_iniciado: "no_iniciado",
+    documentacion_incompleta: "doc_incompleta",
+    en_revision: "en_revision",
+    requerimiento_adicional: "requerimiento",
+    presentado: "presentado",
+    aprobado: "aprobado",
+    finalizado: "finalizado",
+    denegado: "denegado",
+    archivado: "archivado",
+  };
+  return map[dbStatus] ?? "no_iniciado";
+};
+
+// Priority: active statuses first, then by progress
+const statusPriority: Record<Status, number> = {
+  en_revision: 10,
+  requerimiento: 9,
+  doc_incompleta: 8,
+  presentado: 7,
+  aprobado: 6,
+  no_iniciado: 5,
+  finalizado: 4,
+  denegado: 3,
+  archivado: 2,
+};
+
+// Map tramite component id to DB tramite_code
+const tramiteIdToCode: Record<string, string> = {
+  nie: "NIE",
+  dni: "DNI",
+  nacionalidad: "NACIONALIDAD",
+  arraigo: "ARRAIGO",
+  renovacion: "RENOVACION",
+  reagrupacion: "REAGRUPACION",
 };
 
 interface DocItem {
@@ -201,16 +244,30 @@ const createInitialState = (): TramiteState => ({
 
 const Tramites = () => {
   const { toast } = useToast();
+  const { expedientes } = useExpedientes();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [states, setStates] = useState<Record<string, TramiteState>>(() => {
     const s: Record<string, TramiteState> = {};
     tramites.forEach((t) => (s[t.id] = createInitialState()));
     return s;
   });
-  const [statuses] = useState<Record<string, Status>>(() => {
-    const s: Record<string, Status> = {};
-    tramites.forEach((t) => (s[t.id] = "no_iniciado"));
-    return s;
+
+  // Derive statuses from real expediente data
+  const statuses: Record<string, Status> = {};
+  tramites.forEach((t) => {
+    const code = tramiteIdToCode[t.id];
+    const matching = expedientes.filter(e => e.tramite_code === code);
+    if (matching.length === 0) {
+      statuses[t.id] = "no_iniciado";
+    } else {
+      // Pick the most relevant (highest priority) status
+      const best = matching.reduce((prev, curr) => {
+        const prevStatus = mapDbStatus(prev.status);
+        const currStatus = mapDbStatus(curr.status);
+        return (statusPriority[currStatus] ?? 0) > (statusPriority[prevStatus] ?? 0) ? curr : prev;
+      });
+      statuses[t.id] = mapDbStatus(best.status);
+    }
   });
 
   const update = (id: string, patch: Partial<TramiteState>) => {
