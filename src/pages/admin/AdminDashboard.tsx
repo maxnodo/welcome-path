@@ -133,7 +133,7 @@ const AdminDashboard = () => {
   const currentWeekCitas = citas.filter(isCitaInCurrentWeek);
 
   // Workload data (admin only)
-  const workloadData = gestores.filter(g => g.role !== 'admin').map(g => {
+  const workloadData = gestores.map(g => {
     const assigned = expedientes.filter(e => e.advisor_id === g.id);
     const active = assigned.filter(e => !INACTIVE_STATUSES.includes(e.status)).length;
     const pendingReview = assigned.filter(e => e.status === "en_revision").length;
@@ -151,17 +151,18 @@ const AdminDashboard = () => {
   const openDetail = (exp: Expediente) => {
     setSelectedExp(exp);
     setDetailStatus(exp.status);
-    setDetailAdvisorId(exp.advisor_id ?? "");
+    setDetailAdvisorId(exp.advisor_id ?? "__none__");
     setNotes(exp.internal_notes ?? "");
   };
 
   const saveChanges = async () => {
     if (!selectedExp || !user) return;
-    const advisorChanged = detailAdvisorId && detailAdvisorId !== (selectedExp.advisor_id ?? "");
+    const effectiveAdvisorId = detailAdvisorId === "__none__" ? null : detailAdvisorId;
+    const advisorChanged = effectiveAdvisorId && effectiveAdvisorId !== (selectedExp.advisor_id ?? null);
     const { error } = await updateExpediente(selectedExp.id, {
       status: detailStatus,
       internal_notes: notes || null,
-      advisor_id: detailAdvisorId || null,
+      advisor_id: effectiveAdvisorId,
     });
     if (!error) {
       if (advisorChanged) {
@@ -437,6 +438,7 @@ const AdminDashboard = () => {
                   <Select value={detailAdvisorId} onValueChange={setDetailAdvisorId}>
                     <SelectTrigger><SelectValue placeholder="Sin asignar" /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">Sin asignar</SelectItem>
                       {gestores.map(g => (
                         <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email ?? g.id}</SelectItem>
                       ))}
