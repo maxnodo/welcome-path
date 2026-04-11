@@ -247,6 +247,8 @@ const createInitialState = (): TramiteState => ({
 const Tramites = () => {
   const { toast } = useToast();
   const { expedientes } = useExpedientes();
+  const { gestores } = useGestores();
+  const advisorNames = new Map(gestores.map(g => [g.id, g.full_name ?? "Sin nombre"]));
   const [expanded, setExpanded] = useState<string | null>(null);
   const [states, setStates] = useState<Record<string, TramiteState>>(() => {
     const s: Record<string, TramiteState> = {};
