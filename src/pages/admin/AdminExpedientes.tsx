@@ -122,14 +122,22 @@ const AdminExpedientes = () => {
     setSelectedExp(null);
   };
 
+  const refreshSelectedExp = (docId: string, newStatus: string, reason?: string | null) => {
+    if (!selectedExp?.documentos) return;
+    setSelectedExp({
+      ...selectedExp,
+      documentos: selectedExp.documentos.map(d =>
+        d.id === docId ? { ...d, status: newStatus as any, rejection_reason: reason ?? null } : d
+      ),
+    });
+  };
+
   const handleValidateDoc = async (docId: string) => {
     const { error } = await updateDocumentStatus(docId, 'validado');
     if (!error) {
       toast({ title: "Documento validado" });
-      await refetch();
-      // Update selectedExp with fresh data
-      const updated = expedientes.find(e => e.id === selectedExp?.id);
-      if (updated) setSelectedExp({ ...updated });
+      refreshSelectedExp(docId, 'validado');
+      refetch();
     } else {
       toast({ title: "Error", description: String(error), variant: "destructive" });
     }
@@ -140,9 +148,8 @@ const AdminExpedientes = () => {
     const { error } = await updateDocumentStatus(rejectingDocId, 'rechazado', rejectionReason);
     if (!error) {
       toast({ title: "Documento rechazado" });
-      await refetch();
-      const updated = expedientes.find(e => e.id === selectedExp?.id);
-      if (updated) setSelectedExp({ ...updated });
+      refreshSelectedExp(rejectingDocId, 'rechazado', rejectionReason);
+      refetch();
     } else {
       toast({ title: "Error", description: String(error), variant: "destructive" });
     }
@@ -154,9 +161,8 @@ const AdminExpedientes = () => {
     const { error } = await updateDocumentStatus(docId, 'pendiente');
     if (!error) {
       toast({ title: "Documento devuelto a pendiente" });
-      await refetch();
-      const updated = expedientes.find(e => e.id === selectedExp?.id);
-      if (updated) setSelectedExp({ ...updated });
+      refreshSelectedExp(docId, 'pendiente');
+      refetch();
     } else {
       toast({ title: "Error", description: String(error), variant: "destructive" });
     }
