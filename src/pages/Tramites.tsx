@@ -355,6 +355,9 @@ const Tramites = () => {
                 <div className="px-4 pb-5 pt-0 space-y-5 border-t">
                   <p className="text-sm text-muted-foreground pt-4">{t.description}</p>
 
+                  {/* Expedientes list */}
+                  <ExpedientesList expedientes={matchingExpedientes[t.id] ?? []} />
+
                   {/* Type selector for Nacionalidad */}
                   {t.hasTypeSelector && (
                     <div className="space-y-2">
