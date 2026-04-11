@@ -1,36 +1,32 @@
 
 
-## Plan: Corregir race condition en AuthContext.tsx
+## Plan: Lazy loading de páginas en App.tsx
 
-### Problema
-`onAuthStateChange` y `getSession` disparan `fetchProfile` concurrentemente. El `setTimeout` puede ejecutar tras desmontaje. `TOKEN_REFRESHED` pone `loading: true` innecesariamente causando pantalla en blanco.
+### Cambios en `src/App.tsx`
 
-### Cambios en `src/context/AuthContext.tsx`
+1. Reemplazar los ~25 imports estáticos de páginas por `React.lazy()`:
+```ts
+const Login = lazy(() => import("@/pages/Login"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+// ... todas las páginas
+```
 
-**Nuevo estado y refs:**
-- Agregar `const [userId, setUserId] = useState<string | null>(null)`
-- Agregar `const isFetching = useRef(false)` para evitar fetches duplicados
+2. Mantener imports estáticos para: `Layout`, `AdminLayout`, `AdminLogin`, `Logo`, route guards, UI components (Toaster, Sonner, etc.)
 
-**useEffect 1 — Auth listener (modificar el existente):**
-- `onAuthStateChange`: para `INITIAL_SESSION` y `SIGNED_IN`, actualizar session/user/userId y poner `loading: true`. Para `TOKEN_REFRESHED`, solo actualizar session y user, **no tocar loading ni userId**. Para `SIGNED_OUT`, limpiar todo y poner `loading: false`.
-- Eliminar el `setTimeout` y la llamada directa a `fetchProfile`.
-- Eliminar el bloque `getSession().then(...)` — `INITIAL_SESSION` ya lo cubre.
+3. Envolver `<Routes>` en `<Suspense>` con el mismo spinner+Logo usado en los route guards:
+```tsx
+<Suspense fallback={
+  <div className="min-h-screen flex items-center justify-center bg-muted/30">
+    <div className="text-center space-y-4">
+      <Logo size="lg" />
+      <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+    </div>
+  </div>
+}>
+  <Routes>...</Routes>
+</Suspense>
+```
 
-**useEffect 2 — Fetch profile (nuevo):**
-- Depende de `[userId]`
-- Si `userId` es null, limpiar profile y poner `loading: false`, return
-- Si `isFetching.current` es true, return (evitar duplicados)
-- Crear variable `cancelled = false` para cleanup
-- Poner `isFetching.current = true`, hacer fetch, si no `cancelled` entonces `setProfile` y `setLoading(false)`
-- En finally: `isFetching.current = false`
-- Cleanup: `cancelled = true`
-
-**refreshProfile:** cambia a re-ejecutar el fetch directamente (sin pasar por userId) usando la misma lógica con la ref de protección.
-
-### Resultado
-- Un solo punto de entrada para fetchProfile (el useEffect de userId)
-- Sin setTimeout
-- TOKEN_REFRESHED no causa loading ni refetch
-- Ref previene fetches duplicados
-- Cleanup previene setState en componente desmontado
+### Archivos modificados
+- `src/App.tsx` — único archivo afectado
 
