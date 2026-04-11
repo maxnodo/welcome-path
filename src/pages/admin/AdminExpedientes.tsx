@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, Eye } from "lucide-react";
+import { Search, Filter, Eye, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -214,7 +214,12 @@ const AdminExpedientes = () => {
               <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">No se encontraron expedientes.</td></tr>
             ) : filtered.map((exp) => (
               <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-medium text-foreground">{exp.tramites_catalog?.name ?? exp.tramite_code}</td>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  <div className="flex items-center gap-1.5">
+                    {!exp.user_id && <AlertTriangle size={13} className="text-warning shrink-0" title="Sin usuario vinculado" />}
+                    {exp.tramites_catalog?.name ?? exp.tramite_code}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{exp.expediente_number ?? "—"}</td>
                 <td className="px-4 py-3">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(exp.status)}`}>
