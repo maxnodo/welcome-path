@@ -27,23 +27,7 @@ export function useExpedientes() {
     }
 
     const { data } = await query
-    let results = (data as Expediente[]) ?? []
-
-    // Resolve advisor names separately (avoids RLS issues on profiles join)
-    const advisorIds = [...new Set(results.map(e => e.advisor_id).filter(Boolean))] as string[]
-    if (advisorIds.length > 0) {
-      const { data: advisors } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', advisorIds)
-      const advisorMap = new Map((advisors ?? []).map(a => [a.id, a]))
-      results = results.map(e => ({
-        ...e,
-        advisor: e.advisor_id ? (advisorMap.get(e.advisor_id) as Partial<import('@/types/database.types').Profile> | undefined) ?? undefined : undefined,
-      }))
-    }
-
-    setExpedientes(results)
+    setExpedientes((data as Expediente[]) ?? [])
     setLoading(false)
   }
 
