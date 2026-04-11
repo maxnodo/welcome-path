@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowRightLeft, Check } from "lucide-react";
+import { ArrowRightLeft, Check, Mail, AlertCircle, UserCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -8,12 +8,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAdminLeads, Lead } from "@/hooks/useAdminLeads";
-import { useGestores } from "@/hooks/useGestores";
+import { useGestores, getGestorName } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
+
+interface MatchedUser {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+}
 
 const AdminPreinscritos = () => {
   const { user, isAdmin } = useAuth();
@@ -24,6 +31,12 @@ const AdminPreinscritos = () => {
   const [convertLead, setConvertLead] = useState<Lead | null>(null);
   const [convertTramite, setConvertTramite] = useState("");
   const [tramites, setTramites] = useState<{ code: string; name: string }[]>([]);
+
+  // User lookup states
+  const [matchedUser, setMatchedUser] = useState<MatchedUser | null>(null);
+  const [searchingUser, setSearchingUser] = useState(false);
+  const [invitationSent, setInvitationSent] = useState(false);
+  const [sendingInvitation, setSendingInvitation] = useState(false);
 
   useEffect(() => {
     supabase.from('tramites_catalog').select('code, name').eq('is_active', true).then(({ data }) => {
@@ -45,20 +58,56 @@ const AdminPreinscritos = () => {
     }
   };
 
-  const openConvertDialog = (lead: Lead) => {
+  const openConvertDialog = async (lead: Lead) => {
     setConvertLead(lead);
     setConvertTramite("");
+    setMatchedUser(null);
+    setInvitationSent(false);
+    setSendingInvitation(false);
+
+    if (!lead.email) return;
+
+    setSearchingUser(true);
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name, email')
+      .eq('email', lead.email)
+      .maybeSingle();
+
+    setMatchedUser(data as MatchedUser | null);
+    setSearchingUser(false);
+  };
+
+  const handleSendInvitation = async () => {
+    if (!convertLead?.email) return;
+    setSendingInvitation(true);
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: convertLead.email,
+      options: {
+        shouldCreateUser: true,
+      },
+    });
+
+    setSendingInvitation(false);
+
+    if (error) {
+      toast({ title: "Error al enviar invitación", description: error.message, variant: "destructive" });
+    } else {
+      setInvitationSent(true);
+      toast({ title: "Invitación enviada", description: `Se envió un enlace de acceso a ${convertLead.email}.` });
+    }
   };
 
   const handleConvertLead = async () => {
-    if (!convertLead || !convertLead.advisor_id || !user || !convertTramite) return;
+    if (!convertLead || !convertLead.advisor_id || !user || !convertTramite || !matchedUser) return;
 
     setConverting(convertLead.id);
 
     const { data: expData, error: expError } = await supabase
       .from('expedientes')
       .insert({
-        user_id: null,
+        user_id: matchedUser.id,
         tramite_code: convertTramite,
         status: 'no_iniciado' as const,
         advisor_id: convertLead.advisor_id,
@@ -84,15 +133,9 @@ const AdminPreinscritos = () => {
       createdBy: user.id,
     });
 
-    toast({ title: "Lead convertido", description: `Se creó un expediente para ${convertLead.nombre} y se notificó al gestor.` });
+    toast({ title: "Lead convertido", description: `Se creó un expediente para ${convertLead.nombre} vinculado al usuario ${matchedUser.full_name ?? matchedUser.email}.` });
     setConverting(null);
     setConvertLead(null);
-  };
-
-  const getGestorName = (id: string | null) => {
-    if (!id) return null;
-    const g = gestores.find(g => g.id === id);
-    return g?.full_name ?? g?.email ?? null;
   };
 
   return (
@@ -151,7 +194,7 @@ const AdminPreinscritos = () => {
                     </TableCell>
                     <TableCell>
                       {isConverted ? (
-                        <span className="text-xs text-muted-foreground">{getGestorName(lead.advisor_id) ?? "—"}</span>
+                        <span className="text-xs text-muted-foreground">{getGestorName(gestores, lead.advisor_id) ?? "—"}</span>
                       ) : isAdmin ? (
                         <Select
                           value={lead.advisor_id ?? ""}
@@ -167,7 +210,7 @@ const AdminPreinscritos = () => {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <span className="text-xs text-muted-foreground">{getGestorName(lead.advisor_id) ?? "Sin asignar"}</span>
+                        <span className="text-xs text-muted-foreground">{getGestorName(gestores, lead.advisor_id) ?? "Sin asignar"}</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -201,14 +244,15 @@ const AdminPreinscritos = () => {
         </div>
       )}
 
-      {/* Convert lead dialog with tramite selector */}
+      {/* Convert lead dialog */}
       <Dialog open={!!convertLead} onOpenChange={() => setConvertLead(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Convertir lead en expediente</DialogTitle>
           </DialogHeader>
           {convertLead && (
             <div className="space-y-4">
+              {/* Lead info */}
               <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
                 <p className="font-medium text-foreground">{convertLead.nombre}</p>
                 <p className="text-muted-foreground">{convertLead.email ?? convertLead.telefono}</p>
@@ -224,6 +268,62 @@ const AdminPreinscritos = () => {
                 )}
               </div>
 
+              {/* User lookup result */}
+              {searchingUser ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
+                  Buscando usuario con email {convertLead.email}...
+                </div>
+              ) : matchedUser ? (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-success/10 border border-success/20">
+                  <UserCheck size={16} className="text-success shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">{matchedUser.full_name ?? matchedUser.email}</p>
+                    <p className="text-muted-foreground text-xs">Usuario encontrado — se vinculará al expediente</p>
+                  </div>
+                </div>
+              ) : !convertLead.email ? (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <AlertCircle size={16} className="text-destructive shrink-0" />
+                  <p className="text-sm text-muted-foreground">
+                    Este lead no tiene email. No es posible vincular ni invitar a un usuario sin dirección de correo.
+                  </p>
+                </div>
+              ) : invitationSent ? (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
+                  <Mail size={16} className="text-primary shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">Invitación enviada a {convertLead.email}</p>
+                    <p className="text-muted-foreground text-xs">
+                      Una vez que el usuario se registre desde el enlace, podrás volver a intentar la conversión.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
+                    <AlertCircle size={16} className="text-warning shrink-0" />
+                    <p className="text-sm text-muted-foreground">
+                      No existe una cuenta de usuario con el email <span className="font-medium text-foreground">{convertLead.email}</span>.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={handleSendInvitation}
+                    disabled={sendingInvitation}
+                  >
+                    <Mail size={14} />
+                    {sendingInvitation ? "Enviando..." : "Enviar invitación por email"}
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    O el usuario puede registrarse por su cuenta en la plataforma.
+                  </p>
+                </div>
+              )}
+
+              {/* Tramite selector */}
               <div className="space-y-2">
                 <Label className="text-sm">Trámite a crear <span className="text-destructive">*</span></Label>
                 <Select value={convertTramite} onValueChange={setConvertTramite}>
@@ -239,18 +339,31 @@ const AdminPreinscritos = () => {
               </div>
 
               <div className="text-sm text-muted-foreground">
-                <p>Gestor asignado: <span className="text-foreground font-medium">{getGestorName(convertLead.advisor_id)}</span></p>
+                <p>Gestor asignado: <span className="text-foreground font-medium">{getGestorName(gestores, convertLead.advisor_id)}</span></p>
               </div>
             </div>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setConvertLead(null)}>Cancelar</Button>
-            <Button
-              onClick={handleConvertLead}
-              disabled={!convertTramite || converting === convertLead?.id}
-            >
-              {converting === convertLead?.id ? "Convirtiendo..." : "Crear expediente"}
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <Button
+                      onClick={handleConvertLead}
+                      disabled={!convertTramite || !matchedUser || converting === convertLead?.id}
+                    >
+                      {converting === convertLead?.id ? "Convirtiendo..." : "Crear expediente"}
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {!matchedUser && (
+                  <TooltipContent>
+                    <p>{!convertLead?.email ? "Se necesita el email del contacto" : "El usuario debe tener una cuenta para crear el expediente"}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </DialogFooter>
         </DialogContent>
       </Dialog>

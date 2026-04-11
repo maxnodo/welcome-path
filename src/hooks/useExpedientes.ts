@@ -49,12 +49,12 @@ export function useExpedientes() {
     return () => { supabase.removeChannel(channel) }
   }, [user?.id, isGestor, isAdmin])
 
-  async function createExpediente(tramiteCode: string, originCountry?: string, solicitudType?: string) {
+  async function createExpediente(userId: string, tramiteCode: string, originCountry?: string, solicitudType?: string) {
     if (!user) return null
     const { data, error } = await supabase
       .from('expedientes')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         tramite_code: tramiteCode,
         status: 'no_iniciado',
         origin_country: originCountry ?? null,

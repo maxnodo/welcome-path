@@ -35,7 +35,7 @@ const AdminExpedientes = () => {
       (e.tramites_catalog?.name ?? e.tramite_code).toLowerCase().includes(search.toLowerCase()) ||
       (e.expediente_number ?? "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "all" || e.status === filterStatus;
-    const matchGestor = filterGestor === "all" || (filterGestor === "none" ? !e.advisor_id : e.advisor_id === filterGestor);
+    const matchGestor = filterGestor === "all" || (filterGestor === "no_user" ? !e.user_id : filterGestor === "none" ? !e.advisor_id : e.advisor_id === filterGestor);
     return matchSearch && matchStatus && matchGestor;
   });
 
