@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-
-let adminMensajesCounter = 0
 import { useAuth } from '@/context/AuthContext'
 import { Mensaje } from '@/types/database.types'
+
+let adminMensajesCounter = 0
+
+const PAGE_SIZE = 25
 
 export function useAdminMensajes() {
   const { user, isGestor, isAdmin } = useAuth()
   const [mensajes, setMensajes] = useState<Mensaje[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
 
   async function fetchMensajes() {
     if (!user || !isGestor) return
@@ -16,16 +20,20 @@ export function useAdminMensajes() {
 
     let query = supabase
       .from('mensajes')
-      .select('*, sender:profiles!mensajes_sender_id_fkey(*), receiver:profiles!mensajes_receiver_id_fkey(*)')
+      .select('*, sender:profiles!mensajes_sender_id_fkey(*), receiver:profiles!mensajes_receiver_id_fkey(*)', { count: 'exact' })
       .order('created_at', { ascending: false })
 
-    // Gestor (not admin) only sees conversations they are part of
     if (isGestor && !isAdmin) {
       query = query.or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
     }
 
-    const { data } = await query
+    const from = page * PAGE_SIZE
+    const to = from + PAGE_SIZE - 1
+    query = query.range(from, to)
+
+    const { data, count } = await query
     setMensajes((data as Mensaje[]) ?? [])
+    setTotalCount(count ?? 0)
     setLoading(false)
   }
 
@@ -43,7 +51,7 @@ export function useAdminMensajes() {
       .subscribe()
 
     return () => { supabase.removeChannel(channel) }
-  }, [user?.id, isGestor, isAdmin])
+  }, [user?.id, isGestor, isAdmin, page])
 
   async function sendReply(receiverId: string, content: string, expedienteId?: string) {
     if (!user) return
@@ -57,5 +65,11 @@ export function useAdminMensajes() {
     await fetchMensajes()
   }
 
-  return { mensajes, loading, sendReply, refetch: fetchMensajes }
+  return {
+    mensajes, loading, sendReply, refetch: fetchMensajes,
+    page, totalCount, pageSize: PAGE_SIZE,
+    hasMore: (page + 1) * PAGE_SIZE < totalCount,
+    nextPage: () => setPage(p => p + 1),
+    prevPage: () => setPage(p => Math.max(0, p - 1)),
+  }
 }
