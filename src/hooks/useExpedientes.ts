@@ -15,21 +15,35 @@ export function useExpedientes() {
     setLoading(true)
     let query = supabase
       .from('expedientes')
-      .select('*, tramites_catalog(*), documentos(*), advisor:profiles!expedientes_advisor_id_fkey(id, full_name)')
+      .select('*, tramites_catalog(*), documentos(*)')
       .order('created_at', { ascending: false })
 
     if (isAdmin) {
       // Admin sees all expedientes
     } else if (isGestor) {
-      // Gestor only sees expedientes assigned to them via advisor_id
       query = query.eq('advisor_id', user.id)
     } else {
-      // Regular user sees only their own
       query = query.eq('user_id', user.id)
     }
 
     const { data } = await query
-    setExpedientes((data as Expediente[]) ?? [])
+    let results = (data as Expediente[]) ?? []
+
+    // Resolve advisor names separately (avoids RLS issues on profiles join)
+    const advisorIds = [...new Set(results.map(e => e.advisor_id).filter(Boolean))] as string[]
+    if (advisorIds.length > 0) {
+      const { data: advisors } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', advisorIds)
+      const advisorMap = new Map((advisors ?? []).map(a => [a.id, a]))
+      results = results.map(e => ({
+        ...e,
+        advisor: e.advisor_id ? (advisorMap.get(e.advisor_id) as Partial<import('@/types/database.types').Profile> | undefined) ?? undefined : undefined,
+      }))
+    }
+
+    setExpedientes(results)
     setLoading(false)
   }
 
