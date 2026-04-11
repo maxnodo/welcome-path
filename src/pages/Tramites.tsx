@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRef } from "react";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { ExpedienteStatus } from "@/types/database.types";
+import { ExpedientesList } from "@/components/ExpedientesList";
 
 const countries = [
   "Alemania", "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica",
@@ -252,13 +253,15 @@ const Tramites = () => {
     return s;
   });
 
-  // Derive statuses and counts from real expediente data
+  // Derive statuses, counts, and matching expedientes from real data
   const statuses: Record<string, Status> = {};
   const expedienteCounts: Record<string, number> = {};
+  const matchingExpedientes: Record<string, typeof expedientes> = {};
   tramites.forEach((t) => {
     const code = tramiteIdToCode[t.id];
     const matching = expedientes.filter(e => e.tramite_code === code);
     expedienteCounts[t.id] = matching.length;
+    matchingExpedientes[t.id] = matching;
     if (matching.length === 0) {
       statuses[t.id] = "no_iniciado";
     } else {
@@ -351,6 +354,9 @@ const Tramites = () => {
               {isOpen && (
                 <div className="px-4 pb-5 pt-0 space-y-5 border-t">
                   <p className="text-sm text-muted-foreground pt-4">{t.description}</p>
+
+                  {/* Expedientes list */}
+                  <ExpedientesList expedientes={matchingExpedientes[t.id] ?? []} />
 
                   {/* Type selector for Nacionalidad */}
                   {t.hasTypeSelector && (
