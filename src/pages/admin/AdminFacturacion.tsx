@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminFacturas } from "@/hooks/useAdminFacturas";
 import { useAuth } from "@/context/AuthContext";
+import TablePagination from "@/components/TablePagination";
 
 const statusLabels: Record<string, string> = {
   pagada: "Pagada",
@@ -20,7 +21,7 @@ const statusColor: Record<string, string> = {
 };
 
 const AdminFacturacion = () => {
-  const { facturas, loading } = useAdminFacturas();
+  const { facturas, loading, page, totalCount, pageSize, hasMore, nextPage, prevPage } = useAdminFacturas();
   const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -125,6 +126,9 @@ const AdminFacturacion = () => {
             })}
           </tbody>
         </table>
+        {!loading && totalCount > 0 && (
+          <TablePagination page={page} pageSize={pageSize} totalCount={totalCount} onNext={nextPage} onPrev={prevPage} />
+        )}
       </div>
     </div>
   );

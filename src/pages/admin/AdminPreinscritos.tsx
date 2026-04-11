@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAdminLeads, Lead } from "@/hooks/useAdminLeads";
+import TablePagination from "@/components/TablePagination";
 import { useGestores, getGestorName } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +25,7 @@ interface MatchedUser {
 
 const AdminPreinscritos = () => {
   const { user, isAdmin } = useAuth();
-  const { leads, loading, updateLead } = useAdminLeads();
+  const { leads, loading, updateLead, page, totalCount, pageSize, hasMore, nextPage, prevPage } = useAdminLeads();
   const { gestores } = useGestores();
   const { toast } = useToast();
   const [converting, setConverting] = useState<string | null>(null);
@@ -143,7 +144,7 @@ const AdminPreinscritos = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-semibold text-foreground">Pre-inscritos</h2>
-          <Badge variant="secondary">{leads.length} registros</Badge>
+          <Badge variant="secondary">{totalCount} registros</Badge>
         </div>
       </div>
 
@@ -242,6 +243,10 @@ const AdminPreinscritos = () => {
             </TableBody>
           </Table>
         </div>
+        {!loading && totalCount > 0 && (
+          <TablePagination page={page} pageSize={pageSize} totalCount={totalCount} onNext={nextPage} onPrev={prevPage} />
+        )}
+      </div>
       )}
 
       {/* Convert lead dialog */}

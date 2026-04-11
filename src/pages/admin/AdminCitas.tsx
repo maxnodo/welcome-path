@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminCitas } from "@/hooks/useAdminCitas";
+import TablePagination from "@/components/TablePagination";
 import { useToast } from "@/hooks/use-toast";
 import { Cita } from "@/types/database.types";
 
@@ -39,7 +40,7 @@ const statusColor: Record<string, string> = {
 
 const AdminCitas = () => {
   const { toast } = useToast();
-  const { citas, loading, updateCita } = useAdminCitas();
+  const { citas, loading, updateCita, page, totalCount, pageSize, hasMore, nextPage, prevPage } = useAdminCitas();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -157,6 +158,9 @@ const AdminCitas = () => {
             })}
           </tbody>
         </table>
+        {!loading && totalCount > 0 && (
+          <TablePagination page={page} pageSize={pageSize} totalCount={totalCount} onNext={nextPage} onPrev={prevPage} />
+        )}
       </div>
     </div>
   );
