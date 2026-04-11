@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Clock, Calendar, AlertTriangle, Eye, UserPlus, Send, BarChart3, Trash2 } from "lucide-react";
+import { Users, Clock, Calendar, AlertTriangle, Eye, UserPlus, Send, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -15,43 +14,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { useAlertas } from "@/hooks/useAlertas";
 import { useAdminCitas } from "@/hooks/useAdminCitas";
-import { useGestores } from "@/hooks/useGestores";
+import { useGestores, getGestorName } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Expediente, ExpedienteStatus, AlertaType, Cita, Profile } from "@/types/database.types";
 import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
-
-const allStatuses: ExpedienteStatus[] = [
-  "no_iniciado", "documentacion_incompleta", "en_revision", "requerimiento_adicional",
-  "presentado", "aprobado", "finalizado", "denegado", "archivado",
-];
-
-const statusLabels: Record<ExpedienteStatus, string> = {
-  no_iniciado: "No iniciado",
-  documentacion_incompleta: "Doc. incompleta",
-  en_revision: "En revisión",
-  requerimiento_adicional: "Requerimiento",
-  presentado: "Presentado",
-  aprobado: "Aprobado",
-  finalizado: "Finalizado",
-  denegado: "Denegado",
-  archivado: "Archivado",
-};
-
-const statusColor = (s: string) => {
-  const map: Record<string, string> = {
-    en_revision: "bg-secondary/10 text-secondary",
-    documentacion_incompleta: "bg-warning/10 text-warning",
-    presentado: "bg-purple-500/10 text-purple-600",
-    aprobado: "bg-success/10 text-success",
-    finalizado: "bg-success/10 text-success",
-    no_iniciado: "bg-muted text-muted-foreground",
-    requerimiento_adicional: "bg-orange-500/10 text-orange-600",
-    denegado: "bg-destructive/10 text-destructive",
-    archivado: "bg-muted text-muted-foreground",
-  };
-  return map[s] ?? "bg-muted text-muted-foreground";
-};
+import { allStatuses, statusLabels, statusColor } from "@/lib/expediente-utils";
+import ExpedienteDetailDialog from "@/components/admin/ExpedienteDetailDialog";
+import DeleteExpedienteDialog from "@/components/admin/DeleteExpedienteDialog";
 
 const alertaTypes: { value: AlertaType; label: string }[] = [
   { value: "urgente", label: "Urgente" },
@@ -71,10 +41,7 @@ const getUtcWeekRange = () => {
     now.getUTCFullYear(),
     now.getUTCMonth(),
     now.getUTCDate() - daysFromMonday,
-    0,
-    0,
-    0,
-    0,
+    0, 0, 0, 0,
   ));
 
   const weekEnd = new Date(weekStart);
@@ -98,9 +65,6 @@ const AdminDashboard = () => {
   const { citas } = useAdminCitas();
   const { gestores } = useGestores();
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
-  const [detailStatus, setDetailStatus] = useState<ExpedienteStatus>("no_iniciado");
-  const [detailAdvisorId, setDetailAdvisorId] = useState<string>("");
-  const [notes, setNotes] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -132,7 +96,6 @@ const AdminDashboard = () => {
 
   const currentWeekCitas = citas.filter(isCitaInCurrentWeek);
 
-  // Workload data (admin only)
   const workloadData = gestores.map(g => {
     const assigned = expedientes.filter(e => e.advisor_id === g.id);
     const active = assigned.filter(e => !INACTIVE_STATUSES.includes(e.status)).length;
@@ -148,26 +111,18 @@ const AdminDashboard = () => {
     { label: "Alertas urgentes", value: alertas.filter(a => a.type === "urgente" && !a.is_read).length, icon: AlertTriangle, color: "text-destructive bg-destructive/10" },
   ];
 
-  const openDetail = (exp: Expediente) => {
-    setSelectedExp(exp);
-    setDetailStatus(exp.status);
-    setDetailAdvisorId(exp.advisor_id ?? "__none__");
-    setNotes(exp.internal_notes ?? "");
-  };
-
-  const saveChanges = async () => {
+  const handleSave = async (data: { status: ExpedienteStatus; advisorId: string | null; notes: string | null }) => {
     if (!selectedExp || !user) return;
-    const effectiveAdvisorId = detailAdvisorId === "__none__" ? null : detailAdvisorId;
-    const advisorChanged = effectiveAdvisorId && effectiveAdvisorId !== (selectedExp.advisor_id ?? null);
+    const advisorChanged = data.advisorId && data.advisorId !== (selectedExp.advisor_id ?? null);
     const { error } = await updateExpediente(selectedExp.id, {
-      status: detailStatus,
-      internal_notes: notes || null,
-      advisor_id: effectiveAdvisorId,
+      status: data.status,
+      internal_notes: data.notes,
+      advisor_id: data.advisorId,
     });
     if (!error) {
       if (advisorChanged) {
         await notifyGestorAssignment({
-          advisorId: detailAdvisorId,
+          advisorId: data.advisorId!,
           tramiteName: selectedExp.tramites_catalog?.name ?? selectedExp.tramite_code,
           userName: "Cliente del expediente",
           expedienteId: selectedExp.id,
@@ -206,7 +161,6 @@ const AdminDashboard = () => {
     }).select('*, tramites_catalog(*)').single();
     setCreatingExp(false);
     if (!error) {
-      // Notify assigned gestor
       const tramiteName = data?.tramites_catalog?.name ?? newExpTramite;
       const assignedUser = allUsers.find(u => u.id === newExpUserId);
       await notifyGestorAssignment({
@@ -255,12 +209,6 @@ const AdminDashboard = () => {
     );
   };
 
-  const getGestorName = (id: string | null) => {
-    if (!id) return "Sin asignar";
-    const g = gestores.find(g => g.id === id);
-    return g?.full_name ?? g?.email ?? "Desconocido";
-  };
-
   const pendingAlerts = alertas.filter(a => !a.is_read).slice(0, 5);
 
   return (
@@ -303,7 +251,6 @@ const AdminDashboard = () => {
               <Users size={16} /> Carga de trabajo por gestor
             </h3>
 
-            {/* Summary row */}
             <div className="flex flex-wrap items-center gap-4 text-xs bg-muted/50 rounded-lg px-4 py-2.5">
               <span className="text-muted-foreground">
                 Total activos: <span className="font-semibold text-foreground">{totalActive}</span>
@@ -318,7 +265,6 @@ const AdminDashboard = () => {
               )}
             </div>
 
-            {/* Card grid */}
             <div className="flex gap-3 overflow-x-auto pb-2">
               {workloadData.map(w => {
                 const load = getLoadColor(w.active);
@@ -330,12 +276,10 @@ const AdminDashboard = () => {
                     key={w.id}
                     className={`min-w-[180px] flex-shrink-0 bg-card rounded-lg border border-l-4 ${load.border} shadow-sm p-4 flex flex-col items-center gap-3`}
                   >
-                    {/* Name */}
                     <p className="text-sm font-medium text-foreground truncate w-full text-center">
                       {w.full_name ?? w.email ?? "Sin nombre"}
                     </p>
 
-                    {/* Donut chart */}
                     <div
                       className="w-14 h-14 rounded-full flex items-center justify-center"
                       style={{
@@ -347,7 +291,6 @@ const AdminDashboard = () => {
                       </div>
                     </div>
 
-                    {/* Metrics */}
                     <div className="flex items-center gap-2 text-[11px]">
                       <span className="bg-warning/10 text-warning px-1.5 py-0.5 rounded-full font-medium">{w.pendingReview} rev</span>
                       <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">{w.weeklyCitas} cit</span>
@@ -387,9 +330,9 @@ const AdminDashboard = () => {
                     {statusLabels[exp.status] ?? exp.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground text-xs">{getGestorName(exp.advisor_id)}</td>
+                <td className="px-4 py-3 text-muted-foreground text-xs">{getGestorName(gestores, exp.advisor_id)}</td>
                 <td className="px-4 py-3">
-                  <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => openDetail(exp)}>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => setSelectedExp(exp)}>
                     <Eye size={12} /> Ver
                   </Button>
                 </td>
@@ -399,112 +342,78 @@ const AdminDashboard = () => {
         </table>
       </div>
 
-      {/* Detail modal */}
-      <Dialog open={!!selectedExp} onOpenChange={() => setSelectedExp(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Expediente {selectedExp?.expediente_number ?? selectedExp?.id}</DialogTitle>
-          </DialogHeader>
-          {selectedExp && (
-            <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <h4 className="font-semibold text-foreground mb-2">Datos del trámite</h4>
-                  <p className="text-muted-foreground">Tipo: <span className="text-foreground">{selectedExp.tramites_catalog?.name ?? selectedExp.tramite_code}</span></p>
-                  <p className="text-muted-foreground">Nº Expediente: <span className="text-foreground">{selectedExp.expediente_number ?? "—"}</span></p>
-                  <p className="text-muted-foreground">País origen: <span className="text-foreground">{selectedExp.origin_country ?? "—"}</span></p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground mb-2">Fechas</h4>
-                  <p className="text-muted-foreground">Creado: <span className="text-foreground">{new Date(selectedExp.created_at).toLocaleDateString("es-ES")}</span></p>
-                  <p className="text-muted-foreground">Presentado: <span className="text-foreground">{selectedExp.submitted_at ? new Date(selectedExp.submitted_at).toLocaleDateString("es-ES") : "—"}</span></p>
-                  <p className="text-muted-foreground">Resuelto: <span className="text-foreground">{selectedExp.resolved_at ? new Date(selectedExp.resolved_at).toLocaleDateString("es-ES") : "—"}</span></p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm">Estado</Label>
-                <Select value={detailStatus} onValueChange={(v) => setDetailStatus(v as ExpedienteStatus)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {allStatuses.map((s) => <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+      <ExpedienteDetailDialog
+        expediente={selectedExp}
+        gestores={gestores}
+        isAdmin={isAdmin}
+        onSave={handleSave}
+        onDelete={() => setShowDeleteConfirm(true)}
+        onClose={() => setSelectedExp(null)}
+      />
 
-              {/* Gestor selector */}
-              <div className="space-y-2">
-                <Label className="text-sm">Gestor asignado</Label>
-                {isAdmin ? (
-                  <Select value={detailAdvisorId} onValueChange={setDetailAdvisorId}>
-                    <SelectTrigger><SelectValue placeholder="Sin asignar" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">Sin asignar</SelectItem>
-                      {gestores.map(g => (
-                        <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email ?? g.id}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <p className="text-sm text-foreground bg-muted/50 rounded px-3 py-2">
-                    {getGestorName(selectedExp.advisor_id)}
-                  </p>
-                )}
-              </div>
+      <DeleteExpedienteDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        onConfirm={handleDeleteExpediente}
+        deleting={deleting}
+      />
 
-              <div className="space-y-2">
-                <Label className="text-sm">Notas internas (no visibles para el cliente)</Label>
-                <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Añadir notas internas..." rows={3} />
-              </div>
-              {selectedExp.documentos && selectedExp.documentos.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-sm">Documentos ({selectedExp.documentos.length})</Label>
-                  <div className="space-y-1">
-                    {selectedExp.documentos.map(doc => (
-                      <div key={doc.id} className="flex items-center justify-between text-xs bg-muted/50 rounded px-3 py-2">
-                        <span className="text-foreground">{doc.file_name}</span>
-                        <span className={`font-medium ${
-                          doc.status === 'validado' ? 'text-success' : doc.status === 'rechazado' ? 'text-destructive' : 'text-warning'
-                        }`}>{doc.status}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          <DialogFooter className="flex justify-between">
-            <div>
-              {isAdmin && (
-                <Button variant="destructive" size="sm" className="gap-1" onClick={() => setShowDeleteConfirm(true)}>
-                  <Trash2 size={14} /> Eliminar expediente
-                </Button>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setSelectedExp(null)}>Cerrar</Button>
-              <Button onClick={saveChanges}>Guardar cambios</Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Quick actions */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" className="h-auto py-4 flex flex-col gap-1.5" onClick={() => setShowNewExp(true)}>
+              <UserPlus size={20} />
+              <span className="text-xs">Nuevo expediente</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Crear un nuevo expediente asignándolo a un usuario y gestor</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" className="h-auto py-4 flex flex-col gap-1.5" onClick={() => setShowMassAlert(true)}>
+              <Send size={20} />
+              <span className="text-xs">Alerta masiva</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Enviar una alerta a múltiples usuarios</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" className="h-auto py-4 flex flex-col gap-1.5" onClick={() => navigate("/admin/citas")}>
+              <Calendar size={20} />
+              <span className="text-xs">Ver agenda</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Ir a la vista de citas y agenda</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" className="h-auto py-4 flex flex-col gap-1.5 opacity-50" disabled>
+              <BarChart3 size={20} />
+              <span className="text-xs">Generar informe</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Próximamente</TooltipContent>
+        </Tooltip>
+      </div>
 
-      {/* Delete confirmation */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar expediente?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción eliminará permanentemente el expediente y todos sus documentos asociados. No se puede deshacer.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteExpediente} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {deleting ? "Eliminando..." : "Eliminar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Pending alerts */}
+      {pendingAlerts.length > 0 && (
+        <div className="bg-card rounded-lg border shadow-sm p-4">
+          <h3 className="font-semibold text-foreground text-sm mb-3">Alertas pendientes</h3>
+          <div className="space-y-2">
+            {pendingAlerts.map(a => (
+              <div key={a.id} className="flex items-center gap-3 text-sm">
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                  a.type === 'urgente' ? 'bg-destructive/10 text-destructive' : 'bg-warning/10 text-warning'
+                }`}>{a.type}</span>
+                <span className="text-foreground">{a.title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* New expediente dialog */}
       <Dialog open={showNewExp} onOpenChange={setShowNewExp}>
