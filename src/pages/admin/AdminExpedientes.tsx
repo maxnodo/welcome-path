@@ -341,15 +341,40 @@ const AdminExpedientes = () => {
               {selectedExp.documentos && selectedExp.documentos.length > 0 && (
                 <div className="space-y-2">
                   <Label className="text-sm">Documentos ({selectedExp.documentos.length})</Label>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     {selectedExp.documentos.map(doc => (
-                      <div key={doc.id} className="flex items-center justify-between text-xs bg-muted/50 rounded px-3 py-2">
-                        <span className="text-foreground">{doc.file_name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className={`font-medium ${
-                            doc.status === 'validado' ? 'text-success' : doc.status === 'rechazado' ? 'text-destructive' : 'text-warning'
+                      <div key={doc.id} className="flex items-center justify-between text-xs bg-muted/50 rounded px-3 py-2.5 gap-2">
+                        <span className="text-foreground truncate flex-1">{doc.file_name}</span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className={`font-medium px-1.5 py-0.5 rounded text-[10px] ${
+                            doc.status === 'validado' ? 'bg-success/10 text-success' :
+                            doc.status === 'rechazado' ? 'bg-destructive/10 text-destructive' :
+                            doc.status === 'en_revision' ? 'bg-secondary/10 text-secondary' :
+                            'bg-warning/10 text-warning'
                           }`}>{doc.status}</span>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0"><Download size={12} /></Button>
+                          {doc.rejection_reason && (
+                            <span className="text-destructive text-[10px] max-w-[120px] truncate" title={doc.rejection_reason}>
+                              ({doc.rejection_reason})
+                            </span>
+                          )}
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" title="Descargar" onClick={() => handleDownloadDoc(doc)}>
+                            <Download size={12} />
+                          </Button>
+                          {doc.status !== 'validado' && (
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-success hover:text-success" title="Validar" onClick={() => handleValidateDoc(doc.id)}>
+                              <CheckCircle2 size={13} />
+                            </Button>
+                          )}
+                          {doc.status !== 'rechazado' && (
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-destructive hover:text-destructive" title="Rechazar" onClick={() => { setRejectingDocId(doc.id); setRejectionReason(""); }}>
+                              <XCircle size={13} />
+                            </Button>
+                          )}
+                          {(doc.status === 'validado' || doc.status === 'rechazado') && (
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground" title="Devolver a pendiente" onClick={() => handleResetDocStatus(doc.id)}>
+                              <RotateCcw size={12} />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -373,6 +398,30 @@ const AdminExpedientes = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reject document reason dialog */}
+      <AlertDialog open={!!rejectingDocId} onOpenChange={(open) => { if (!open) { setRejectingDocId(null); setRejectionReason(""); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rechazar documento</AlertDialogTitle>
+            <AlertDialogDescription>
+              Indica el motivo del rechazo para que el usuario pueda corregirlo.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Textarea
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+            placeholder="Motivo del rechazo (ej: documento ilegible, fecha vencida...)"
+            rows={3}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRejectDoc} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Rechazar documento
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete confirmation */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
