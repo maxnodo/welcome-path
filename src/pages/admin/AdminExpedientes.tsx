@@ -122,6 +122,52 @@ const AdminExpedientes = () => {
     setSelectedExp(null);
   };
 
+  const handleValidateDoc = async (docId: string) => {
+    const { error } = await updateDocumentStatus(docId, 'validado');
+    if (!error) {
+      toast({ title: "Documento validado" });
+      await refetch();
+      // Update selectedExp with fresh data
+      const updated = expedientes.find(e => e.id === selectedExp?.id);
+      if (updated) setSelectedExp({ ...updated });
+    } else {
+      toast({ title: "Error", description: String(error), variant: "destructive" });
+    }
+  };
+
+  const handleRejectDoc = async () => {
+    if (!rejectingDocId) return;
+    const { error } = await updateDocumentStatus(rejectingDocId, 'rechazado', rejectionReason);
+    if (!error) {
+      toast({ title: "Documento rechazado" });
+      await refetch();
+      const updated = expedientes.find(e => e.id === selectedExp?.id);
+      if (updated) setSelectedExp({ ...updated });
+    } else {
+      toast({ title: "Error", description: String(error), variant: "destructive" });
+    }
+    setRejectingDocId(null);
+    setRejectionReason("");
+  };
+
+  const handleResetDocStatus = async (docId: string) => {
+    const { error } = await updateDocumentStatus(docId, 'pendiente');
+    if (!error) {
+      toast({ title: "Documento devuelto a pendiente" });
+      await refetch();
+      const updated = expedientes.find(e => e.id === selectedExp?.id);
+      if (updated) setSelectedExp({ ...updated });
+    } else {
+      toast({ title: "Error", description: String(error), variant: "destructive" });
+    }
+  };
+
+  const handleDownloadDoc = async (doc: Documento) => {
+    const url = await getDocumentUrl(doc.file_path);
+    if (url) window.open(url, '_blank');
+    else toast({ title: "Error", description: "No se pudo obtener el enlace del documento.", variant: "destructive" });
+  };
+
   const statusCounts = allStatuses.map((s) => ({
     status: s,
     label: statusLabels[s],
