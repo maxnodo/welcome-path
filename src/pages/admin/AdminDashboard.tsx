@@ -384,8 +384,6 @@ const AdminDashboard = () => {
 
         {/* Right column */}
         <div className="space-y-4">
-          <div className="bg-card rounded-lg border shadow-sm p-4 space-y-2">
-            <h3 className="font-semibold text-foreground text-sm">Acciones rápidas</h3>
             <Button variant="outline" className="w-full justify-start gap-2 text-xs" onClick={() => setShowNewExp(true)}>
               <UserPlus size={14} /> Nuevo expediente
             </Button>
