@@ -21,48 +21,38 @@ const statusColor: Record<string, string> = {
 };
 
 const AdminFacturacion = () => {
-  const { facturas, loading, page, totalCount, pageSize, hasMore, nextPage, prevPage } = useAdminFacturas();
   const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  const filtered = facturas.filter((f) => {
-    const user = (f as any).user;
-    const matchSearch = !search ||
-      f.invoice_number.toLowerCase().includes(search.toLowerCase()) ||
-      (user?.full_name ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchStatus = filterStatus === "all" || f.status === filterStatus;
-    return matchSearch && matchStatus;
-  });
-
-  const totalRevenue = facturas.filter(f => f.status === "pagada").reduce((sum, f) => sum + f.total_amount, 0);
-  const pendingAmount = facturas.filter(f => f.status === "pendiente").reduce((sum, f) => sum + f.total_amount, 0);
-  const failedCount = facturas.filter(f => f.status === "fallida").length;
+  const {
+    facturas, loading, page, totalCount, pageSize, hasMore, nextPage, prevPage, stats,
+  } = useAdminFacturas({ search, status: filterStatus });
 
   return (
     <div className="space-y-6">
-      {/* Stats */}
+      {/* Stats - global metrics, unaffected by filters */}
       {isAdmin && (
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-success/10 text-success flex items-center justify-center"><DollarSign size={20} /></div>
             <div>
               <p className="text-xs text-muted-foreground">Facturado (pagado)</p>
-              <p className="text-2xl font-bold text-foreground">{totalRevenue.toFixed(2)} €</p>
+              <p className="text-2xl font-bold text-foreground">{stats.totalRevenue.toFixed(2)} €</p>
             </div>
           </div>
           <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-warning/10 text-warning flex items-center justify-center"><Receipt size={20} /></div>
             <div>
               <p className="text-xs text-muted-foreground">Pendiente de cobro</p>
-              <p className="text-2xl font-bold text-foreground">{pendingAmount.toFixed(2)} €</p>
+              <p className="text-2xl font-bold text-foreground">{stats.pendingAmount.toFixed(2)} €</p>
             </div>
           </div>
           <div className="bg-card rounded-lg border p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center"><AlertTriangle size={20} /></div>
             <div>
               <p className="text-xs text-muted-foreground">Pagos fallidos</p>
-              <p className="text-2xl font-bold text-foreground">{failedCount}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.failedCount}</p>
             </div>
           </div>
         </div>
@@ -102,9 +92,9 @@ const AdminFacturacion = () => {
           <tbody>
             {loading ? (
               <tr><td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">Cargando...</td></tr>
-            ) : filtered.length === 0 ? (
+            ) : facturas.length === 0 ? (
               <tr><td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">No hay facturas.</td></tr>
-            ) : filtered.map((f) => {
+            ) : facturas.map((f) => {
               const user = (f as any).user;
               return (
                 <tr key={f.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
