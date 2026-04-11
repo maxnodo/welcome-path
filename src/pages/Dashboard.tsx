@@ -83,7 +83,6 @@ const Dashboard = () => {
             Contactar ahora
           </button>
         </div>
-      </div>
     </div>
   );
 };
