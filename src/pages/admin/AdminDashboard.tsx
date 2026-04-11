@@ -342,65 +342,43 @@ const AdminDashboard = () => {
         );
       })()}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Expedientes table */}
-        <div className="lg:col-span-2 bg-card rounded-lg border shadow-sm overflow-hidden">
-          <div className="p-4 border-b">
-            <h3 className="font-semibold text-foreground">Expedientes recientes</h3>
-          </div>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50 text-left">
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Trámite</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Estado</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Gestor</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Acciones</th>
+      {/* Expedientes table */}
+      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+        <div className="p-4 border-b">
+          <h3 className="font-semibold text-foreground">Expedientes recientes</h3>
+        </div>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b bg-muted/50 text-left">
+              <th className="px-4 py-2.5 font-medium text-muted-foreground">Trámite</th>
+              <th className="px-4 py-2.5 font-medium text-muted-foreground">Estado</th>
+              <th className="px-4 py-2.5 font-medium text-muted-foreground">Gestor</th>
+              <th className="px-4 py-2.5 font-medium text-muted-foreground">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">Cargando...</td></tr>
+            ) : expedientes.length === 0 ? (
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">No hay expedientes.</td></tr>
+            ) : expedientes.slice(0, 10).map((exp) => (
+              <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 font-medium text-foreground">{exp.tramites_catalog?.name ?? exp.tramite_code}</td>
+                <td className="px-4 py-3">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(exp.status)}`}>
+                    {statusLabels[exp.status] ?? exp.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-muted-foreground text-xs">{getGestorName(exp.advisor_id)}</td>
+                <td className="px-4 py-3">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => openDetail(exp)}>
+                    <Eye size={12} /> Ver
+                  </Button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">Cargando...</td></tr>
-              ) : expedientes.length === 0 ? (
-                <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">No hay expedientes.</td></tr>
-              ) : expedientes.slice(0, 10).map((exp) => (
-                <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-medium text-foreground">{exp.tramites_catalog?.name ?? exp.tramite_code}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(exp.status)}`}>
-                      {statusLabels[exp.status] ?? exp.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground text-xs">{getGestorName(exp.advisor_id)}</td>
-                  <td className="px-4 py-3">
-                    <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => openDetail(exp)}>
-                      <Eye size={12} /> Ver
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-4">
-          <div className="bg-card rounded-lg border shadow-sm p-4 space-y-3">
-            <h3 className="font-semibold text-foreground text-sm">Alertas pendientes</h3>
-            {pendingAlerts.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No hay alertas pendientes.</p>
-            ) : pendingAlerts.map((a) => (
-              <div key={a.id} className="flex items-start gap-2 text-sm">
-                <span className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1.5 ${
-                  a.type === 'urgente' ? 'bg-destructive' : a.type === 'recordatorio' ? 'bg-warning' : 'bg-orange-500'
-                }`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-foreground font-medium text-xs">{a.title}</p>
-                  <p className="text-[10px] text-muted-foreground">{new Date(a.created_at).toLocaleDateString("es-ES")}</p>
-                </div>
-              </div>
             ))}
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
 
       {/* Detail modal */}
