@@ -8,36 +8,35 @@ import { useExpedientes } from "@/hooks/useExpedientes";
 import { useDocumentos } from "@/hooks/useDocumentos";
 import { useGestores, getGestorName } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
-import { Expediente, ExpedienteStatus, Documento } from "@/types/database.types";
+import { ExpedienteStatus, Expediente, Documento } from "@/types/database.types";
 import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
 import { allStatuses, statusLabels, statusColor } from "@/lib/expediente-utils";
 import ExpedienteDetailDialog from "@/components/admin/ExpedienteDetailDialog";
 import DeleteExpedienteDialog from "@/components/admin/DeleteExpedienteDialog";
 import RejectDocumentDialog from "@/components/admin/RejectDocumentDialog";
+import TablePagination from "@/components/TablePagination";
 
 const AdminExpedientes = () => {
   const { toast } = useToast();
   const { user, isAdmin } = useAuth();
-  const { expedientes, loading, updateExpediente, deleteExpediente, refetch } = useExpedientes();
   const { updateDocumentStatus, getDocumentUrl } = useDocumentos();
   const { gestores } = useGestores();
+
+  // Filter state
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterGestor, setFilterGestor] = useState<string>("all");
+
+  // Hook with server-side filters & pagination
+  const {
+    expedientes, loading, updateExpediente, deleteExpediente, refetch,
+    page, totalCount, pageSize, hasMore, nextPage, prevPage, statusCounts,
+  } = useExpedientes({ search, status: filterStatus, gestorId: filterGestor });
+
   const [selectedExp, setSelectedExp] = useState<Expediente | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [rejectingDocId, setRejectingDocId] = useState<string | null>(null);
-
-  const filtered = expedientes.filter((e) => {
-    const matchSearch =
-      !search ||
-      (e.tramites_catalog?.name ?? e.tramite_code).toLowerCase().includes(search.toLowerCase()) ||
-      (e.expediente_number ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchStatus = filterStatus === "all" || e.status === filterStatus;
-    const matchGestor = filterGestor === "all" || (filterGestor === "no_user" ? !e.user_id : filterGestor === "none" ? !e.advisor_id : e.advisor_id === filterGestor);
-    return matchSearch && matchStatus && matchGestor;
-  });
 
   const handleSave = async (data: { status: ExpedienteStatus; advisorId: string | null; notes: string | null }) => {
     if (!selectedExp || !user) return;
@@ -129,17 +128,15 @@ const AdminExpedientes = () => {
     else toast({ title: "Error", description: "No se pudo obtener el enlace del documento.", variant: "destructive" });
   };
 
-  const statusCounts = allStatuses.map((s) => ({
-    status: s,
-    label: statusLabels[s],
-    count: expedientes.filter((e) => e.status === s).length,
-  }));
+  const statusCountItems = allStatuses
+    .map((s) => ({ status: s, label: statusLabels[s], count: statusCounts[s] ?? 0 }))
+    .filter(s => s.count > 0);
 
   return (
     <div className="space-y-6">
       {/* Status summary */}
       <div className="flex gap-2 flex-wrap">
-        {statusCounts.filter(s => s.count > 0).map((s) => (
+        {statusCountItems.map((s) => (
           <button
             key={s.status}
             onClick={() => setFilterStatus(filterStatus === s.status ? "all" : s.status)}
@@ -210,9 +207,9 @@ const AdminExpedientes = () => {
           <tbody>
             {loading ? (
               <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">Cargando expedientes...</td></tr>
-            ) : filtered.length === 0 ? (
+            ) : expedientes.length === 0 ? (
               <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">No se encontraron expedientes.</td></tr>
-            ) : filtered.map((exp) => (
+            ) : expedientes.map((exp) => (
               <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-medium text-foreground">
                   <div className="flex items-center gap-1.5">
@@ -239,6 +236,15 @@ const AdminExpedientes = () => {
             ))}
           </tbody>
         </table>
+        {!loading && totalCount > 0 && (
+          <TablePagination
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+            onNext={nextPage}
+            onPrev={prevPage}
+          />
+        )}
       </div>
 
       <ExpedienteDetailDialog
