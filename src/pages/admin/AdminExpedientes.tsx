@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, Eye } from "lucide-react";
+import { Search, Filter, Eye, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,7 +35,7 @@ const AdminExpedientes = () => {
       (e.tramites_catalog?.name ?? e.tramite_code).toLowerCase().includes(search.toLowerCase()) ||
       (e.expediente_number ?? "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "all" || e.status === filterStatus;
-    const matchGestor = filterGestor === "all" || (filterGestor === "none" ? !e.advisor_id : e.advisor_id === filterGestor);
+    const matchGestor = filterGestor === "all" || (filterGestor === "no_user" ? !e.user_id : filterGestor === "none" ? !e.advisor_id : e.advisor_id === filterGestor);
     return matchSearch && matchStatus && matchGestor;
   });
 
@@ -183,6 +183,7 @@ const AdminExpedientes = () => {
             <SelectContent>
               <SelectItem value="all">Todos los gestores</SelectItem>
               <SelectItem value="none">Sin asignar</SelectItem>
+              <SelectItem value="no_user">⚠ Sin usuario vinculado</SelectItem>
               {gestores.map(g => (
                 <SelectItem key={g.id} value={g.id}>{g.full_name ?? g.email}</SelectItem>
               ))}
@@ -213,7 +214,12 @@ const AdminExpedientes = () => {
               <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">No se encontraron expedientes.</td></tr>
             ) : filtered.map((exp) => (
               <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-medium text-foreground">{exp.tramites_catalog?.name ?? exp.tramite_code}</td>
+                <td className="px-4 py-3 font-medium text-foreground">
+                  <div className="flex items-center gap-1.5">
+                    {!exp.user_id && <span title="Sin usuario vinculado"><AlertTriangle size={13} className="text-warning shrink-0" /></span>}
+                    {exp.tramites_catalog?.name ?? exp.tramite_code}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{exp.expediente_number ?? "—"}</td>
                 <td className="px-4 py-3">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(exp.status)}`}>
