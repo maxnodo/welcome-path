@@ -1,4 +1,4 @@
-import { FileText, ChevronRight, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { FileText, ChevronRight, Clock, CheckCircle2, XCircle, AlertCircle, User } from "lucide-react";
 import { Expediente, ExpedienteStatus, DocumentoStatus } from "@/types/database.types";
 import { useState } from "react";
 
@@ -67,6 +67,11 @@ export function ExpedientesList({ expedientes }: ExpedientesListProps) {
                     Creado {dateStr}
                     {exp.origin_country ? ` · ${exp.origin_country}` : ""}
                     {exp.solicitud_type ? ` · ${exp.solicitud_type}` : ""}
+                    {exp.advisor?.full_name && (
+                      <span className="inline-flex items-center gap-1 ml-1">
+                        · <User size={10} className="inline" /> {exp.advisor.full_name}
+                      </span>
+                    )}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground shrink-0">
