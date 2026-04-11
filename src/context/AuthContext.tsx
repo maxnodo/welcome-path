@@ -67,22 +67,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let cancelled = false
     isFetching.current = true
 
-    supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
-      .then(({ data, error }) => {
+    const fetchProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle()
         if (!cancelled) {
           if (!error && data) {
             setProfile(data as Profile)
           }
           setLoading(false)
         }
-      })
-      .finally(() => {
+      } finally {
         isFetching.current = false
-      })
+      }
+    }
+    fetchProfile()
 
     return () => {
       cancelled = true
