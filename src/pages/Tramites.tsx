@@ -359,7 +359,7 @@ const Tramites = () => {
                   <p className="text-sm text-muted-foreground pt-4">{t.description}</p>
 
                   {/* Expedientes list */}
-                  <ExpedientesList expedientes={matchingExpedientes[t.id] ?? []} />
+                  <ExpedientesList expedientes={matchingExpedientes[t.id] ?? []} advisorNames={advisorNames} />
 
                   {/* Type selector for Nacionalidad */}
                   {t.hasTypeSelector && (
