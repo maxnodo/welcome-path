@@ -216,7 +216,7 @@ const AdminExpedientes = () => {
               <tr key={exp.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-medium text-foreground">
                   <div className="flex items-center gap-1.5">
-                    {!exp.user_id && <AlertTriangle size={13} className="text-warning shrink-0" title="Sin usuario vinculado" />}
+                    {!exp.user_id && <span title="Sin usuario vinculado"><AlertTriangle size={13} className="text-warning shrink-0" /></span>}
                     {exp.tramites_catalog?.name ?? exp.tramite_code}
                   </div>
                 </td>
