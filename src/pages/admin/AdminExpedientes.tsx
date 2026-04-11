@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, Eye, Download, Trash2 } from "lucide-react";
+import { Search, Filter, Eye, Download, Trash2, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
+import { useDocumentos } from "@/hooks/useDocumentos";
 import { useGestores } from "@/hooks/useGestores";
 import { useAuth } from "@/context/AuthContext";
-import { Expediente, ExpedienteStatus } from "@/types/database.types";
+import { Expediente, ExpedienteStatus, Documento } from "@/types/database.types";
 import { notifyGestorAssignment } from "@/lib/notifyGestorAssignment";
 
 const allStatuses: ExpedienteStatus[] = [
@@ -49,7 +50,8 @@ const statusColor = (s: string) => {
 const AdminExpedientes = () => {
   const { toast } = useToast();
   const { user, isAdmin } = useAuth();
-  const { expedientes, loading, updateExpediente, deleteExpediente } = useExpedientes();
+  const { expedientes, loading, updateExpediente, deleteExpediente, refetch } = useExpedientes();
+  const { updateDocumentStatus, getDocumentUrl } = useDocumentos();
   const { gestores } = useGestores();
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -60,6 +62,8 @@ const AdminExpedientes = () => {
   const [notes, setNotes] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [rejectingDocId, setRejectingDocId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const filtered = expedientes.filter((e) => {
     const matchSearch =
