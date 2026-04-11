@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
+
 import { useToast } from "@/hooks/use-toast";
 import { useExpedientes } from "@/hooks/useExpedientes";
 import { useAlertas } from "@/hooks/useAlertas";
@@ -122,7 +122,7 @@ const AdminDashboard = () => {
     return { ...g, active, pendingReview, weeklyCitas, total: assigned.length };
   });
 
-  const maxActive = Math.max(...workloadData.map(w => w.active), 1);
+  
 
   const kpis = [
     { label: "Expedientes activos", value: expedientes.filter(e => !INACTIVE_STATUSES.includes(e.status)).length, icon: Users, color: "text-secondary bg-secondary/10" },
@@ -267,31 +267,80 @@ const AdminDashboard = () => {
         })}
       </div>
 
-      {/* Workload card — admin only */}
-      {isAdmin && workloadData.length > 0 && (
-        <div className="bg-card rounded-lg border shadow-sm p-5 space-y-4">
-          <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
-            <Users size={16} /> Carga de trabajo por gestor
-          </h3>
-          <div className="space-y-3">
-            {workloadData.map(w => (
-              <div key={w.id} className="flex items-center gap-4">
-                <div className="w-36 shrink-0">
-                  <p className="text-sm font-medium text-foreground truncate">{w.full_name ?? w.email}</p>
-                </div>
-                <div className="flex-1 flex items-center gap-2">
-                  <Progress value={(w.active / maxActive) * 100} className="h-2 flex-1" />
-                </div>
-                <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-medium">{w.active} activos</span>
-                  <span className="bg-warning/10 text-warning px-2 py-0.5 rounded-full font-medium">{w.pendingReview} revisión</span>
-                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{w.weeklyCitas} citas</span>
-                </div>
-              </div>
-            ))}
+      {/* Workload card grid — admin only */}
+      {isAdmin && workloadData.length > 0 && (() => {
+        const totalActive = workloadData.reduce((s, w) => s + w.active, 0);
+        const avgLoad = workloadData.length ? (totalActive / workloadData.length).toFixed(1) : "0";
+        const overloaded = workloadData.filter(w => w.active >= 7).length;
+        const getLoadColor = (active: number) => {
+          if (active >= 7) return { border: "border-l-destructive", ring: "hsl(0 72% 51%)", label: "Alta" };
+          if (active >= 4) return { border: "border-l-warning", ring: "hsl(32 95% 44%)", label: "Media" };
+          return { border: "border-l-success", ring: "hsl(142 72% 29%)", label: "Baja" };
+        };
+        const capacity = 10;
+
+        return (
+          <div className="bg-card rounded-lg border shadow-sm p-5 space-y-4">
+            <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
+              <Users size={16} /> Carga de trabajo por gestor
+            </h3>
+
+            {/* Summary row */}
+            <div className="flex flex-wrap items-center gap-4 text-xs bg-muted/50 rounded-lg px-4 py-2.5">
+              <span className="text-muted-foreground">
+                Total activos: <span className="font-semibold text-foreground">{totalActive}</span>
+              </span>
+              <span className="text-muted-foreground">
+                Promedio: <span className="font-semibold text-foreground">{avgLoad}/gestor</span>
+              </span>
+              {overloaded > 0 && (
+                <span className="text-destructive font-medium">
+                  ⚠ {overloaded} sobrecargado{overloaded > 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+
+            {/* Card grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+              {workloadData.map(w => {
+                const load = getLoadColor(w.active);
+                const pct = Math.min((w.active / capacity) * 100, 100);
+                const deg = (pct / 100) * 360;
+
+                return (
+                  <div
+                    key={w.id}
+                    className={`bg-card rounded-lg border border-l-4 ${load.border} shadow-sm p-4 flex flex-col items-center gap-3`}
+                  >
+                    {/* Name */}
+                    <p className="text-sm font-medium text-foreground truncate w-full text-center">
+                      {w.full_name ?? w.email ?? "Sin nombre"}
+                    </p>
+
+                    {/* Donut chart */}
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `conic-gradient(${load.ring} ${deg}deg, hsl(var(--muted)) ${deg}deg)`,
+                      }}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center">
+                        <span className="text-base font-bold text-foreground">{w.active}</span>
+                      </div>
+                    </div>
+
+                    {/* Metrics */}
+                    <div className="flex items-center gap-2 text-[11px]">
+                      <span className="bg-warning/10 text-warning px-1.5 py-0.5 rounded-full font-medium">{w.pendingReview} rev</span>
+                      <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">{w.weeklyCitas} cit</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Expedientes table */}
