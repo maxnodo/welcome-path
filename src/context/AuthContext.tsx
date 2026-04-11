@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { Profile } from '@/types/database.types'
@@ -23,55 +23,89 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
+  const isFetching = useRef(false)
 
+  // Effect 1: Auth listener
   useEffect(() => {
-    // Set up listener BEFORE getSession
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
-        if (session?.user) {
-          // Set loading true while we fetch the profile
-          setLoading(true)
-          // Use setTimeout to avoid deadlock with Supabase auth
-          setTimeout(() => fetchProfile(session.user.id), 0)
-        } else {
+
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+          if (session?.user) {
+            setLoading(true)
+            setUserId(session.user.id)
+          } else {
+            setProfile(null)
+            setUserId(null)
+            setLoading(false)
+          }
+        } else if (event === 'SIGNED_OUT') {
           setProfile(null)
+          setUserId(null)
           setLoading(false)
         }
+        // TOKEN_REFRESHED: session/user updated above, no loading/profile change
       }
     )
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      } else {
-        setLoading(false)
-      }
-    })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  async function fetchProfile(userId: string) {
+  // Effect 2: Fetch profile when userId changes
+  useEffect(() => {
+    if (!userId) {
+      setProfile(null)
+      setLoading(false)
+      return
+    }
+
+    if (isFetching.current) return
+
+    let cancelled = false
+    isFetching.current = true
+
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (!cancelled) {
+          if (!error && data) {
+            setProfile(data as Profile)
+          }
+          setLoading(false)
+        }
+      })
+      .finally(() => {
+        isFetching.current = false
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [userId])
+
+  async function refreshProfile() {
+    if (!user) return
+    if (isFetching.current) return
+
+    isFetching.current = true
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('id', user.id)
         .maybeSingle()
       if (!error && data) {
         setProfile(data as Profile)
       }
     } finally {
-      setLoading(false)
+      isFetching.current = false
     }
-  }
-
-  async function refreshProfile() {
-    if (user) await fetchProfile(user.id)
   }
 
   async function signIn(email: string, password: string) {
@@ -81,9 +115,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function signOut() {
     await supabase.auth.signOut()
-    setProfile(null)
-    setSession(null)
-    setUser(null)
   }
 
   const isAuthenticated = !!session
