@@ -40,24 +40,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex gap-6">
-      {/* Left column - user card */}
-      <div className="w-64 shrink-0 hidden lg:block">
-        <div className="bg-card rounded-lg border shadow-sm p-6 text-center">
-          <div className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-            {initials}
-          </div>
-          <p className="text-sm text-muted-foreground">Bienvenido</p>
-          <p className="font-semibold text-foreground text-lg">{displayName}</p>
-          <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-            <p>Nacionalidad: {profile?.nationality ?? "—"}</p>
-            <p className="break-all">{profile?.email ?? "—"}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right column - cards grid */}
-      <div className="flex-1 space-y-6">
+    <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {dashboardCards.map((card) => (
             <button
@@ -100,7 +83,6 @@ const Dashboard = () => {
             Contactar ahora
           </button>
         </div>
-      </div>
     </div>
   );
 };
