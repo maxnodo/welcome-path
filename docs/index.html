@@ -1,1448 +1,1392 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WCE Welcome &mdash; Documentaci&oacute;n del Proyecto</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WCE Welcome — Guía de Producto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- Mobile toggle -->
-<button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">&#9776;</button>
-<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+<button class="sidebar-toggle" id="sidebarToggle"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
 
-<!-- ==================== SIDEBAR ==================== -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-logo"><span>WCE</span> Welcome</div>
-    <div class="sidebar-subtitle">Immigration &amp; Foreign Affairs</div>
+  <div class="sidebar-brand">
+    <div class="brand-logo">WCE</div>
+    <div class="brand-info">
+      <span class="brand-name">Welcome Path</span>
+      <span class="brand-sub">Guía interna del producto</span>
+    </div>
   </div>
   <nav class="sidebar-nav">
+
     <div class="nav-group">
-      <div class="nav-group-title">General</div>
-      <a href="#overview" class="nav-link active">Vista General</a>
-      <a href="#arquitectura" class="nav-link">Arquitectura</a>
-      <a href="#roles" class="nav-link">Roles y Permisos</a>
-      <a href="#tablas" class="nav-link">Tablas de Datos</a>
+      <div class="nav-group-label">Acceso</div>
+      <a href="#" class="nav-link active" data-section="login-usuario">🔐 Login usuario</a>
+      <a href="#" class="nav-link" data-section="login-admin">🔑 Login admin/gestor</a>
+      <a href="#" class="nav-link" data-section="recuperar">🔄 Recuperar contraseña</a>
+      <a href="#" class="nav-link" data-section="preinscripcion">📝 Pre-inscripción</a>
     </div>
+
     <div class="nav-group">
-      <div class="nav-group-title">Autenticaci&oacute;n</div>
-      <a href="#login" class="nav-link">Login</a>
-      <a href="#forgot-password" class="nav-link">Recuperar Contrase&ntilde;a</a>
-      <a href="#reset-password" class="nav-link">Restablecer Contrase&ntilde;a</a>
-      <a href="#admin-login" class="nav-link">Login Admin</a>
+      <div class="nav-group-label">Panel Usuario</div>
+      <a href="#" class="nav-link" data-section="user-dashboard">🏠 Dashboard</a>
+      <a href="#" class="nav-link" data-section="user-perfil">👤 Mi Perfil</a>
+      <a href="#" class="nav-link" data-section="user-tramites">📂 Mis Trámites</a>
+      <a href="#" class="nav-link" data-section="user-mensajes">💬 Mensajes</a>
+      <a href="#" class="nav-link" data-section="user-alertas">🔔 Alertas</a>
+      <a href="#" class="nav-link" data-section="user-suscripcion">💳 Suscripción</a>
+      <a href="#" class="nav-link" data-section="user-facturas">🧾 Facturas</a>
+      <a href="#" class="nav-link" data-section="user-citas">📅 Citas</a>
     </div>
+
     <div class="nav-group">
-      <div class="nav-group-title">Panel Usuario</div>
-      <a href="#user-dashboard" class="nav-link">Dashboard</a>
-      <a href="#perfil" class="nav-link">Mi Perfil</a>
-      <a href="#tramites" class="nav-link">Mis Tr&aacute;mites</a>
-      <a href="#mensajes" class="nav-link">Mensajes</a>
-      <a href="#alertas" class="nav-link">Alertas</a>
-      <a href="#suscripcion" class="nav-link">Suscripci&oacute;n</a>
-      <a href="#facturas" class="nav-link">Facturas</a>
-      <a href="#citas" class="nav-link">Citas</a>
+      <div class="nav-group-label">Panel Admin</div>
+      <a href="#" class="nav-link" data-section="admin-dashboard">📊 Dashboard Admin</a>
+      <a href="#" class="nav-link" data-section="admin-expedientes">📁 Expedientes</a>
+      <a href="#" class="nav-link" data-section="admin-mensajes">✉️ Mensajes</a>
+      <a href="#" class="nav-link" data-section="admin-alertas">⚠️ Alertas</a>
+      <a href="#" class="nav-link" data-section="admin-citas">🗓️ Citas</a>
+      <a href="#" class="nav-link" data-section="admin-facturacion">💰 Facturación</a>
+      <a href="#" class="nav-link" data-section="admin-leads">🎯 Pre-inscritos</a>
     </div>
+
     <div class="nav-group">
-      <div class="nav-group-title">Panel Admin/Gestor</div>
-      <a href="#admin-dashboard" class="nav-link">Dashboard Admin</a>
-      <a href="#admin-expedientes" class="nav-link">Expedientes</a>
-      <a href="#admin-mensajes" class="nav-link">Mensajes</a>
-      <a href="#admin-alertas" class="nav-link">Alertas</a>
-      <a href="#admin-citas" class="nav-link">Citas</a>
-      <a href="#admin-facturacion" class="nav-link">Facturaci&oacute;n</a>
-      <a href="#admin-preinscritos" class="nav-link">Pre-inscritos</a>
+      <div class="nav-group-label">Solo Admin</div>
+      <a href="#" class="nav-link" data-section="admin-usuarios">👥 Gestión usuarios</a>
+      <a href="#" class="nav-link" data-section="admin-config">⚙️ Configuración</a>
     </div>
+
     <div class="nav-group">
-      <div class="nav-group-title">Solo Admin</div>
-      <a href="#admin-usuarios" class="nav-link">Usuarios</a>
-      <a href="#admin-configuracion" class="nav-link">Configuraci&oacute;n</a>
+      <div class="nav-group-label">Flujos</div>
+      <a href="#" class="nav-link" data-section="flujo-lead">🔄 Lead → Expediente</a>
+      <a href="#" class="nav-link" data-section="flujo-gestor">👔 Asignación gestor</a>
+      <a href="#" class="nav-link" data-section="flujo-docs">📄 Validación documentos</a>
     </div>
+
     <div class="nav-group">
-      <div class="nav-group-title">Flujos</div>
-      <a href="#flujo-preinscripcion" class="nav-link">Pre-inscripci&oacute;n</a>
-      <a href="#flujo-asignacion" class="nav-link">Asignaci&oacute;n Gestor</a>
-      <a href="#flujo-multigestor" class="nav-link">Multi-gestor Scoping</a>
+      <div class="nav-group-label">Referencia</div>
+      <a href="#" class="nav-link" data-section="permisos">🛡️ Permisos por rol</a>
+      <a href="#" class="nav-link" data-section="usuarios-prueba">👤 Usuarios de prueba</a>
+      <a href="#" class="nav-link" data-section="stack">⚙️ Stack técnico</a>
     </div>
+
   </nav>
-  <div class="sidebar-footer">v1.0 &middot; Abril 2026</div>
 </aside>
 
-<!-- ==================== MAIN CONTENT ==================== -->
 <main class="main">
 <div class="content">
 
-<!-- ============================================================
-     SECTION 1: OVERVIEW
-     ============================================================ -->
-<section id="overview">
-  <h1>WCE Welcome &mdash; Immigration &amp; Foreign Affairs</h1>
-  <p class="section-intro">Sistema de gesti&oacute;n de casos para despacho de extranjer&iacute;a en Barcelona. Plataforma integral que conecta usuarios, gestores y administradores en un flujo de trabajo unificado para tr&aacute;mites migratorios.</p>
-
-  <h3>Stack Tecnol&oacute;gico</h3>
-  <div class="tech-stack">
-    <span class="tech-pill">React 18</span>
-    <span class="tech-pill">TypeScript</span>
-    <span class="tech-pill">Vite</span>
-    <span class="tech-pill">Supabase</span>
-    <span class="tech-pill">shadcn/ui</span>
-    <span class="tech-pill">Tailwind CSS</span>
-    <span class="tech-pill">Lovable</span>
+<!-- ═══════════════════════════════════════════════════════
+     ACCESO — LOGIN USUARIO
+════════════════════════════════════════════════════════ -->
+<section class="section active" id="s-login-usuario">
+  <div class="page-header">
+    <div class="page-route">/login</div>
+    <h1 class="page-title">Login de usuario</h1>
+    <p class="page-desc">Pantalla de acceso para clientes de Welcome IFA. Incluye dos tabs: acceso con cuenta existente y formulario de pre-inscripción para nuevos leads.</p>
+    <div class="page-roles">
+      <span class="badge badge-public">Público</span>
+    </div>
   </div>
 
-  <h3 id="arquitectura">Arquitectura</h3>
-  <div class="arch-diagram">
-    <div class="arch-box frontend">Frontend<br><small>React + Vite</small></div>
-    <div class="arch-arrow">&rarr;</div>
-    <div class="arch-box auth">Supabase Auth<br><small>JWT + RLS</small></div>
-    <div class="arch-arrow">&rarr;</div>
-    <div class="arch-box db">PostgreSQL<br><small>11 tablas</small></div>
-    <div class="arch-arrow">&rarr;</div>
-    <div class="arch-box storage">Storage<br><small>Documentos</small></div>
-    <div class="arch-arrow">&rarr;</div>
-    <div class="arch-box realtime">Realtime<br><small>Mensajes + Alertas</small></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Tab 1 — Acceder a mi cuenta</div>
+      <ul class="feature-list">
+        <li>Campo email y contraseña</li>
+        <li>Botón "Iniciar sesión"</li>
+        <li>Link "¿Olvidaste tu contraseña?" → /forgot-password</li>
+        <li>Post-login redirige a /dashboard</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Tab 2 — Pre-inscribirme</div>
+      <ul class="feature-list">
+        <li>Nombre completo *</li>
+        <li>Email *</li>
+        <li>Teléfono (WhatsApp) *</li>
+        <li>País de origen</li>
+        <li>Necesidad (multi-select): Regularizar, Renovar, Familiar, Trabajo, Nacionalidad, No lo tengo claro</li>
+        <li>Ubicación (España / Fuera)</li>
+        <li>Urgencia / cuándo</li>
+        <li>Descripción libre</li>
+        <li>Consentimiento privacidad</li>
+      </ul>
+    </div>
   </div>
 
-  <h3 id="roles">Roles del Sistema</h3>
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr><th>Rol</th><th>Acceso</th><th>Descripci&oacute;n</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="badge badge-admin">Admin</span></td>
-          <td>Total</td>
-          <td>Acceso completo. Gestiona usuarios, configuraci&oacute;n y ve todos los datos del sistema.</td>
-        </tr>
-        <tr>
-          <td><span class="badge badge-gestor">Gestor</span></td>
-          <td>Parcial</td>
-          <td>Gestiona solo los expedientes asignados. Sin acceso a configuraci&oacute;n ni gesti&oacute;n de usuarios.</td>
-        </tr>
-        <tr>
-          <td><span class="badge badge-user">User</span></td>
-          <td>Propio</td>
-          <td>Ve &uacute;nicamente sus propios datos: perfil, tr&aacute;mites, mensajes, alertas, citas y facturas.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3 id="tablas">Tablas de la Base de Datos</h3>
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr><th>#</th><th>Tabla</th><th>Descripci&oacute;n</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td><code>profiles</code></td><td>Perfiles de usuario con datos personales y rol</td></tr>
-        <tr><td>2</td><td><code>expedientes</code></td><td>Casos/expedientes con estado, tipo de tr&aacute;mite y gestor asignado</td></tr>
-        <tr><td>3</td><td><code>documentos</code></td><td>Archivos subidos vinculados a expedientes</td></tr>
-        <tr><td>4</td><td><code>mensajes</code></td><td>Mensajes bidireccionales entre usuarios y gestores</td></tr>
-        <tr><td>5</td><td><code>alertas</code></td><td>Notificaciones con tipo y estado le&iacute;do/no le&iacute;do</td></tr>
-        <tr><td>6</td><td><code>citas</code></td><td>Citas programadas con tipo, duraci&oacute;n y asesor</td></tr>
-        <tr><td>7</td><td><code>facturas</code></td><td>Facturas con base imponible, IVA, total y estado</td></tr>
-        <tr><td>8</td><td><code>suscripciones</code></td><td>Planes de suscripci&oacute;n y datos de pago</td></tr>
-        <tr><td>9</td><td><code>leads</code></td><td>Pre-inscritos desde FormularioExpress</td></tr>
-        <tr><td>10</td><td><code>tramites_catalog</code></td><td>Cat&aacute;logo de tipos de tr&aacute;mite disponibles</td></tr>
-        <tr><td>11</td><td><code>app_settings</code></td><td>Configuraci&oacute;n global de la aplicaci&oacute;n</td></tr>
-      </tbody>
-    </table>
+  <div class="card">
+    <div class="card-title">Datos que guarda</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">El tab de pre-inscripción inserta en la tabla <span class="data-source">leads</span> con RLS anónimo activado. El tab de login utiliza Supabase Auth (<span class="data-source">auth.users</span>).</p>
   </div>
 </section>
 
-<!-- ============================================================
-     SECTION 2: AUTENTICACION
-     ============================================================ -->
-<h2 id="autenticacion">Autenticaci&oacute;n</h2>
-<p class="section-intro">Flujos de acceso p&uacute;blico gestionados por Supabase Auth. Incluye login de usuarios, recuperaci&oacute;n de contrase&ntilde;a y login separado para administradores/gestores.</p>
-
-<!-- LOGIN -->
-<section class="screen-doc" id="login">
-  <h3>Login <span class="screen-route">/login</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-public">P&uacute;blico</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/login</div>
-    </div>
-    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:360px;background:#f0f4ff;">
-      <div style="width:360px;">
-        <div style="text-align:center;margin-bottom:16px;font-weight:700;font-size:16px;color:var(--content-text);">WCE Welcome</div>
-        <div class="wf-tabs" style="margin-bottom:16px;">
-          <div class="wf-tab active">Acceder a mi cuenta</div>
-          <div class="wf-tab">Pre-inscribirme</div>
-        </div>
-        <div class="wf-col" style="gap:10px;">
-          <div class="wf-input">Email</div>
-          <div class="wf-input">Contrase&ntilde;a</div>
-          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Iniciar Sesi&oacute;n</div>
-          <div style="text-align:center;font-size:10px;color:var(--primary);cursor:pointer;">&iquest;Olvidaste tu contrase&ntilde;a?</div>
-        </div>
-      </div>
+<!-- LOGIN ADMIN -->
+<section class="section" id="s-login-admin">
+  <div class="page-header">
+    <div class="page-route">/admin/login</div>
+    <h1 class="page-title">Login admin / gestor</h1>
+    <p class="page-desc">Pantalla de acceso exclusiva para el equipo interno. Tema oscuro. Verifica el rol tras el login y bloquea si el usuario no es gestor ni admin.</p>
+    <div class="page-roles">
+      <span class="badge badge-public">Público</span>
+      <span class="badge badge-admin">Admin</span>
+      <span class="badge badge-gestor">Gestor</span>
     </div>
   </div>
 
-  <ul class="feature-list">
-    <li>Dos pesta&ntilde;as: &laquo;Acceder a mi cuenta&raquo; (email + contrase&ntilde;a) y &laquo;Pre-inscribirme&raquo; (FormularioExpress)</li>
-    <li>FormularioExpress crea un registro en la tabla <code>leads</code></li>
-    <li>Enlace a recuperaci&oacute;n de contrase&ntilde;a</li>
-    <li>Validaci&oacute;n en tiempo real de campos</li>
-    <li>Redirecci&oacute;n autom&aacute;tica seg&uacute;n rol: user &rarr; <code>/dashboard</code>, admin/gestor &rarr; <code>/admin</code></li>
-  </ul>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Qué ve el usuario</div>
+      <ul class="feature-list">
+        <li>Formulario con email + contraseña sobre fondo oscuro</li>
+        <li>Logo y nombre de la plataforma</li>
+        <li>Link "¿Eres usuario? Ir al login de cliente" → /login</li>
+        <li>Post-login redirige a /admin</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Lógica de acceso</div>
+      <ul class="feature-list">
+        <li>Tras login verifica <span class="data-source">profiles.role</span></li>
+        <li>Si role = "user" → muestra error y hace logout</li>
+        <li>Si role = "gestor" o "admin" → acceso concedido</li>
+        <li>Sin cuenta válida → mensaje de error genérico</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
-<!-- FORGOT PASSWORD -->
-<section class="screen-doc" id="forgot-password">
-  <h3>Recuperar Contrase&ntilde;a <span class="screen-route">/forgot-password</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-public">P&uacute;blico</span>
+<!-- RECUPERAR CONTRASEÑA -->
+<section class="section" id="s-recuperar">
+  <div class="page-header">
+    <div class="page-route">/forgot-password · /reset-password</div>
+    <h1 class="page-title">Recuperación de contraseña</h1>
+    <p class="page-desc">Flujo en dos pasos para restablecer la contraseña vía email.</p>
+    <div class="page-roles"><span class="badge badge-public">Público</span></div>
   </div>
 
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/forgot-password</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Paso 1 — Solicitar enlace (/forgot-password)</div>
+      <ul class="feature-list">
+        <li>Input de email</li>
+        <li>Botón "Enviar enlace"</li>
+        <li>Usa <code>resetPasswordForEmail</code> de Supabase</li>
+        <li>Mensaje neutro: no revela si el email existe o no</li>
+      </ul>
     </div>
-    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:280px;background:#f0f4ff;">
-      <div style="width:360px;">
-        <div style="text-align:center;margin-bottom:8px;font-weight:700;font-size:14px;color:var(--content-text);">Recuperar Contrase&ntilde;a</div>
-        <p style="text-align:center;font-size:10px;margin-bottom:12px;">Introduce tu email para recibir un enlace de restablecimiento.</p>
-        <div class="wf-col" style="gap:10px;">
-          <div class="wf-input">Email</div>
-          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Enviar Enlace</div>
-        </div>
-      </div>
+    <div class="card">
+      <div class="card-title">Paso 2 — Nueva contraseña (/reset-password)</div>
+      <ul class="feature-list">
+        <li>Campo nueva contraseña (mín. 6 caracteres)</li>
+        <li>Campo confirmar contraseña</li>
+        <li>Detecta evento <code>PASSWORD_RECOVERY</code> de Supabase</li>
+        <li>Si el enlace es inválido o expirado → opción de solicitar nuevo</li>
+      </ul>
     </div>
   </div>
-
-  <ul class="feature-list">
-    <li>Campo de email con validaci&oacute;n</li>
-    <li>Env&iacute;a enlace de restablecimiento v&iacute;a Supabase Auth</li>
-    <li>Mensaje de confirmaci&oacute;n tras env&iacute;o</li>
-  </ul>
 </section>
 
-<!-- RESET PASSWORD -->
-<section class="screen-doc" id="reset-password">
-  <h3>Restablecer Contrase&ntilde;a <span class="screen-route">/reset-password</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-public">P&uacute;blico (v&iacute;a enlace email)</span>
+<!-- PRE-INSCRIPCIÓN -->
+<section class="section" id="s-preinscripcion">
+  <div class="page-header">
+    <div class="page-route">/preinscripcion</div>
+    <h1 class="page-title">Formulario Express de Pre-inscripción</h1>
+    <p class="page-desc">Formulario público standalone (también embebido como tab en /login). Captura datos del lead antes de crear una cuenta. Accesible sin autenticación.</p>
+    <div class="page-roles"><span class="badge badge-public">Público · Sin autenticación</span></div>
   </div>
 
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/reset-password?token=...</div>
-    </div>
-    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:280px;background:#f0f4ff;">
-      <div style="width:360px;">
-        <div style="text-align:center;margin-bottom:8px;font-weight:700;font-size:14px;color:var(--content-text);">Nueva Contrase&ntilde;a</div>
-        <div class="wf-col" style="gap:10px;">
-          <div class="wf-input">Nueva contrase&ntilde;a</div>
-          <div class="wf-input">Confirmar contrase&ntilde;a</div>
-          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Guardar Contrase&ntilde;a</div>
-        </div>
-      </div>
-    </div>
+  <div class="card">
+    <div class="card-title">Campos del formulario</div>
+    <ul class="feature-list">
+      <li><strong>Nombre completo</strong> — requerido</li>
+      <li><strong>Email</strong> — requerido</li>
+      <li><strong>Teléfono (WhatsApp)</strong> — requerido</li>
+      <li><strong>País de origen</strong></li>
+      <li><strong>Necesidad principal</strong> — multi-select: Regularizar situación, Renovar permiso, Reagrupación familiar, Permiso de trabajo, Nacionalidad española, No lo tengo claro</li>
+      <li><strong>Ubicación</strong> — ¿Está en España o fuera?</li>
+      <li><strong>Urgencia</strong> — cuándo necesita resolverlo</li>
+      <li><strong>Descripción libre</strong></li>
+      <li><strong>Consentimiento</strong> — política de privacidad</li>
+    </ul>
   </div>
 
-  <ul class="feature-list">
-    <li>Acceso mediante token en URL enviado por email</li>
-    <li>Dos campos: nueva contrase&ntilde;a y confirmaci&oacute;n</li>
-    <li>Validaci&oacute;n de seguridad de contrase&ntilde;a</li>
-    <li>Redirecci&oacute;n a login tras &eacute;xito</li>
-  </ul>
+  <div class="card">
+    <div class="card-title">Qué pasa con los datos</div>
+    <p style="font-size:14px;color:var(--text-secondary);">INSERT anónimo en tabla <span class="data-source">leads</span>. RLS permite insertar sin autenticación. El lead queda en estado <strong>pendiente</strong> hasta que un admin lo gestione desde /admin/preinscritos.</p>
+  </div>
 </section>
 
-<!-- ADMIN LOGIN -->
-<section class="screen-doc" id="admin-login">
-  <h3>Login Admin <span class="screen-route">/admin/login</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-public">P&uacute;blico</span>
+<!-- ═══════════════════════════════════════════════════════
+     PANEL USUARIO — DASHBOARD
+════════════════════════════════════════════════════════ -->
+<section class="section" id="s-user-dashboard">
+  <div class="page-header">
+    <div class="page-route">/dashboard</div>
+    <h1 class="page-title">Dashboard de usuario</h1>
+    <p class="page-desc">Pantalla principal del cliente. Muestra un resumen del estado de su cuenta y acceso rápido a todas las secciones.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario</span></div>
   </div>
 
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/login</div>
-    </div>
-    <div class="wireframe-body no-sidebar" style="padding:24px;display:flex;justify-content:center;align-items:center;min-height:320px;background:#0f172a;">
-      <div style="width:360px;">
-        <div style="text-align:center;margin-bottom:16px;font-weight:700;font-size:16px;color:#fff;">Panel de Gesti&oacute;n</div>
-        <div class="wf-col" style="gap:10px;">
-          <div class="wf-input" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#a0aec0;">Email corporativo</div>
-          <div class="wf-input" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#a0aec0;">Contrase&ntilde;a</div>
-          <div class="wf-btn wf-btn-primary" style="width:100%;text-align:center;">Acceder al Panel</div>
-        </div>
-      </div>
-    </div>
+  <div class="card">
+    <div class="card-title">Tarjeta de usuario</div>
+    <ul class="feature-list">
+      <li>Iniciales del nombre como avatar</li>
+      <li>Nombre completo, nacionalidad, email</li>
+      <li>Fuente: <span class="data-source">profiles</span></li>
+    </ul>
   </div>
 
-  <ul class="feature-list">
-    <li>P&aacute;gina de login separada con tema oscuro</li>
-    <li>Exclusiva para roles admin y gestor</li>
-    <li>Verifica el rol del usuario tras autenticaci&oacute;n</li>
-    <li>Redirecci&oacute;n a <code>/admin</code> tras login exitoso</li>
-  </ul>
-</section>
-
-<!-- ============================================================
-     SECTION 3: PANEL USUARIO
-     ============================================================ -->
-<h2 id="panel-usuario">Panel de Usuario</h2>
-<p class="section-intro">Panel privado para usuarios (PrivateRoute). Layout con barra lateral de navegaci&oacute;n. Acceso solo a datos propios del usuario autenticado.</p>
-
-<!-- USER DASHBOARD -->
-<section class="screen-doc" id="user-dashboard">
-  <h3>Dashboard <span class="screen-route">/dashboard</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
+  <div class="card">
+    <div class="card-title">Grid de 10 cards</div>
+    <ul class="feature-list">
+      <li><strong>Perfil</strong> — acceso a datos personales</li>
+      <li><strong>Trámites</strong> — con badge de cantidad de expedientes</li>
+      <li><strong>Mensajes</strong> — badge con mensajes no leídos</li>
+      <li><strong>Alertas</strong> — badge con alertas no leídas</li>
+      <li><strong>Suscripción</strong> — plan actual</li>
+      <li><strong>Histórico</strong> — página placeholder</li>
+      <li><strong>Ayuda</strong> — página placeholder</li>
+      <li><strong>Chat en Vivo</strong> — indicador "En línea"</li>
+      <li><strong>Facturas</strong> — con badge de facturas pendientes</li>
+      <li><strong>Citas</strong> — con badge de próximas citas</li>
+    </ul>
   </div>
 
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/dashboard</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item active">Dashboard</div>
-        <div class="wf-nav-item">Mi Perfil</div>
-        <div class="wf-nav-item">Tr&aacute;mites</div>
-        <div class="wf-nav-item">Mensajes</div>
-        <div class="wf-nav-item">Alertas</div>
-        <div class="wf-nav-item">Suscripci&oacute;n</div>
-        <div class="wf-nav-item">Facturas</div>
-        <div class="wf-nav-item">Citas</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Mi Panel</div>
-        <div class="wf-row">
-          <!-- User card -->
-          <div class="wf-col wf-flex-1">
-            <div class="wf-box wf-box-primary" style="display:flex;align-items:center;gap:10px;">
-              <div class="wf-avatar">JG</div>
-              <div>
-                <div style="font-weight:700;font-size:12px;color:var(--primary);">Juan Garc&iacute;a</div>
-                <div style="font-size:9px;">Colombia &middot; NIE: Y1234567X</div>
-              </div>
-            </div>
-          </div>
-          <!-- Quick cards -->
-          <div class="wf-col wf-flex-2">
-            <div class="wf-grid wf-grid-5" style="font-size:9px;">
-              <div class="wf-box wf-box-muted" style="text-align:center;">Perfil</div>
-              <div class="wf-box wf-box-muted" style="text-align:center;">Tr&aacute;mites</div>
-              <div class="wf-box wf-box-primary" style="text-align:center;">Mensajes <span class="wf-badge wf-badge-red">3</span></div>
-              <div class="wf-box wf-box-warning" style="text-align:center;">Alertas <span class="wf-badge wf-badge-red">2</span></div>
-              <div class="wf-box wf-box-muted" style="text-align:center;">Suscripci&oacute;n</div>
-              <div class="wf-box wf-box-muted" style="text-align:center;">Hist&oacute;rico</div>
-              <div class="wf-box wf-box-muted" style="text-align:center;">Ayuda</div>
-              <div class="wf-box wf-box-success" style="text-align:center;">Chat en Vivo</div>
-              <div class="wf-box wf-box-muted" style="text-align:center;">Facturas</div>
-              <div class="wf-box wf-box-muted" style="text-align:center;">Citas</div>
-            </div>
-          </div>
-        </div>
-        <div class="wf-box wf-box-primary" style="text-align:center;font-size:11px;font-weight:600;">
-          &iquest;Necesitas ayuda con un nuevo tr&aacute;mite? &mdash; Iniciar consulta
-        </div>
-      </div>
-    </div>
+  <div class="card">
+    <div class="card-title">Banner CTA</div>
+    <p style="font-size:14px;color:var(--text-secondary);">"Contacta con tu asesor" — botón de acción al final del dashboard.</p>
   </div>
-
-  <ul class="feature-list">
-    <li>Columna izquierda con tarjeta de usuario: iniciales, nombre, nacionalidad</li>
-    <li>Grid de 10 tarjetas de acceso r&aacute;pido con badges de notificaciones</li>
-    <li>Tarjetas con badge: Mensajes (no le&iacute;dos) y Alertas (pendientes)</li>
-    <li>Banner CTA inferior para iniciar nueva consulta</li>
-    <li>Datos en tiempo real v&iacute;a Supabase Realtime</li>
-  </ul>
 </section>
 
 <!-- MI PERFIL -->
-<section class="screen-doc" id="perfil">
-  <h3>Mi Perfil <span class="screen-route">/perfil</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
+<section class="section" id="s-user-perfil">
+  <div class="page-header">
+    <div class="page-route">/perfil</div>
+    <h1 class="page-title">Mi Perfil</h1>
+    <p class="page-desc">Formulario editable con todos los datos personales y migratorios del usuario.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario</span></div>
   </div>
 
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/perfil</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Datos personales</div>
+      <ul class="feature-list">
+        <li>Nombre completo</li>
+        <li>Nacionalidad principal</li>
+        <li>Segunda nacionalidad</li>
+        <li>Tipo de documento (NIE / DNI / Pasaporte)</li>
+        <li>Número de documento</li>
+        <li>Fecha de nacimiento</li>
+        <li>Estado civil</li>
+        <li>Teléfono</li>
+        <li>Dirección completa</li>
+      </ul>
     </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item">Dashboard</div>
-        <div class="wf-nav-item active">Mi Perfil</div>
-        <div class="wf-nav-item">Tr&aacute;mites</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Mi Perfil</div>
-        <div class="wf-grid wf-grid-2">
-          <div class="wf-input">Nombre completo</div>
-          <div class="wf-input">Nacionalidad</div>
-          <div class="wf-input">N&uacute;mero de documento</div>
-          <div class="wf-input">Direcci&oacute;n</div>
-          <div class="wf-input">Estado migratorio</div>
-          <div class="wf-input">Tipo de visa</div>
-          <div class="wf-input" style="grid-column:span 2;">Representante legal asignado</div>
-        </div>
-        <div style="margin-top:8px;">
-          <span class="wf-btn wf-btn-primary">Guardar Cambios</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Formulario con datos personales: nombre, nacionalidad, documento, direcci&oacute;n</li>
-    <li>Informaci&oacute;n migratoria: estado migratorio, tipo de visa</li>
-    <li>Representante legal asignado (solo lectura)</li>
-    <li>Guardado en tabla <code>profiles</code></li>
-  </ul>
-</section>
-
-<!-- MIS TRAMITES -->
-<section class="screen-doc" id="tramites">
-  <h3>Mis Tr&aacute;mites <span class="screen-route">/tramites</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/tramites</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item">Dashboard</div>
-        <div class="wf-nav-item">Mi Perfil</div>
-        <div class="wf-nav-item active">Tr&aacute;mites</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Mis Tr&aacute;mites</div>
-        <div class="wf-accordion">
-          <div class="wf-accordion-item" style="font-weight:600;color:var(--primary);">NIE (N&uacute;mero de Identidad de Extranjero) <span style="font-size:9px;">&blacktriangledown;</span></div>
-          <div class="wf-accordion-item" style="padding-left:24px;flex-direction:column;align-items:flex-start;gap:6px;">
-            <div>Pa&iacute;s: <span class="wf-badge wf-badge-blue">Colombia</span></div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <span class="wf-badge wf-badge-green">Pasaporte &check;</span>
-              <span class="wf-badge wf-badge-amber">Empadronamiento &uarr;</span>
-              <span class="wf-badge wf-badge-gray">Foto carnet</span>
-            </div>
-            <span class="wf-btn wf-btn-primary" style="margin-top:4px;">Enviar Documentaci&oacute;n</span>
-          </div>
-          <div class="wf-accordion-item">DNI <span style="font-size:9px;">&blacktriangleright;</span></div>
-          <div class="wf-accordion-item">Nacionalidad <span style="font-size:9px;">&blacktriangleright;</span></div>
-          <div class="wf-accordion-item">Arraigo <span style="font-size:9px;">&blacktriangleright;</span></div>
-          <div class="wf-accordion-item">Renovaci&oacute;n <span style="font-size:9px;">&blacktriangleright;</span></div>
-          <div class="wf-accordion-item">Reagrupaci&oacute;n <span style="font-size:9px;">&blacktriangleright;</span></div>
-        </div>
-        <div class="wf-box wf-box-muted" style="margin-top:8px;">
-          <div style="font-weight:600;margin-bottom:4px;">Expedientes activos</div>
-          <div style="display:flex;gap:6px;">
-            <span class="wf-badge wf-badge-blue">EXP-2026-0042</span>
-            <span class="wf-badge wf-badge-green">En proceso</span>
-          </div>
-        </div>
-      </div>
+    <div class="card">
+      <div class="card-title">Datos migratorios</div>
+      <ul class="feature-list">
+        <li>Estado migratorio actual</li>
+        <li>Tipo de visa / permiso</li>
+        <li>Fecha de entrada a España</li>
+        <li>Vencimiento del permiso</li>
+        <li>Número de expediente (referencia)</li>
+        <li>Oficina de tramitación</li>
+        <li>Representante legal (si actúa en nombre de otro)</li>
+      </ul>
     </div>
   </div>
-
-  <ul class="feature-list">
-    <li>Lista tipo acorde&oacute;n con 6 tr&aacute;mites: NIE, DNI, Nacionalidad, Arraigo, Renovaci&oacute;n, Reagrupaci&oacute;n</li>
-    <li>Cada tr&aacute;mite expande: descripci&oacute;n, selector de pa&iacute;s, checklist de documentos</li>
-    <li>Bot&oacute;n de subida para cada documento requerido</li>
-    <li>Checkboxes de confirmaci&oacute;n y bot&oacute;n de env&iacute;o</li>
-    <li>Componente ExpedientesList muestra estado real del expediente desde la BD</li>
-    <li>Estados de documento: subido, pendiente, no subido</li>
-  </ul>
-</section>
-
-<!-- MENSAJES -->
-<section class="screen-doc" id="mensajes">
-  <h3>Mensajes <span class="screen-route">/mensajes</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/mensajes</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item">Dashboard</div>
-        <div class="wf-nav-item active">Mensajes</div>
-      </div>
-      <div class="wf-content" style="flex-direction:row;">
-        <div class="wf-chat-list wf-flex-1">
-          <div class="wf-chat-item active">Mar&iacute;a L&oacute;pez (Gestora) <span class="wf-badge wf-badge-red" style="margin-left:4px;">2</span></div>
-          <div class="wf-chat-item">Soporte WCE</div>
-        </div>
-        <div class="wf-col wf-flex-3" style="background:#fafbfc;border-radius:8px;padding:12px;">
-          <div style="font-weight:600;font-size:11px;border-bottom:1px solid var(--border);padding-bottom:6px;">Mar&iacute;a L&oacute;pez</div>
-          <div class="wf-col" style="flex:1;gap:8px;padding:8px 0;">
-            <div class="wf-chat-bubble received">Hola Juan, necesito el empadronamiento actualizado.</div>
-            <div class="wf-chat-bubble sent">De acuerdo, lo env&iacute;o hoy.</div>
-            <div class="wf-chat-bubble received">Perfecto, gracias.</div>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <div class="wf-input" style="flex:1;">Escribe un mensaje...</div>
-            <span class="wf-btn wf-btn-primary">Enviar</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Interfaz de chat con lista de conversaciones a la izquierda</li>
-    <li>Mensajes bidireccionales con gestores</li>
-    <li>Badges de mensajes no le&iacute;dos</li>
-    <li>Actualizaci&oacute;n en tiempo real v&iacute;a Supabase Realtime</li>
-    <li>Almacenado en tabla <code>mensajes</code></li>
-  </ul>
-</section>
-
-<!-- ALERTAS -->
-<section class="screen-doc" id="alertas">
-  <h3>Alertas <span class="screen-route">/alertas</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/alertas</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item">Dashboard</div>
-        <div class="wf-nav-item active">Alertas</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header" style="display:flex;justify-content:space-between;align-items:center;">Alertas <span class="wf-btn wf-btn-outline" style="font-size:9px;">Marcar todas como le&iacute;das</span></div>
-        <div class="wf-col" style="gap:6px;">
-          <div class="wf-box wf-box-destructive" style="display:flex;justify-content:space-between;">
-            <span><span class="wf-badge wf-badge-red">Urgente</span> Documentaci&oacute;n vencida &mdash; NIE</span>
-            <span style="font-size:9px;">Hace 2h</span>
-          </div>
-          <div class="wf-box wf-box-warning" style="display:flex;justify-content:space-between;">
-            <span><span class="wf-badge wf-badge-amber">Recordatorio</span> Cita programada para el 15/04</span>
-            <span style="font-size:9px;">Hace 1d</span>
-          </div>
-          <div class="wf-box wf-box-muted" style="display:flex;justify-content:space-between;opacity:0.6;">
-            <span><span class="wf-badge wf-badge-gray">Resoluci&oacute;n</span> Su tr&aacute;mite ha sido aprobado</span>
-            <span style="font-size:9px;">Hace 3d &check;</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Tipos de alerta: <code>urgente</code>, <code>recordatorio</code>, <code>presentacion_pendiente</code>, <code>resolucion</code></li>
-    <li>Estados: le&iacute;da / no le&iacute;da con indicador visual</li>
-    <li>Bot&oacute;n &laquo;Marcar todas como le&iacute;das&raquo;</li>
-    <li>Ordenadas por fecha, m&aacute;s recientes primero</li>
-    <li>Codificaci&oacute;n por colores seg&uacute;n tipo</li>
-  </ul>
-</section>
-
-<!-- SUSCRIPCION -->
-<section class="screen-doc" id="suscripcion">
-  <h3>Suscripci&oacute;n <span class="screen-route">/suscripcion</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/suscripcion</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item active">Suscripci&oacute;n</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Mi Suscripci&oacute;n</div>
-        <div class="wf-box wf-box-primary">
-          <div style="font-weight:700;font-size:13px;color:var(--primary);">Plan Premium</div>
-          <div style="font-size:10px;margin-top:4px;">49,00 &euro;/mes &middot; Pr&oacute;xima facturaci&oacute;n: 01/05/2026</div>
-        </div>
-        <div class="wf-grid wf-grid-2">
-          <div class="wf-box wf-box-muted">
-            <div style="font-weight:600;">M&eacute;todo de pago</div>
-            <div>VISA **** 4242</div>
-          </div>
-          <div class="wf-box wf-box-muted">
-            <div style="font-weight:600;">Renovaci&oacute;n autom&aacute;tica</div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><span class="wf-toggle"></span> Activada</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Detalles del plan activo con precio</li>
-    <li>M&eacute;todo de pago registrado</li>
-    <li>Fecha de pr&oacute;xima facturaci&oacute;n</li>
-    <li>Toggle de renovaci&oacute;n autom&aacute;tica</li>
-    <li>Datos desde tabla <code>suscripciones</code></li>
-  </ul>
-</section>
-
-<!-- FACTURAS -->
-<section class="screen-doc" id="facturas">
-  <h3>Facturas <span class="screen-route">/facturas</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/facturas</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item active">Facturas</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Mis Facturas</div>
-        <table class="wf-table">
-          <thead>
-            <tr><th>N&uacute;mero</th><th>Periodo</th><th>Concepto</th><th>Base</th><th>IVA</th><th>Total</th><th>Estado</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>F-2026-012</td><td>Mar 2026</td><td>Plan Premium</td><td>40,50&euro;</td><td>8,50&euro;</td><td>49,00&euro;</td>
-              <td><span class="wf-badge wf-badge-green">Pagada</span></td>
-            </tr>
-            <tr>
-              <td>F-2026-011</td><td>Feb 2026</td><td>Plan Premium</td><td>40,50&euro;</td><td>8,50&euro;</td><td>49,00&euro;</td>
-              <td><span class="wf-badge wf-badge-green">Pagada</span></td>
-            </tr>
-            <tr>
-              <td>F-2026-010</td><td>Ene 2026</td><td>Plan Premium</td><td>40,50&euro;</td><td>8,50&euro;</td><td>49,00&euro;</td>
-              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Tabla con columnas: n&uacute;mero, periodo, concepto, base imponible, IVA, total, estado, fecha</li>
-    <li>Estados: <code>pagada</code>, <code>pendiente</code>, <code>fallida</code>, <code>cancelada</code></li>
-    <li>Codificaci&oacute;n por colores seg&uacute;n estado</li>
-    <li>Datos desde tabla <code>facturas</code></li>
-  </ul>
-</section>
-
-<!-- CITAS -->
-<section class="screen-doc" id="citas">
-  <h3>Citas <span class="screen-route">/citas</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-user">User</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/citas</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar">
-        <div class="wf-logo">WCE Welcome</div>
-        <div class="wf-nav-item active">Citas</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Mis Citas</div>
-        <div class="wf-col" style="gap:8px;">
-          <div class="wf-box wf-box-primary" style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <span class="wf-badge wf-badge-blue">Videollamada</span>
-              <span style="font-weight:600;margin-left:6px;">Revisi&oacute;n expediente NIE</span>
-              <div style="font-size:9px;margin-top:4px;">15/04/2026 &middot; 10:00 &middot; 30 min &middot; Mar&iacute;a L&oacute;pez</div>
-            </div>
-            <span class="wf-badge wf-badge-green">Confirmada</span>
-          </div>
-          <div class="wf-box wf-box-muted" style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <span class="wf-badge wf-badge-gray">Presencial</span>
-              <span style="font-weight:600;margin-left:6px;">Firma de documentos</span>
-              <div style="font-size:9px;margin-top:4px;">22/04/2026 &middot; 16:00 &middot; 45 min &middot; Carlos Ruiz</div>
-            </div>
-            <span class="wf-badge wf-badge-amber">Pendiente</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Lista de citas pr&oacute;ximas con detalles</li>
-    <li>Tipos: <code>llamada</code>, <code>videollamada</code>, <code>presencial</code>, <code>reuni&oacute;n</code></li>
-    <li>Muestra: tipo, estado, fecha, duraci&oacute;n, nombre del asesor</li>
-    <li>Datos desde tabla <code>citas</code></li>
-  </ul>
-</section>
-
-<!-- ============================================================
-     SECTION 4: PANEL ADMIN/GESTOR
-     ============================================================ -->
-<h2 id="panel-admin">Panel Admin / Gestor</h2>
-<p class="section-intro">Panel de gesti&oacute;n (AdminRoute + AdminLayout). Barra lateral oscura. Los gestores ven solo los datos de sus expedientes asignados; los admins ven todo.</p>
-
-<!-- ADMIN DASHBOARD -->
-<section class="screen-doc" id="admin-dashboard">
-  <h3>Dashboard Admin <span class="screen-route">/admin</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Dashboard</div>
-        <div class="wf-nav-item">Expedientes</div>
-        <div class="wf-nav-item">Mensajes</div>
-        <div class="wf-nav-item">Alertas</div>
-        <div class="wf-nav-item">Citas</div>
-        <div class="wf-nav-item">Facturaci&oacute;n</div>
-        <div class="wf-nav-item">Pre-inscritos</div>
-        <div class="wf-nav-item">Usuarios</div>
-        <div class="wf-nav-item">Config</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Panel de Gesti&oacute;n</div>
-        <!-- KPI Cards -->
-        <div class="wf-grid wf-grid-4">
-          <div class="wf-box wf-box-primary wf-kpi">
-            <div class="wf-kpi-value">47</div>
-            <div class="wf-kpi-label">Expedientes Activos</div>
-          </div>
-          <div class="wf-box wf-box-warning wf-kpi">
-            <div class="wf-kpi-value">12</div>
-            <div class="wf-kpi-label">Pendientes Revisi&oacute;n</div>
-          </div>
-          <div class="wf-box wf-box-success wf-kpi">
-            <div class="wf-kpi-value">8</div>
-            <div class="wf-kpi-label">Citas Semana</div>
-          </div>
-          <div class="wf-box wf-box-destructive wf-kpi">
-            <div class="wf-kpi-value">3</div>
-            <div class="wf-kpi-label">Alertas Urgentes</div>
-          </div>
-        </div>
-        <!-- Workload (admin only) -->
-        <div class="wf-box wf-box-muted">
-          <div style="font-weight:600;font-size:11px;margin-bottom:8px;">Carga de Trabajo por Gestor <span class="wf-badge wf-badge-red" style="font-size:8px;">Solo Admin</span></div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="width:80px;font-size:10px;">Mar&iacute;a L.</span>
-            <div class="wf-progress" style="flex:1;"><div class="wf-progress-bar" style="width:75%;background:var(--primary);"></div></div>
-            <span style="font-size:10px;">15 exp.</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:80px;font-size:10px;">Carlos R.</span>
-            <div class="wf-progress" style="flex:1;"><div class="wf-progress-bar" style="width:45%;background:var(--success);"></div></div>
-            <span style="font-size:10px;">9 exp.</span>
-          </div>
-        </div>
-        <!-- Quick actions -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="wf-btn wf-btn-primary">+ Nuevo Expediente</span>
-          <span class="wf-btn wf-btn-outline">Alerta Masiva</span>
-          <span class="wf-btn wf-btn-outline">Ver Agenda</span>
-          <span class="wf-btn wf-btn-outline" style="opacity:0.5;">Generar Informe</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>4 tarjetas KPI: expedientes activos, pendientes revisi&oacute;n, citas semana, alertas urgentes</li>
-    <li>Tarjeta de carga de trabajo por gestor con barras de progreso (solo admin)</li>
-    <li>Tabla de expedientes con columna de gestor</li>
-    <li>Acciones r&aacute;pidas: Nuevo expediente (di&aacute;logo), Alerta masiva (batch insert), Ver agenda, Generar informe (deshabilitado)</li>
-    <li>Modal de detalle con estado, gestor, notas y documentos</li>
-    <li>Bot&oacute;n de eliminar expediente (solo admin)</li>
-  </ul>
-</section>
-
-<!-- ADMIN EXPEDIENTES -->
-<section class="screen-doc" id="admin-expedientes">
-  <h3>Expedientes <span class="screen-route">/admin/expedientes</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/expedientes</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item">Dashboard</div>
-        <div class="wf-nav-item active">Expedientes</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Expedientes</div>
-        <!-- Filters -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-          <span class="wf-badge wf-badge-blue" style="cursor:pointer;">Todos</span>
-          <span class="wf-badge wf-badge-green">En proceso</span>
-          <span class="wf-badge wf-badge-amber">Pendiente</span>
-          <span class="wf-badge wf-badge-red">Urgente</span>
-          <span class="wf-badge wf-badge-gray">Completado</span>
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px;">
-          <div class="wf-input" style="flex:1;">Buscar expediente...</div>
-          <div class="wf-input" style="width:140px;">Filtrar por gestor <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
-        </div>
-        <table class="wf-table">
-          <thead>
-            <tr><th>Tr&aacute;mite</th><th>N&uacute;mero</th><th>Estado</th><th>Gestor</th><th>Pa&iacute;s</th><th>Docs</th><th>Fecha</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>NIE</td><td>EXP-2026-0042</td>
-              <td><span class="wf-badge wf-badge-green">En proceso</span></td>
-              <td>Mar&iacute;a L.</td><td>Colombia</td><td>3/5</td><td>10/04</td>
-            </tr>
-            <tr>
-              <td>Arraigo</td><td>EXP-2026-0041</td>
-              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
-              <td>Carlos R.</td><td>Venezuela</td><td>1/4</td><td>09/04</td>
-            </tr>
-            <tr>
-              <td>Nacionalidad</td><td>EXP-2026-0040</td>
-              <td><span class="wf-badge wf-badge-red">Urgente</span></td>
-              <td>Mar&iacute;a L.</td><td>Ecuador</td><td>4/4</td><td>08/04</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Filtros por estado con pills de colores</li>
-    <li>Barra de b&uacute;squeda por nombre/n&uacute;mero</li>
-    <li>Filtro por gestor (solo visible para admin)</li>
-    <li>Tabla completa: tr&aacute;mite, n&uacute;mero, estado, gestor, pa&iacute;s, documentos, fecha</li>
-    <li>Modal de detalle igual al del dashboard</li>
-    <li>Bot&oacute;n de eliminar (solo admin)</li>
-    <li>Gestor ve solo expedientes donde <code>advisor_id = self</code></li>
-  </ul>
-</section>
-
-<!-- ADMIN MENSAJES -->
-<section class="screen-doc" id="admin-mensajes">
-  <h3>Mensajes Admin <span class="screen-route">/admin/mensajes</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/mensajes</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item">Dashboard</div>
-        <div class="wf-nav-item active">Mensajes</div>
-      </div>
-      <div class="wf-content" style="flex-direction:row;">
-        <div class="wf-chat-list wf-flex-1">
-          <div class="wf-chat-item active">Juan Garc&iacute;a <span class="wf-badge wf-badge-red" style="margin-left:4px;">1</span></div>
-          <div class="wf-chat-item">Ana Mart&iacute;nez</div>
-          <div class="wf-chat-item">Pedro Su&aacute;rez</div>
-        </div>
-        <div class="wf-col wf-flex-3" style="background:#fafbfc;border-radius:8px;padding:12px;">
-          <div style="font-weight:600;font-size:11px;border-bottom:1px solid var(--border);padding-bottom:6px;">Juan Garc&iacute;a &middot; EXP-2026-0042</div>
-          <div class="wf-col" style="flex:1;gap:8px;padding:8px 0;">
-            <div class="wf-chat-bubble sent">Hola Juan, necesito el empadronamiento.</div>
-            <div class="wf-chat-bubble received">Lo env&iacute;o hoy.</div>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <div class="wf-input" style="flex:1;">Responder...</div>
-            <span class="wf-btn wf-btn-primary">Enviar</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Sidebar de conversaciones + &aacute;rea de chat</li>
-    <li>Gestores ven solo sus conversaciones propias</li>
-    <li>Admin ve todas las conversaciones del sistema</li>
-    <li>Vinculaci&oacute;n con expediente en el encabezado del chat</li>
-  </ul>
-</section>
-
-<!-- ADMIN ALERTAS -->
-<section class="screen-doc" id="admin-alertas">
-  <h3>Alertas Admin <span class="screen-route">/admin/alertas</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/alertas</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Alertas</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Alertas</div>
-        <div class="wf-grid wf-grid-3" style="margin-bottom:8px;">
-          <div class="wf-box wf-box-muted wf-kpi">
-            <div class="wf-kpi-value">24</div>
-            <div class="wf-kpi-label">Total</div>
-          </div>
-          <div class="wf-box wf-box-warning wf-kpi">
-            <div class="wf-kpi-value">8</div>
-            <div class="wf-kpi-label">No Le&iacute;das</div>
-          </div>
-          <div class="wf-box wf-box-destructive wf-kpi">
-            <div class="wf-kpi-value">3</div>
-            <div class="wf-kpi-label">Urgentes</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px;">
-          <span class="wf-badge wf-badge-blue">Todas</span>
-          <span class="wf-badge wf-badge-red">Urgente</span>
-          <span class="wf-badge wf-badge-amber">Recordatorio</span>
-          <span class="wf-badge wf-badge-gray">No le&iacute;das</span>
-        </div>
-        <div class="wf-col" style="gap:4px;">
-          <div class="wf-box wf-box-destructive" style="display:flex;justify-content:space-between;align-items:center;">
-            <span><span class="wf-badge wf-badge-red">Urgente</span> Vencimiento EXP-0042</span>
-            <span class="wf-btn wf-btn-destructive" style="font-size:8px;">Eliminar</span>
-          </div>
-          <div class="wf-box wf-box-warning" style="display:flex;justify-content:space-between;align-items:center;">
-            <span><span class="wf-badge wf-badge-amber">Recordatorio</span> Cita pendiente &mdash; Ana M.</span>
-            <span class="wf-btn wf-btn-destructive" style="font-size:8px;">Eliminar</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Tarjetas estad&iacute;sticas: total, no le&iacute;das, urgentes</li>
-    <li>Filtros por tipo y estado de lectura</li>
-    <li>Lista con bot&oacute;n de eliminar por alerta</li>
-    <li>Gestor ve solo alertas de expedientes asignados (inner join con <code>expedientes.advisor_id</code>)</li>
-  </ul>
-</section>
-
-<!-- ADMIN CITAS -->
-<section class="screen-doc" id="admin-citas">
-  <h3>Citas Admin <span class="screen-route">/admin/citas</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/citas</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Citas</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Citas</div>
-        <div class="wf-grid wf-grid-3" style="margin-bottom:8px;">
-          <div class="wf-box wf-box-primary wf-kpi">
-            <div class="wf-kpi-value">3</div>
-            <div class="wf-kpi-label">Hoy</div>
-          </div>
-          <div class="wf-box wf-box-success wf-kpi">
-            <div class="wf-kpi-value">8</div>
-            <div class="wf-kpi-label">Pr&oacute;ximas</div>
-          </div>
-          <div class="wf-box wf-box-muted wf-kpi">
-            <div class="wf-kpi-value">156</div>
-            <div class="wf-kpi-label">Total</div>
-          </div>
-        </div>
-        <table class="wf-table">
-          <thead>
-            <tr><th>Tipo</th><th>Cliente</th><th>Fecha</th><th>Duraci&oacute;n</th><th>Estado</th><th>Acci&oacute;n</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="wf-badge wf-badge-blue">Videollamada</span></td>
-              <td>Juan G.</td><td>15/04 10:00</td><td>30 min</td>
-              <td><span class="wf-badge wf-badge-green">Confirmada</span></td>
-              <td><span style="font-size:9px;color:var(--primary);cursor:pointer;">Cambiar &blacktriangledown;</span></td>
-            </tr>
-            <tr>
-              <td><span class="wf-badge wf-badge-gray">Presencial</span></td>
-              <td>Ana M.</td><td>16/04 16:00</td><td>45 min</td>
-              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
-              <td><span style="font-size:9px;color:var(--primary);cursor:pointer;">Cambiar &blacktriangledown;</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Estad&iacute;sticas: citas de hoy, pr&oacute;ximas y total</li>
-    <li>Tabla con tipo, cliente, fecha, duraci&oacute;n, estado</li>
-    <li>Dropdown de cambio de estado por cita</li>
-    <li>Gestor ve solo sus citas (filtrado por <code>advisor_id</code>)</li>
-  </ul>
-</section>
-
-<!-- ADMIN FACTURACION -->
-<section class="screen-doc" id="admin-facturacion">
-  <h3>Facturaci&oacute;n <span class="screen-route">/admin/facturacion</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/facturacion</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Facturaci&oacute;n</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Facturaci&oacute;n</div>
-        <div class="wf-grid wf-grid-4" style="margin-bottom:8px;">
-          <div class="wf-box wf-box-success wf-kpi">
-            <div class="wf-kpi-value">12.450&euro;</div>
-            <div class="wf-kpi-label">Facturado Mes <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
-          </div>
-          <div class="wf-box wf-box-primary wf-kpi">
-            <div class="wf-kpi-value">2.350&euro;</div>
-            <div class="wf-kpi-label">Pendiente <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
-          </div>
-          <div class="wf-box wf-box-warning wf-kpi">
-            <div class="wf-kpi-value">3</div>
-            <div class="wf-kpi-label">Fallidas <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></div>
-          </div>
-          <div class="wf-box wf-box-muted wf-kpi">
-            <div class="wf-kpi-value">89</div>
-            <div class="wf-kpi-label">Total Facturas</div>
-          </div>
-        </div>
-        <table class="wf-table">
-          <thead>
-            <tr><th>N&uacute;mero</th><th>Cliente</th><th>Concepto</th><th>Total</th><th>Estado</th><th>Fecha</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>F-2026-089</td><td>Juan G.</td><td>Plan Premium</td><td>49,00&euro;</td>
-              <td><span class="wf-badge wf-badge-green">Pagada</span></td><td>01/04</td>
-            </tr>
-            <tr>
-              <td>F-2026-088</td><td>Ana M.</td><td>Plan B&aacute;sico</td><td>29,00&euro;</td>
-              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td><td>01/04</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Tarjetas de totales: facturado mes, pendiente, fallidas (visibles SOLO para admin)</li>
-    <li>Tabla general de facturas para admin y gestor</li>
-    <li>Columnas: n&uacute;mero, cliente, concepto, total, estado, fecha</li>
-  </ul>
-</section>
-
-<!-- ADMIN PREINSCRITOS -->
-<section class="screen-doc" id="admin-preinscritos">
-  <h3>Pre-inscritos <span class="screen-route">/admin/preinscritos</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-    <span class="badge badge-gestor">Gestor</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/preinscritos</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Pre-inscritos</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Pre-inscritos (Leads)</div>
-        <table class="wf-table">
-          <thead>
-            <tr><th>Nombre</th><th>Email</th><th>Tel.</th><th>Pa&iacute;s</th><th>Necesidad</th><th>Fecha</th><th>Gestor</th><th>Estado</th><th>Acciones</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Luis P&eacute;rez</td><td>luis@mail.com</td><td>+34 612...</td><td>Per&uacute;</td><td>NIE</td><td>10/04</td>
-              <td>
-                <span style="font-size:9px;color:var(--primary);">Asignar &blacktriangledown; <span class="wf-badge wf-badge-red" style="font-size:7px;">Admin</span></span>
-              </td>
-              <td><span class="wf-badge wf-badge-amber">Pendiente</span></td>
-              <td>
-                <span class="wf-btn wf-btn-primary" style="font-size:8px;">Convertir <span class="wf-badge wf-badge-red" style="font-size:6px;">Admin</span></span>
-              </td>
-            </tr>
-            <tr>
-              <td>Rosa D&iacute;az</td><td>rosa@mail.com</td><td>+34 655...</td><td>Bolivia</td><td>Arraigo</td><td>09/04</td>
-              <td>Mar&iacute;a L.</td>
-              <td><span class="wf-badge wf-badge-green">Convertido</span></td>
-              <td><span style="font-size:9px;color:var(--muted);">EXP-0041</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Tabla de leads: nombre, email, tel&eacute;fono, pa&iacute;s, necesidad, fecha, gestor, estado, acciones</li>
-    <li>Dropdown para asignar gestor (solo admin)</li>
-    <li>Bot&oacute;n &laquo;Convertir&raquo; a expediente con di&aacute;logo de selecci&oacute;n de tr&aacute;mite (solo admin)</li>
-    <li>Estados: <code>pending</code>, <code>converted</code></li>
-    <li>Datos desde tabla <code>leads</code></li>
-  </ul>
-</section>
-
-<!-- ============================================================
-     SECTION 5: SOLO ADMIN
-     ============================================================ -->
-<h2 id="solo-admin">Solo Admin</h2>
-<p class="section-intro">Pantallas protegidas por AdminOnlyRoute. Acceso exclusivo para el rol admin. Gesti&oacute;n de usuarios y configuraci&oacute;n global del sistema.</p>
-
-<!-- USUARIOS -->
-<section class="screen-doc" id="admin-usuarios">
-  <h3>Usuarios <span class="screen-route">/admin/usuarios</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/usuarios</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Usuarios</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Gesti&oacute;n de Usuarios</div>
-        <table class="wf-table">
-          <thead>
-            <tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Fecha Registro</th><th>Acci&oacute;n</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Juan Garc&iacute;a</td><td>juan@mail.com</td>
-              <td><span class="wf-badge wf-badge-green">user</span></td>
-              <td>01/01/2026</td>
-              <td><span style="font-size:9px;color:var(--primary);">Cambiar Rol &blacktriangledown;</span></td>
-            </tr>
-            <tr>
-              <td>Mar&iacute;a L&oacute;pez</td><td>maria@wce.com</td>
-              <td><span class="wf-badge wf-badge-blue">gestor</span></td>
-              <td>15/09/2025</td>
-              <td><span style="font-size:9px;color:var(--primary);">Cambiar Rol &blacktriangledown;</span></td>
-            </tr>
-            <tr>
-              <td>Admin WCE</td><td>admin@wce.com</td>
-              <td><span class="wf-badge wf-badge-red">admin</span></td>
-              <td>01/01/2025</td>
-              <td><span style="font-size:9px;color:var(--muted);">&mdash;</span></td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="wf-box wf-box-warning" style="margin-top:8px;font-size:10px;">
-          Di&aacute;logo de confirmaci&oacute;n: &laquo;&iquest;Cambiar rol de Juan Garc&iacute;a a gestor?&raquo;<br>
-          Usa funci&oacute;n <code>SECURITY DEFINER</code> en PostgreSQL.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Tabla de todos los usuarios: nombre, email, rol, fecha de registro</li>
-    <li>Dropdown de cambio de rol con di&aacute;logo de confirmaci&oacute;n</li>
-    <li>Utiliza funci&oacute;n <code>SECURITY DEFINER</code> para cambios de rol seguros</li>
-    <li>Acceso exclusivo para admin (AdminOnlyRoute)</li>
-  </ul>
-</section>
-
-<!-- CONFIGURACION -->
-<section class="screen-doc" id="admin-configuracion">
-  <h3>Configuraci&oacute;n <span class="screen-route">/admin/configuracion</span></h3>
-  <div class="roles-row">
-    <span class="badge badge-admin">Admin</span>
-  </div>
-
-  <div class="wireframe">
-    <div class="wireframe-title-bar">
-      <div class="wireframe-dots"><span></span><span></span><span></span></div>
-      <div class="wireframe-url">app.wcewelcome.com/admin/configuracion</div>
-    </div>
-    <div class="wireframe-body">
-      <div class="wf-sidebar wf-sidebar-dark">
-        <div class="wf-logo">WCE Admin</div>
-        <div class="wf-nav-item active">Config</div>
-      </div>
-      <div class="wf-content">
-        <div class="wf-header">Configuraci&oacute;n</div>
-        <div class="wf-col" style="gap:12px;">
-          <!-- Datos empresa -->
-          <div class="wf-box wf-box-muted">
-            <div style="font-weight:700;font-size:11px;margin-bottom:8px;">Datos de la Empresa</div>
-            <div class="wf-grid wf-grid-2" style="gap:6px;">
-              <div class="wf-input">Nombre: WCE Welcome S.L.</div>
-              <div class="wf-input">Email: info@wcewelcome.com</div>
-              <div class="wf-input">Tel&eacute;fono: +34 93 XXX XX XX</div>
-              <div class="wf-input">CIF: B12345678</div>
-            </div>
-          </div>
-          <!-- Notificaciones -->
-          <div class="wf-box wf-box-muted">
-            <div style="font-weight:700;font-size:11px;margin-bottom:8px;">Notificaciones</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;">
-              <span>Email al crear expediente</span> <span class="wf-toggle"></span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;">
-              <span>Alerta al gestor asignado</span> <span class="wf-toggle"></span>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;">
-              <span>Resumen semanal</span> <span class="wf-toggle off"></span>
-            </div>
-          </div>
-          <!-- Seguridad -->
-          <div class="wf-box wf-box-muted">
-            <div style="font-weight:700;font-size:11px;margin-bottom:8px;">Seguridad</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin-bottom:4px;">
-              <span>Autenticaci&oacute;n 2FA</span> <span class="wf-toggle off"></span>
-            </div>
-            <div style="font-size:10px;">Registro de actividad: <span class="wf-badge wf-badge-green">Activo</span></div>
-          </div>
-          <!-- Apariencia & DB -->
-          <div class="wf-row">
-            <div class="wf-box wf-box-muted wf-flex-1">
-              <div style="font-weight:700;font-size:11px;margin-bottom:4px;">Apariencia</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;">
-                <span>Modo oscuro</span> <span class="wf-toggle off"></span>
-              </div>
-            </div>
-            <div class="wf-box wf-box-muted wf-flex-1">
-              <div style="font-weight:700;font-size:11px;margin-bottom:4px;">Base de Datos</div>
-              <div style="font-size:10px;">Estado: <span class="wf-badge wf-badge-green">Conectada</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Datos de empresa: nombre, email, tel&eacute;fono, CIF</li>
-    <li>Notificaciones: toggles para cada tipo de notificaci&oacute;n</li>
-    <li>Seguridad: 2FA y registro de actividad</li>
-    <li>Apariencia: modo oscuro</li>
-    <li>Base de datos: indicador de estado de conexi&oacute;n</li>
-    <li>Persiste en tabla <code>app_settings</code></li>
-  </ul>
-</section>
-
-<!-- ============================================================
-     SECTION 6: FLUJOS
-     ============================================================ -->
-<h2 id="flujos">Flujos de Trabajo</h2>
-<p class="section-intro">Flujos principales del sistema que conectan las diferentes pantallas y roles.</p>
-
-<!-- FLUJO PRE-INSCRIPCION -->
-<section class="screen-doc" id="flujo-preinscripcion">
-  <h3>Pre-inscripci&oacute;n &rarr; Lead &rarr; Expediente</h3>
-
-  <div class="flow">
-    <div class="flow-step">FormularioExpress<br><small>(p&uacute;blico en /login)</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step">Tabla <code>leads</code><br><small>estado: pending</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step highlight">Admin asigna gestor<br><small>/admin/preinscritos</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step highlight">Selecciona tr&aacute;mite<br><small>di&aacute;logo con cat&aacute;logo</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step">Convierte a expediente<br><small>tabla <code>expedientes</code></small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step">Gestor notificado<br><small>alerta autom&aacute;tica</small></div>
-  </div>
-
-  <ul class="feature-list">
-    <li>El usuario se pre-inscribe v&iacute;a FormularioExpress en la pesta&ntilde;a de login</li>
-    <li>Se crea un registro en la tabla <code>leads</code> con estado <code>pending</code></li>
-    <li>El admin ve el lead en <code>/admin/preinscritos</code> y asigna un gestor</li>
-    <li>El admin selecciona el tipo de tr&aacute;mite desde el cat&aacute;logo (<code>tramites_catalog</code>)</li>
-    <li>Al convertir, se crea un expediente en la tabla <code>expedientes</code></li>
-    <li>Se genera una alerta autom&aacute;tica para el gestor asignado</li>
-  </ul>
-</section>
-
-<!-- FLUJO ASIGNACION -->
-<section class="screen-doc" id="flujo-asignacion">
-  <h3>Asignaci&oacute;n de Gestor</h3>
-
-  <div class="flow">
-    <div class="flow-step highlight">Admin abre modal<br><small>expediente detalle</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step">Selecciona gestor<br><small>dropdown de gestores</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step">Guarda <code>advisor_id</code><br><small>en expediente</small></div>
-    <div class="flow-arrow">&rarr;</div>
-    <div class="flow-step">Auto-alerta creada<br><small>tabla <code>alertas</code></small></div>
-  </div>
-
-  <ul class="feature-list">
-    <li>Admin selecciona gestor en el modal de detalle del expediente</li>
-    <li>Se actualiza el campo <code>advisor_id</code> en el expediente</li>
-    <li>Se crea autom&aacute;ticamente una alerta para el gestor asignado</li>
-    <li>El gestor puede ver inmediatamente el expediente en su panel</li>
-  </ul>
-</section>
-
-<!-- FLUJO MULTI-GESTOR -->
-<section class="screen-doc" id="flujo-multigestor">
-  <h3>Multi-gestor Scoping</h3>
 
   <div class="card">
-    <p style="margin-bottom:16px;">Cada gestor ve <strong>exclusivamente</strong> los datos vinculados a sus expedientes asignados. El scoping se aplica en todas las pantallas del panel admin/gestor:</p>
+    <div class="card-title">Datos que modifica</div>
+    <p style="font-size:14px;color:var(--text-secondary);">UPDATE en <span class="data-source">profiles</span>. El usuario puede editar todos los campos excepto <code>role</code>, que está protegido por RLS.</p>
+  </div>
+</section>
 
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr><th>Pantalla</th><th>Filtro para Gestor</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Expedientes</td><td><code>expedientes.advisor_id = auth.uid()</code></td></tr>
-          <tr><td>Citas</td><td><code>citas.advisor_id = auth.uid()</code></td></tr>
-          <tr><td>Mensajes</td><td><code>mensajes.sender_id = uid OR receiver_id = uid</code></td></tr>
-          <tr><td>Alertas</td><td><code>INNER JOIN expedientes ON alertas.expediente_id = expedientes.id WHERE expedientes.advisor_id = auth.uid()</code></td></tr>
-        </tbody>
-      </table>
-    </div>
+<!-- MIS TRÁMITES -->
+<section class="section" id="s-user-tramites">
+  <div class="page-header">
+    <div class="page-route">/tramites</div>
+    <h1 class="page-title">Mis Trámites</h1>
+    <p class="page-desc">Vista central del cliente. Muestra el catálogo de trámites disponibles y los expedientes abiertos del usuario con sus documentos.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario (solo propios)</span></div>
+  </div>
 
+  <div class="card">
+    <div class="card-title">Acordeón de trámites del catálogo</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">6 trámites: NIE, DNI, Nacionalidad, Arraigo, Renovación, Reagrupación familiar. Cada uno muestra su estado real desde la BD.</p>
     <ul class="feature-list">
-      <li>Expedientes: filtrado por <code>advisor_id</code></li>
-      <li>Citas: filtrado por <code>advisor_id</code></li>
-      <li>Mensajes: filtrado por <code>sender_id</code> o <code>receiver_id</code></li>
-      <li>Alertas: inner join con expedientes por <code>advisor_id</code></li>
-      <li>El admin siempre ve todos los datos sin restricci&oacute;n</li>
+      <li>Al expandir: descripción del trámite</li>
+      <li>Selector de país (si aplica)</li>
+      <li>Selector tipo solicitud para Nacionalidad: residencia / matrimonio / opción / naturalización</li>
+      <li>Checklist de documentos requeridos con botón de subida individual por doc</li>
+      <li>Checkboxes de confirmación legal</li>
+      <li>Botón "Enviar"</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Componente ExpedientesList</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">Lista de expedientes reales del usuario.</p>
+    <ul class="feature-list">
+      <li>Número de expediente, estado con icono de color, fecha de creación, país, gestor asignado</li>
+      <li>Al expandir cada expediente: documentos del expediente con estado (pendiente / en revisión / validado / rechazado)</li>
+    </ul>
+    <div class="notice notice-warning" style="margin-top:12px;">
+      <span class="notice-icon">⚠️</span>
+      <div><strong>Pendiente:</strong> La subida real de documentos (<code>handleSend</code> en Tramites.tsx) no está conectada al backend. La UI existe pero la función es un no-op.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Fuentes de datos</div>
+    <p style="font-size:14px;color:var(--text-secondary);"><span class="data-source">expedientes</span> filtrado por <code>user_id</code> · <span class="data-source">documentos</span> por <code>expediente_id</code> · <span class="data-source">tramites_catalog</span> para el acordeón</p>
+  </div>
+</section>
+
+<!-- MENSAJES USUARIO -->
+<section class="section" id="s-user-mensajes">
+  <div class="page-header">
+    <div class="page-route">/mensajes</div>
+    <h1 class="page-title">Mensajes</h1>
+    <p class="page-desc">Chat bidireccional entre el usuario y su gestor asignado.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario (solo propios)</span></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Panel izquierdo — Conversaciones</div>
+      <ul class="feature-list">
+        <li>Lista de conversaciones con nombre del gestor</li>
+        <li>Último mensaje y fecha</li>
+        <li>Badge de mensajes no leídos por conversación</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Panel derecho — Chat</div>
+      <ul class="feature-list">
+        <li>Burbujas de mensajes enviados y recibidos</li>
+        <li>Campo de texto para responder</li>
+        <li>Enviar con Enter o botón</li>
+        <li>Timestamps por mensaje</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Fuente de datos</div>
+    <p style="font-size:14px;color:var(--text-secondary);"><span class="data-source">mensajes</span> donde <code>sender_id = user.id</code> o <code>receiver_id = user.id</code></p>
+  </div>
+</section>
+
+<!-- ALERTAS USUARIO -->
+<section class="section" id="s-user-alertas">
+  <div class="page-header">
+    <div class="page-route">/alertas</div>
+    <h1 class="page-title">Alertas</h1>
+    <p class="page-desc">Notificaciones del sistema y del equipo de gestión dirigidas al usuario.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario (solo propias)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tipos de alerta y colores</div>
+    <table class="diff-table">
+      <thead><tr><th>Tipo</th><th>Color</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>Urgente</td><td>🔴 Rojo</td><td>Documento rechazado, acción requerida</td></tr>
+        <tr><td>Recordatorio</td><td>🟡 Amarillo</td><td>Cita mañana a las 10h</td></tr>
+        <tr><td>Presentación pendiente</td><td>🟠 Naranja</td><td>Faltan documentos para presentar</td></tr>
+        <tr><td>Resolución</td><td>🟢 Verde</td><td>Expediente aprobado</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acciones disponibles</div>
+    <ul class="feature-list">
+      <li>Marcar alerta individual como leída</li>
+      <li>Marcar todas como leídas</li>
+      <li>Badge en sidebar actualizado en tiempo real</li>
     </ul>
   </div>
 </section>
 
-<!-- Footer -->
-<div style="margin-top:64px;padding-top:24px;border-top:2px solid var(--border);text-align:center;color:var(--muted);font-size:13px;">
-  <p>WCE Welcome &mdash; Immigration &amp; Foreign Affairs</p>
-  <p style="font-size:11px;">Documentaci&oacute;n del proyecto &middot; Abril 2026 &middot; Barcelona</p>
+<!-- SUSCRIPCIÓN -->
+<section class="section" id="s-user-suscripcion">
+  <div class="page-header">
+    <div class="page-route">/suscripcion</div>
+    <h1 class="page-title">Suscripción</h1>
+    <p class="page-desc">Información del plan contratado y opciones de renovación.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario (propia)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Información que muestra</div>
+    <ul class="feature-list">
+      <li>Plan actual (ej: Mensual)</li>
+      <li>Importe: 49,90 €/mes</li>
+      <li>Moneda</li>
+      <li>Método de pago (últimos 4 dígitos tarjeta)</li>
+      <li>Fecha de inicio</li>
+      <li>Fecha de fin</li>
+      <li>Próxima facturación</li>
+      <li>Toggle para activar/desactivar auto-renovación</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">Fuente de datos</div>
+    <p style="font-size:14px;color:var(--text-secondary);"><span class="data-source">suscripciones</span> donde <code>user_id = auth.uid()</code></p>
+  </div>
+</section>
+
+<!-- FACTURAS USUARIO -->
+<section class="section" id="s-user-facturas">
+  <div class="page-header">
+    <div class="page-route">/facturas</div>
+    <h1 class="page-title">Facturas</h1>
+    <p class="page-desc">Historial de todas las facturas del usuario.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario (propias)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Columnas de la tabla</div>
+    <table class="diff-table">
+      <thead><tr><th>Campo</th><th>Detalle</th></tr></thead>
+      <tbody>
+        <tr><td>Número</td><td>WCE-2026-001</td></tr>
+        <tr><td>Periodo</td><td>Ene 2026</td></tr>
+        <tr><td>Concepto</td><td>Descripción del servicio</td></tr>
+        <tr><td>Base imponible</td><td>En euros</td></tr>
+        <tr><td>IVA</td><td>21%</td></tr>
+        <tr><td>Total</td><td>Con IVA incluido</td></tr>
+        <tr><td>Estado</td><td>Pagada (verde) / Pendiente (amarillo) / Fallida (rojo) / Cancelada (gris)</td></tr>
+        <tr><td>Fecha</td><td>Fecha de emisión</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">Paginación</div>
+    <p style="font-size:14px;color:var(--text-secondary);">Server-side. Fuente: <span class="data-source">facturas</span></p>
+  </div>
+</section>
+
+<!-- CITAS USUARIO -->
+<section class="section" id="s-user-citas">
+  <div class="page-header">
+    <div class="page-route">/citas</div>
+    <h1 class="page-title">Citas</h1>
+    <p class="page-desc">Próximas citas del usuario con su gestor.</p>
+    <div class="page-roles"><span class="badge badge-usuario">Usuario (propias)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Información por cita</div>
+    <ul class="feature-list">
+      <li><strong>Tipo:</strong> Llamada, Videollamada, Presencial, Reunión extendida</li>
+      <li><strong>Estado:</strong> Confirmada, Pendiente, Completada, Cancelada</li>
+      <li><strong>Fecha y hora</strong></li>
+      <li><strong>Duración</strong> en minutos</li>
+      <li><strong>Nombre del gestor</strong> asignado</li>
+      <li><strong>Notas</strong> de la cita</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-title">Fuente de datos</div>
+    <p style="font-size:14px;color:var(--text-secondary);"><span class="data-source">citas</span> filtrado por <code>user_id = auth.uid()</code></p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PANEL ADMIN — DASHBOARD
+════════════════════════════════════════════════════════ -->
+<section class="section" id="s-admin-dashboard">
+  <div class="page-header">
+    <div class="page-route">/admin</div>
+    <h1 class="page-title">Dashboard Admin</h1>
+    <p class="page-desc">Vista principal del panel de gestión. Muestra KPIs, carga de trabajo del equipo y acciones rápidas.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin</span>
+      <span class="badge badge-gestor">Gestor</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">4 KPIs (ambos roles)</div>
+    <ul class="feature-list">
+      <li>Expedientes activos</li>
+      <li>Expedientes pendientes de revisión</li>
+      <li>Citas esta semana</li>
+      <li>Alertas urgentes</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Card de carga por gestor — Solo Admin</div>
+    <ul class="feature-list">
+      <li>Donut chart con % de capacidad de cada gestor</li>
+      <li>Badges: activos / en revisión / citas</li>
+      <li>Indicador visual de sobrecarga</li>
+      <li>Promedios y totales del equipo</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla de expedientes recientes</div>
+    <ul class="feature-list">
+      <li>Trámite, número, estado, gestor asignado, fecha</li>
+      <li>Gestor ve solo los suyos · Admin ve todos</li>
+      <li>Click abre ExpedienteDetailDialog (modal compartido)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acciones rápidas</div>
+    <table class="diff-table">
+      <thead><tr><th>Acción</th><th>Admin</th><th>Gestor</th></tr></thead>
+      <tbody>
+        <tr><td>Nuevo expediente (con selector usuario + trámite + gestor obligatorio)</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Alerta masiva (tipo + título + descripción + selección de destinatarios)</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Ver agenda → navega a /admin/citas</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Generar informe (deshabilitado, tooltip "Próximamente")</td><td>⏳</td><td>⏳</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- EXPEDIENTES ADMIN -->
+<section class="section" id="s-admin-expedientes">
+  <div class="page-header">
+    <div class="page-route">/admin/expedientes</div>
+    <h1 class="page-title">Expedientes</h1>
+    <p class="page-desc">Gestión completa de expedientes. El gestor ve solo los asignados a él (<code>advisor_id = su id</code>). El admin ve todos.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin</span>
+      <span class="badge badge-gestor">Gestor (solo asignados)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Filtros y búsqueda (server-side)</div>
+    <ul class="feature-list">
+      <li>Pills de conteo por estado (query separado)</li>
+      <li>Búsqueda por nombre de trámite o número de expediente</li>
+      <li>Filtro por estado del expediente</li>
+      <li>Filtro por gestor — <strong>solo Admin</strong></li>
+      <li>Filtro "Sin usuario vinculado" — badge ⚠️ en tabla</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Columnas de la tabla</div>
+    <p style="font-size:14px;color:var(--text-secondary);">Trámite · Número · Estado · Gestor · País · Docs (cantidad) · Fecha creación</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Modal ExpedienteDetailDialog</div>
+    <ul class="feature-list">
+      <li>Cambiar estado del expediente</li>
+      <li>Asignar/cambiar gestor (Admin: editable con opción "Sin asignar" · Gestor: solo lectura)</li>
+      <li>Notas internas (editable por ambos)</li>
+      <li>Documentos del expediente con acciones:</li>
+    </ul>
+    <table class="diff-table" style="margin-top:10px;">
+      <thead><tr><th>Acción sobre documentos</th><th>Admin</th><th>Gestor</th></tr></thead>
+      <tbody>
+        <tr><td>✅ Validar documento</td><td>✅</td><td>✅</td></tr>
+        <tr><td>❌ Rechazar con motivo</td><td>✅</td><td>✅</td></tr>
+        <tr><td>🔄 Devolver a pendiente</td><td>✅</td><td>✅</td></tr>
+        <tr><td>⬇️ Descargar (URL firmada Supabase Storage)</td><td>✅</td><td>✅</td></tr>
+        <tr><td>🗑️ Eliminar expediente</td><td>✅</td><td>❌</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- MENSAJES ADMIN -->
+<section class="section" id="s-admin-mensajes">
+  <div class="page-header">
+    <div class="page-route">/admin/mensajes</div>
+    <h1 class="page-title">Mensajes (admin)</h1>
+    <p class="page-desc">Centro de mensajería del equipo. Admin ve todas las conversaciones; gestor solo las suyas.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin (todos)</span>
+      <span class="badge badge-gestor">Gestor (propios)</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Panel izquierdo</div>
+      <ul class="feature-list">
+        <li>Búsqueda de conversaciones</li>
+        <li>Lista de conversaciones con nombre del cliente y gestor</li>
+        <li>Paginación</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Panel derecho</div>
+      <ul class="feature-list">
+        <li>Hilo de mensajes de la conversación seleccionada</li>
+        <li>Campo de respuesta</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Diferencia por rol</div>
+    <table class="diff-table">
+      <thead><tr><th>Rol</th><th>Qué ve</th></tr></thead>
+      <tbody>
+        <tr><td>Admin</td><td>Todas las conversaciones de la plataforma</td></tr>
+        <tr><td>Gestor</td><td>Solo conversaciones donde es <code>sender_id</code> o <code>receiver_id</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ALERTAS ADMIN -->
+<section class="section" id="s-admin-alertas">
+  <div class="page-header">
+    <div class="page-route">/admin/alertas</div>
+    <h1 class="page-title">Alertas (admin)</h1>
+    <p class="page-desc">Gestión de alertas del sistema.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin (todas)</span>
+      <span class="badge badge-gestor">Gestor (asignadas)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Stats y filtros</div>
+    <ul class="feature-list">
+      <li>Stats: total · no leídas · urgentes sin leer</li>
+      <li>Filtro por tipo de alerta</li>
+      <li>Filtro por estado de lectura (leída / no leída)</li>
+      <li>Eliminar alerta</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Diferencia por rol</div>
+    <table class="diff-table">
+      <thead><tr><th>Rol</th><th>Qué ve</th></tr></thead>
+      <tbody>
+        <tr><td>Admin</td><td>Todas las alertas, incluyendo alertas sin <code>expediente_id</code></td></tr>
+        <tr><td>Gestor</td><td>Solo alertas de expedientes donde <code>advisor_id = su id</code> (inner join). <strong>No ve alertas sin expediente_id</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CITAS ADMIN -->
+<section class="section" id="s-admin-citas">
+  <div class="page-header">
+    <div class="page-route">/admin/citas</div>
+    <h1 class="page-title">Citas (admin)</h1>
+    <p class="page-desc">Gestión de agenda de citas.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin (todas)</span>
+      <span class="badge badge-gestor">Gestor (propias)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Stats globales (queries separados)</div>
+    <ul class="feature-list">
+      <li>Citas hoy</li>
+      <li>Próximas citas (7 días)</li>
+      <li>Total de citas</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla y acciones</div>
+    <ul class="feature-list">
+      <li>Tipo con icono · Cliente · Fecha y hora · Duración · Estado</li>
+      <li>Selector de cambio de estado inline</li>
+      <li>Filtros server-side: búsqueda por cliente, por estado</li>
+      <li>Paginación</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Diferencia por rol</div>
+    <table class="diff-table">
+      <thead><tr><th>Rol</th><th>Qué ve</th></tr></thead>
+      <tbody>
+        <tr><td>Admin</td><td>Todas las citas</td></tr>
+        <tr><td>Gestor</td><td>Solo donde <code>advisor_id = su id</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FACTURACIÓN ADMIN -->
+<section class="section" id="s-admin-facturacion">
+  <div class="page-header">
+    <div class="page-route">/admin/facturacion</div>
+    <h1 class="page-title">Facturación (admin)</h1>
+    <p class="page-desc">Vista de facturación con stats financieros globales para admin.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin</span>
+      <span class="badge badge-gestor">Gestor (tabla, sin stats)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Stats globales — Solo Admin</div>
+    <ul class="feature-list">
+      <li>Total facturado (calculado sin filtros)</li>
+      <li>Pendiente de cobro</li>
+      <li>Pagos fallidos</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla de facturas (ambos roles)</div>
+    <p style="font-size:14px;color:var(--text-secondary);">Número · Cliente · Concepto · Periodo · Base · IVA · Total · Estado · Fecha. Filtros server-side + paginación.</p>
+  </div>
+</section>
+
+<!-- PRE-INSCRITOS ADMIN -->
+<section class="section" id="s-admin-leads">
+  <div class="page-header">
+    <div class="page-route">/admin/preinscritos</div>
+    <h1 class="page-title">Pre-inscritos (Leads)</h1>
+    <p class="page-desc">Gestión de leads del formulario express. Conversión a expediente y asignación de gestor.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin</span>
+      <span class="badge badge-gestor">Gestor (vista + acciones limitadas)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla de leads</div>
+    <p style="font-size:14px;color:var(--text-secondary);">Nombre · Email · Teléfono · País · Necesidad (chips) · Fecha · Gestor (dropdown — solo Admin) · Estado (Pendiente / Convertido) · Acciones</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Diferencias por rol</div>
+    <table class="diff-table">
+      <thead><tr><th>Acción</th><th>Admin</th><th>Gestor</th></tr></thead>
+      <tbody>
+        <tr><td>Ver tabla de leads</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Asignar gestor al lead (dropdown)</td><td>✅</td><td>❌</td></tr>
+        <tr><td>Convertir lead en expediente</td><td>✅</td><td>❌</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Flujo de conversión (Solo Admin)</div>
+    <ul class="feature-list">
+      <li>Click "Convertir" abre diálogo</li>
+      <li>Sistema busca usuario por email en <span class="data-source">profiles</span></li>
+      <li>Si existe → muestra datos y permite crear expediente vinculado</li>
+      <li>Si no existe → botón "Enviar invitación por email" (magic link via <code>signInWithOtp</code>)</li>
+      <li>Selector de trámite obligatorio (de <span class="data-source">tramites_catalog</span>)</li>
+      <li>Gestor debe estar asignado al lead para proceder</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SOLO ADMIN
+════════════════════════════════════════════════════════ -->
+<section class="section" id="s-admin-usuarios">
+  <div class="page-header">
+    <div class="page-route">/admin/usuarios</div>
+    <h1 class="page-title">Gestión de usuarios</h1>
+    <p class="page-desc">Administración de cuentas y roles. Ruta protegida por AdminOnlyRoute. Redirige a /admin si un gestor intenta acceder por URL.</p>
+    <div class="page-roles"><span class="badge badge-admin">Solo Admin</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla de usuarios</div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:10px;">Nombre · Email · Rol (badge coloreado) · Fecha de registro. Fuente: <span class="data-source">profiles</span></p>
+    <ul class="feature-list">
+      <li>Selector de cambio de rol (user / gestor / admin)</li>
+      <li>Diálogo de confirmación antes de cambiar rol</li>
+      <li>Cambio via RPC <code>admin_update_user_role</code> (SECURITY DEFINER en Supabase)</li>
+      <li>Nadie puede cambiar su propio rol</li>
+      <li>No visible en sidebar para gestores</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CONFIGURACIÓN -->
+<section class="section" id="s-admin-config">
+  <div class="page-header">
+    <div class="page-route">/admin/configuracion</div>
+    <h1 class="page-title">Configuración del sistema</h1>
+    <p class="page-desc">Ajustes globales de la plataforma. Persisten en la tabla app_settings.</p>
+    <div class="page-roles"><span class="badge badge-admin">Solo Admin</span></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Secciones</div>
+      <ul class="feature-list">
+        <li><strong>Datos empresa:</strong> nombre, email contacto, teléfono, CIF</li>
+        <li><strong>Notificaciones:</strong> toggles — emails automáticos, recordatorios de citas, alertas docs vencidos</li>
+        <li><strong>Seguridad:</strong> 2FA, registro de actividad</li>
+        <li><strong>Apariencia:</strong> modo oscuro</li>
+        <li><strong>Base de datos:</strong> estado conexión, proveedor (Supabase), región</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Comportamiento</div>
+      <ul class="feature-list">
+        <li>Botón "Guardar" persiste en <span class="data-source">app_settings</span></li>
+        <li>No visible en sidebar para gestores</li>
+        <li>Redirige a /admin si gestor accede por URL directa</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FLUJOS
+════════════════════════════════════════════════════════ -->
+<section class="section" id="s-flujo-lead">
+  <div class="page-header">
+    <h1 class="page-title">Flujo: Lead → Expediente</h1>
+    <p class="page-desc">Desde que un potencial cliente rellena el formulario hasta que se crea su expediente y el gestor recibe la alerta.</p>
+  </div>
+
+  <div class="card">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Lead rellena el FormularioExpress</div>
+          <div class="flow-step-desc">En /preinscripcion o en el tab de /login. Nombre, email, teléfono, país, necesidad, urgencia.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Datos guardados en tabla <code>leads</code></div>
+          <div class="flow-step-desc">INSERT anónimo. Estado: "pendiente".</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Admin ve el lead en /admin/preinscritos</div>
+          <div class="flow-step-desc">Asigna un gestor al lead desde el dropdown.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Admin hace clic en "Convertir"</div>
+          <div class="flow-step-desc">Se abre el diálogo de conversión. El sistema busca al usuario por email en <code>profiles</code>.</div>
+          <div class="flow-step-branch">
+            <div class="flow-branch flow-branch-yes">
+              <strong>✅ Usuario existe</strong>
+              Crea expediente vinculado con el <code>user_id</code> encontrado.
+            </div>
+            <div class="flow-branch flow-branch-no">
+              <strong>❌ No existe cuenta</strong>
+              Muestra botón "Enviar invitación". Envía magic link via <code>signInWithOtp</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Admin selecciona trámite</div>
+          <div class="flow-step-desc">Selector obligatorio de <code>tramites_catalog</code>. El gestor ya debe estar asignado.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">6</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Expediente creado + alerta automática</div>
+          <div class="flow-step-desc">INSERT en <code>expedientes</code>. Helper <code>notifyGestorAssignment</code> crea una alerta tipo "recordatorio" para el gestor con el nombre del trámite y del usuario.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLUJO ASIGNACIÓN GESTOR -->
+<section class="section" id="s-flujo-gestor">
+  <div class="page-header">
+    <h1 class="page-title">Flujo: Asignación de gestor</h1>
+    <p class="page-desc">Proceso de asignar o cambiar el gestor responsable de un expediente.</p>
+  </div>
+
+  <div class="card">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Admin abre el ExpedienteDetailDialog</div>
+          <div class="flow-step-desc">Desde /admin, /admin/expedientes o cualquier tabla que muestre expedientes.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Selecciona gestor del dropdown</div>
+          <div class="flow-step-desc">Lista de gestores activos. Opción "Sin asignar" disponible. El dropdown es editable solo para Admin — el Gestor lo ve en modo lectura.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Admin guarda los cambios</div>
+          <div class="flow-step-desc">UPDATE en <code>expedientes.advisor_id</code>.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Alerta automática al nuevo gestor</div>
+          <div class="flow-step-desc">Helper <code>notifyGestorAssignment</code> inserta en <code>alertas</code>: tipo "recordatorio", con nombre del trámite y nombre del usuario. El gestor ve la alerta en su panel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLUJO DOCUMENTOS -->
+<section class="section" id="s-flujo-docs">
+  <div class="page-header">
+    <h1 class="page-title">Flujo: Validación de documentos</h1>
+    <p class="page-desc">Ciclo de vida de un documento desde que el usuario lo adjunta hasta que el gestor lo valida o rechaza.</p>
+  </div>
+
+  <div class="card">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Usuario adjunta documento</div>
+          <div class="flow-step-desc">Desde /tramites con el botón de subida individual por documento. <strong>Nota:</strong> la conexión con el backend está pendiente de implementar.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Estado inicial: "pendiente"</div>
+          <div class="flow-step-desc">Registro en <code>documentos</code> con <code>status = 'pendiente'</code>. El gestor ve el badge en su lista de expedientes.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Gestor abre ExpedienteDetailDialog</div>
+          <div class="flow-step-desc">Ve la lista de documentos con su estado actual y tres acciones disponibles.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Gestor toma acción</div>
+          <div class="flow-step-branch">
+            <div class="flow-branch flow-branch-yes">
+              <strong>✅ Validar</strong>
+              Estado → "validado". El documento queda aceptado.
+            </div>
+            <div class="flow-branch flow-branch-no">
+              <strong>❌ Rechazar</strong>
+              Abre RejectDocumentDialog para ingresar motivo. Estado → "rechazado".
+            </div>
+          </div>
+          <div style="margin-top:8px;padding:10px 12px;border-radius:6px;background:#f5f3ff;border:1px solid #e9d5ff;font-size:13px;color:#5b21b6;">
+            <strong>🔄 Devolver a pendiente:</strong> Resetea el estado del doc para que el usuario pueda re-subirlo.
+          </div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <div class="flow-step-title">Descargar archivo</div>
+          <div class="flow-step-desc">Botón de descarga genera una URL firmada de Supabase Storage válida por tiempo limitado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     REFERENCIA — PERMISOS
+════════════════════════════════════════════════════════ -->
+<section class="section" id="s-permisos">
+  <div class="page-header">
+    <h1 class="page-title">Tabla de permisos por rol</h1>
+    <p class="page-desc">Referencia completa de qué puede hacer cada rol en la plataforma.</p>
+    <div class="page-roles">
+      <span class="badge badge-admin">Admin</span>
+      <span class="badge badge-gestor">Gestor</span>
+      <span class="badge badge-usuario">Usuario</span>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="perms-table">
+      <thead>
+        <tr>
+          <th>Funcionalidad</th>
+          <th>Admin</th>
+          <th>Gestor</th>
+          <th>Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group-header"><td colspan="4">Autenticación</td></tr>
+        <tr><td>Login en /login</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓</td></tr>
+        <tr><td>Login en /admin/login</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Pre-inscripción (formulario express)</td><td class="perm-anon">Público</td><td class="perm-anon">Público</td><td class="perm-anon">Público</td></tr>
+        <tr><td>Reset de contraseña</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+
+        <tr class="group-header"><td colspan="4">Panel de Usuario</td></tr>
+        <tr><td>Dashboard (/dashboard)</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓</td></tr>
+        <tr><td>Mi Perfil (ver y editar)</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓ (propio)</td></tr>
+        <tr><td>Mis Trámites y expedientes</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓ (propios)</td></tr>
+        <tr><td>Subir documentos (UI)</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-partial">⚠️ UI existe, no conectada</td></tr>
+        <tr><td>Mensajes con gestor</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓ (propios)</td></tr>
+        <tr><td>Alertas (ver, marcar leídas)</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓ (propias)</td></tr>
+        <tr><td>Suscripción, facturas, citas</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-yes">✓ (propios)</td></tr>
+
+        <tr class="group-header"><td colspan="4">Panel Admin — Expedientes</td></tr>
+        <tr><td>Ver todos los expedientes</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Ver expedientes asignados (advisor_id)</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Filtrar por gestor</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Cambiar estado de expediente</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Asignar / reasignar gestor</td><td class="perm-yes">✓</td><td class="perm-partial">Solo lectura</td><td class="perm-no">✕</td></tr>
+        <tr><td>Eliminar expediente</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Crear nuevo expediente</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Validar / rechazar documentos</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Descargar documentos</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Agregar notas internas</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Mensajes</td></tr>
+        <tr><td>Ver todas las conversaciones</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Ver conversaciones propias</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Responder mensajes</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Alertas admin</td></tr>
+        <tr><td>Ver todas las alertas</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Ver alertas de expedientes asignados</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Ver alertas sin expediente_id</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Eliminar alertas</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Enviar alerta masiva</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Citas admin</td></tr>
+        <tr><td>Ver todas las citas</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Ver citas donde es advisor</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Cambiar estado de cita</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Facturación admin</td></tr>
+        <tr><td>Ver tabla de facturas</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Stats financieros globales</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Pre-inscritos / Leads</td></tr>
+        <tr><td>Ver tabla de leads</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Asignar gestor a lead</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Convertir lead en expediente</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Dashboard admin</td></tr>
+        <tr><td>KPIs (activos, revisión, citas, alertas)</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+        <tr><td>Card carga de trabajo por gestor</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Crear expediente desde dashboard</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Solo Admin</td></tr>
+        <tr><td>Gestión de usuarios (ver, cambiar roles)</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Configuración del sistema</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Visible en sidebar (/usuarios, /configuracion)</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+
+        <tr class="group-header"><td colspan="4">Seguridad / RLS</td></tr>
+        <tr><td>Cambiar role de otros usuarios (via RPC)</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Cambiar su propio role</td><td class="perm-no">✕</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>Actualizar su perfil (excepto role)</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+        <tr><td>Acceso a app_settings</td><td class="perm-yes">✓</td><td class="perm-no">✕</td><td class="perm-no">✕</td></tr>
+        <tr><td>INSERT en leads (formulario público)</td><td class="perm-anon">Anónimo</td><td class="perm-anon">Anónimo</td><td class="perm-anon">Anónimo</td></tr>
+
+        <tr class="group-header"><td colspan="4">Funcionalidades pendientes</td></tr>
+        <tr><td>Subida real de documentos (backend)</td><td colspan="3" style="text-align:left;color:#d97706;font-size:13px;">⚠️ handleSend en Tramites.tsx es no-op — UI existe pero no conectada</td></tr>
+        <tr><td>Notificación al usuario al rechazar doc</td><td colspan="3" style="text-align:left;color:#d97706;font-size:13px;">⚠️ No implementada</td></tr>
+        <tr><td>Vinculación lead → usuario al crear cuenta</td><td colspan="3" style="text-align:left;color:#d97706;font-size:13px;">⚠️ No implementada</td></tr>
+        <tr><td>Generar informe</td><td colspan="3" style="text-align:left;color:#d97706;font-size:13px;">⏳ Botón deshabilitado — Próximamente</td></tr>
+        <tr><td>Realtime en alertas y citas admin</td><td colspan="3" style="text-align:left;color:#d97706;font-size:13px;">⚠️ Falta suscripción a canales Realtime</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- USUARIOS DE PRUEBA -->
+<section class="section" id="s-usuarios-prueba">
+  <div class="page-header">
+    <h1 class="page-title">Usuarios de prueba</h1>
+    <p class="page-desc">Cuentas para testear la plataforma. Contraseña universal: <code style="background:#f3f4f6;padding:2px 8px;border-radius:4px;font-family:JetBrains Mono,monospace;">Welcome2024!</code></p>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Login en</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Admin Welcome IFA</td>
+          <td><span class="user-email">admin@welcome-ifa.com</span></td>
+          <td><span class="badge badge-admin">Admin</span></td>
+          <td>/admin/login</td>
+        </tr>
+        <tr>
+          <td>María López</td>
+          <td><span class="user-email">maria.lopez@welcome-ifa.com</span></td>
+          <td><span class="badge badge-gestor">Gestor</span></td>
+          <td>/admin/login</td>
+        </tr>
+        <tr>
+          <td>Laura Martínez</td>
+          <td><span class="user-email">laura.martinez@welcome-ifa.com</span></td>
+          <td><span class="badge badge-gestor">Gestor</span></td>
+          <td>/admin/login</td>
+        </tr>
+        <tr>
+          <td>Pedro Sánchez</td>
+          <td><span class="user-email">pedro.sanchez@welcome-ifa.com</span></td>
+          <td><span class="badge badge-gestor">Gestor</span></td>
+          <td>/admin/login</td>
+        </tr>
+        <tr>
+          <td>Carmen Ruiz</td>
+          <td><span class="user-email">carmen.ruiz@welcome-ifa.com</span></td>
+          <td><span class="badge badge-gestor">Gestor</span></td>
+          <td>/admin/login</td>
+        </tr>
+        <tr>
+          <td>Carlos García</td>
+          <td><span class="user-email">carlos.garcia@test.com</span></td>
+          <td><span class="badge badge-usuario">Usuario</span></td>
+          <td>/login</td>
+        </tr>
+        <tr>
+          <td>Ana Beltrán</td>
+          <td><span class="user-email">ana.beltran@test.com</span></td>
+          <td><span class="badge badge-usuario">Usuario</span></td>
+          <td>/login</td>
+        </tr>
+        <tr>
+          <td>Diego Ramírez</td>
+          <td><span class="user-email">diego.ramirez@test.com</span></td>
+          <td><span class="badge badge-usuario">Usuario</span></td>
+          <td>/login</td>
+        </tr>
+        <tr>
+          <td>Lucía Fernández</td>
+          <td><span class="user-email">lucia.fernandez@test.com</span></td>
+          <td><span class="badge badge-usuario">Usuario</span></td>
+          <td>/login</td>
+        </tr>
+        <tr>
+          <td>Roberto Silva</td>
+          <td><span class="user-email">roberto.silva@test.com</span></td>
+          <td><span class="badge badge-usuario">Usuario</span></td>
+          <td>/login</td>
+        </tr>
+        <tr>
+          <td>María José Ortega</td>
+          <td><span class="user-email">maria.jose.ortega@test.com</span></td>
+          <td><span class="badge badge-usuario">Usuario</span></td>
+          <td>/login</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="notice notice-info" style="margin-top:16px;">
+    <span class="notice-icon">ℹ️</span>
+    <div>La app vive en <strong><a href="https://wce.otronodo.com" target="_blank">wce.otronodo.com</a></strong>. Gestores y admins ingresan por <code>/admin/login</code>; los usuarios por <code>/login</code>.</div>
+  </div>
+</section>
+
+<!-- STACK TÉCNICO -->
+<section class="section" id="s-stack">
+  <div class="page-header">
+    <h1 class="page-title">Stack técnico</h1>
+    <p class="page-desc">Tecnologías y herramientas que conforman la plataforma WCE Welcome.</p>
+  </div>
+
+  <div class="stack-grid">
+    <div class="stack-item">
+      <div class="stack-item-category">Frontend</div>
+      <div class="stack-item-name">React 18 + TypeScript</div>
+      <div class="stack-item-desc">Con Vite como bundler</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-item-category">UI</div>
+      <div class="stack-item-name">shadcn/ui + Tailwind CSS</div>
+      <div class="stack-item-desc">Componentes y utilidades CSS</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-item-category">Iconos</div>
+      <div class="stack-item-name">Lucide Icons</div>
+      <div class="stack-item-desc">Librería de iconos SVG</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-item-category">Estado y datos</div>
+      <div class="stack-item-name">TanStack React Query</div>
+      <div class="stack-item-desc">+ React Context (AuthContext)</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-item-category">Backend</div>
+      <div class="stack-item-name">Supabase</div>
+      <div class="stack-item-desc">Auth + PostgreSQL + Storage + Realtime</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-item-category">Dev / Deploy</div>
+      <div class="stack-item-name">Lovable + GitHub</div>
+      <div class="stack-item-desc">AI-assisted dev. Deploy en Lovable. Repo: maxnodo/welcome-path</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Base de datos — 11 tablas</div>
+    <div class="db-grid">
+      <div class="db-table-card">
+        <div class="db-table-name">profiles</div>
+        <div class="db-table-desc">Datos del usuario, rol, info personal y migratoria</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">expedientes</div>
+        <div class="db-table-desc">Trámites activos, estado, user_id, advisor_id</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">documentos</div>
+        <div class="db-table-desc">Archivos por expediente, estado de validación</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">mensajes</div>
+        <div class="db-table-desc">Chat entre usuario y gestor</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">alertas</div>
+        <div class="db-table-desc">Notificaciones del sistema con tipo y estado de lectura</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">citas</div>
+        <div class="db-table-desc">Agenda: tipo, fecha, duración, advisor_id</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">facturas</div>
+        <div class="db-table-desc">Historial de facturación con estado y montos</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">suscripciones</div>
+        <div class="db-table-desc">Plan contratado, fechas, auto-renovación</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">leads</div>
+        <div class="db-table-desc">Pre-inscripciones del formulario express</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">tramites_catalog</div>
+        <div class="db-table-desc">Catálogo de tipos de trámite disponibles</div>
+      </div>
+      <div class="db-table-card">
+        <div class="db-table-name">app_settings</div>
+        <div class="db-table-desc">Configuración global, solo accesible por admin</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Hooks personalizados</div>
+    <p style="font-size:13.5px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;line-height:2;">
+      useAuth · useExpedientes · useDocumentos · useMensajes · useAdminMensajes · useAlertas · useAdminAlertas · useCitas · useAdminCitas · useFacturas · useAdminFacturas · useProfile · useSuscripcion · useGestores · useAppSettings · useAdminLeads · useAdminUsers
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Componentes compartidos</div>
+    <ul class="feature-list">
+      <li><strong>ExpedienteDetailDialog</strong> — Modal reutilizable con prop showDocumentActions</li>
+      <li><strong>DeleteExpedienteDialog</strong> — Confirmación de eliminación con nombre de expediente</li>
+      <li><strong>RejectDocumentDialog</strong> — Input de motivo de rechazo</li>
+      <li><strong>TablePagination</strong> — Anterior / Siguiente + "Mostrando X–Y de Z"</li>
+      <li><strong>LoadingSpinner</strong> — Con logo, usado en route guards y Suspense</li>
+      <li><strong>expediente-utils.ts</strong> — allStatuses, statusLabels, statusColor</li>
+      <li><strong>notifyGestorAssignment</strong> — Helper para alertas automáticas al asignar gestor</li>
+    </ul>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>WCE Welcome Path — Guía interna del producto</span>
+  <span>
+    <a href="https://github.com/maxnodo/welcome-path" target="_blank">github.com/maxnodo/welcome-path</a>
+    · <a href="https://wce.otronodo.com" target="_blank">wce.otronodo.com</a>
+  </span>
 </div>
 
 </div><!-- /content -->
 </main>
 
 <script>
-// Sidebar toggle for mobile
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.querySelector('.sidebar-overlay').classList.toggle('active');
+// Navigation
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('.section');
+
+function showSection(id) {
+  sections.forEach(s => s.classList.remove('active'));
+  navLinks.forEach(l => l.classList.remove('active'));
+
+  const target = document.getElementById('s-' + id);
+  if (target) target.classList.add('active');
+
+  const link = document.querySelector('[data-section="' + id + '"]');
+  if (link) link.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-// Active nav link highlighting
-document.addEventListener('scroll', function() {
-  const sections = document.querySelectorAll('section[id], h2[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
-  let current = '';
-
-  sections.forEach(function(section) {
-    const top = section.offsetTop;
-    if (window.scrollY >= top - 100) {
-      current = section.getAttribute('id');
-    }
-  });
-
-  navLinks.forEach(function(link) {
-    link.classList.remove('active');
-    if (link.getAttribute('href') === '#' + current) {
-      link.classList.add('active');
-    }
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const id = link.getAttribute('data-section');
+    showSection(id);
+    // close mobile sidebar
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    history.replaceState(null, '', '#' + id);
   });
 });
 
-// Close sidebar on nav click (mobile)
-document.querySelectorAll('.nav-link').forEach(function(link) {
-  link.addEventListener('click', function() {
-    if (window.innerWidth <= 900) {
-      document.getElementById('sidebar').classList.remove('open');
-      document.querySelector('.sidebar-overlay').classList.remove('active');
-    }
-  });
+// Mobile sidebar
+const toggle = document.getElementById('sidebarToggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+toggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
 });
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+});
+
+// Load from hash
+const hash = window.location.hash.replace('#', '');
+if (hash) showSection(hash);
 </script>
-
 </body>
 </html>
