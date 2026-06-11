@@ -40,7 +40,7 @@ export const AdminLogin = () => {
   useEffect(() => {
     if (waitingForProfile && isAuthenticated && !authLoading) {
       if (isGestor) {
-        navigate("/admin");
+        navigate("/admin", { replace: true });
       } else {
         setError("No tienes permisos de gestor/admin.");
         setWaitingForProfile(false);
@@ -48,6 +48,16 @@ export const AdminLogin = () => {
       }
     }
   }, [waitingForProfile, isAuthenticated, authLoading, isGestor, navigate]);
+
+  useEffect(() => {
+    if (!waitingForProfile || !loading) return;
+    const timeout = window.setTimeout(() => {
+      setError("No pudimos completar el acceso. Revisa que el navegador permita cookies/localStorage y vuelve a intentarlo.");
+      setWaitingForProfile(false);
+      setLoading(false);
+    }, 12000);
+    return () => window.clearTimeout(timeout);
+  }, [loading, waitingForProfile]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

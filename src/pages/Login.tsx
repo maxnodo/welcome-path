@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,22 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated, isGestor, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading || !isAuthenticated || authLoading) return;
+    navigate(isGestor ? "/admin" : "/dashboard", { replace: true });
+  }, [authLoading, isAuthenticated, isGestor, loading, navigate]);
+
+  useEffect(() => {
+    if (!loading) return;
+    const timeout = window.setTimeout(() => {
+      setLoading(false);
+      setError("No pudimos completar el acceso. Revisa que el navegador permita cookies/localStorage y vuelve a intentarlo.");
+    }, 12000);
+    return () => window.clearTimeout(timeout);
+  }, [loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
