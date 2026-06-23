@@ -23,39 +23,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [userId, setUserId] = useState<string | null>(null)
   const isFetching = useRef(false)
 
-  // Effect 1: Auth listener
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-          if (session?.user) {
-            setLoading(true)
-            setUserId(session.user.id)
-          } else {
-            setProfile(null)
-            setUserId(null)
-            setLoading(false)
-          }
-        } else if (event === 'SIGNED_OUT') {
-          setProfile(null)
-          setUserId(null)
-          setLoading(false)
-        }
-        // TOKEN_REFRESHED: session/user updated above, no loading/profile change
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  // Effect 2: Fetch profile when userId changes
-  useEffect(() => {
+  async function fetchProfileByUserId(userId: string | null) {
     if (!userId) {
       setProfile(null)
       setLoading(false)
@@ -64,50 +34,79 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (isFetching.current) return
 
-    let cancelled = false
-    isFetching.current = true
-
-    const fetchProfile = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle()
-        if (!cancelled) {
-          if (!error && data) {
-            setProfile(data as Profile)
-          }
-          setLoading(false)
-        }
-      } finally {
-        isFetching.current = false
-      }
-    }
-    fetchProfile()
-
-    return () => {
-      cancelled = true
-    }
-  }, [userId])
-
-  async function refreshProfile() {
-    if (!user) return
-    if (isFetching.current) return
-
     isFetching.current = true
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', userId)
         .maybeSingle()
+
       if (!error && data) {
         setProfile(data as Profile)
+      } else if (!data) {
+        setProfile(null)
       }
     } finally {
       isFetching.current = false
+      setLoading(false)
     }
+  }
+
+  // Effect 1: auth bootstrap and session listener
+  useEffect(() => {
+    let cancelled = false
+
+    const initSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (cancelled) return
+
+      setSession(session)
+      setUser(session?.user ?? null)
+      if (session?.user) {
+        setLoading(true)
+        await fetchProfileByUserId(session.user.id)
+      } else {
+        setProfile(null)
+        setLoading(false)
+      }
+    }
+
+    initSession()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session)
+        setUser(session?.user ?? null)
+
+        if (event === 'SIGNED_OUT') {
+          setProfile(null)
+          setLoading(false)
+          return
+        }
+
+        if (session?.user) {
+          setLoading(true)
+          await fetchProfileByUserId(session.user.id)
+          return
+        }
+
+        setProfile(null)
+        setLoading(false)
+      }
+    )
+
+    return () => {
+      cancelled = true
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  async function refreshProfile() {
+    if (!user) return
+    if (isFetching.current) return
+
+    await fetchProfileByUserId(user.id)
   }
 
   async function signIn(email: string, password: string) {
@@ -119,7 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(data.session)
       setUser(data.session.user)
       setLoading(true)
-      setUserId(data.session.user.id)
+      await fetchProfileByUserId(data.session.user.id)
     }
     return { error: error as Error | null }
   }
